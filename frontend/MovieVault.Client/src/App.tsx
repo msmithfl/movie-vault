@@ -3,6 +3,7 @@ import Header from './components/Header'
 import Footer from './components/Footer'
 import MovieList from './components/MovieList'
 import AddMovie from './components/AddMovie'
+import EditMovie from './components/EditMovie'
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Routes>
             <Route path="/" element={<MovieList />} />
             <Route path="/add" element={<AddMovie />} />
+            <Route path="/edit/:id" element={<EditMovie />} />
           </Routes>
         </main>
         <Footer />

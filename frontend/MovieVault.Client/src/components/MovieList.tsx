@@ -9,8 +9,11 @@ interface Movie {
   createdAt?: string;
 }
 
+type SortOption = 'date' | 'alphabetic' | 'format';
+
 function MovieList() {
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [sortBy, setSortBy] = useState<SortOption>('date');
   const API_URL = 'http://localhost:5156/api/movies';
 
   useEffect(() => {
@@ -43,6 +46,25 @@ function MovieList() {
     }
   };
 
+  const getSortedMovies = () => {
+    const sortedMovies = [...movies];
+    
+    switch (sortBy) {
+      case 'alphabetic':
+        return sortedMovies.sort((a, b) => a.title.localeCompare(b.title));
+      case 'format':
+        return sortedMovies.sort((a, b) => a.format.localeCompare(b.format));
+      case 'date':
+      default:
+        return sortedMovies.sort((a, b) => {
+          if (!a.createdAt || !b.createdAt) return 0;
+          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+        });
+    }
+  };
+
+  const sortedMovies = getSortedMovies();
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
@@ -54,6 +76,24 @@ function MovieList() {
           + Add Movie
         </Link>
       </div>
+
+      {movies.length > 0 && (
+        <div className="mb-6 flex items-center gap-3">
+          <label htmlFor="sortBy" className="text-sm font-medium text-gray-300">
+            Sort by:
+          </label>
+          <select
+            id="sortBy"
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as SortOption)}
+            className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+          >
+            <option value="date">Date Added (Newest First)</option>
+            <option value="alphabetic">Title (A-Z)</option>
+            <option value="format">Format</option>
+          </select>
+        </div>
+      )}
 
       {movies.length === 0 ? (
         <div className="text-center py-20">
@@ -79,7 +119,7 @@ function MovieList() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-700">
-              {movies.map((movie) => (
+              {sortedMovies.map((movie) => (
                 <tr 
                   key={movie.id}
                   className="hover:bg-gray-750 transition-colors duration-150"
@@ -92,13 +132,21 @@ function MovieList() {
                   </td>
                   <td className="px-6 py-4 text-gray-400 font-mono text-sm">{movie.upcNumber}</td>
                   <td className="px-6 py-4 text-right">
-                    <button
-                      onClick={() => movie.id && handleDelete(movie.id)}
-                      className="text-red-400 hover:text-red-300 hover:bg-red-500/10 p-2 rounded-md transition-colors duration-200"
-                      aria-label="Delete movie"
-                    >
-                      🗑️ Delete
-                    </button>
+                    <div className="flex gap-2 justify-end">
+                      <Link
+                        to={`/edit/${movie.id}`}
+                        className="text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 px-3 py-2 rounded-md transition-colors duration-200"
+                      >
+                        ✏️ Edit
+                      </Link>
+                      <button
+                        onClick={() => movie.id && handleDelete(movie.id)}
+                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10 px-3 py-2 rounded-md transition-colors duration-200"
+                        aria-label="Delete movie"
+                      >
+                        🗑️ Delete
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
