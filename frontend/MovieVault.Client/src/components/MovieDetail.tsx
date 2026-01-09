@@ -12,6 +12,9 @@ interface Movie {
   condition: string;
   rating: number;
   review: string;
+  year: number;
+  genres: string[];
+  posterPath: string;
   hdDriveNumber: number;
   shelfNumber: number;
   shelfSection: string;
@@ -169,6 +172,28 @@ function MovieDetail() {
             </div>
 
             <div>
+              <h3 className="text-sm font-medium text-gray-400 mb-2">Year</h3>
+              <p className="text-base text-white">
+                {movie.year || <span className="text-gray-500">Not set</span>}
+              </p>
+            </div>
+
+            <div>
+              <h3 className="text-sm font-medium text-gray-400 mb-2">Genres</h3>
+              {movie.genres && movie.genres.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {movie.genres.map((genre, idx) => (
+                    <span key={idx} className="bg-purple-600 px-3 py-2 rounded-md text-white">
+                      {genre}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 italic">None</p>
+              )}
+            </div>
+
+            <div>
               <h3 className="text-sm font-medium text-gray-400 mb-2">UPC Number</h3>
               <p className="text-base font-mono text-white bg-gray-700 px-3 py-2 rounded-md inline-block">
                 {movie.upcNumber}
@@ -228,6 +253,22 @@ function MovieDetail() {
               <p className="text-base text-white font-mono">#{movie.id}</p>
             </div>
           </div>
+
+          {movie.posterPath && (
+            <div className="mb-8">
+              <h3 className="text-sm font-medium text-gray-400 mb-3">Poster</h3>
+              <div className="flex justify-center">
+                <img 
+                  src={movie.posterPath} 
+                  alt={`${movie.title} poster`}
+                  className="rounded-lg shadow-lg max-h-96 object-contain"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              </div>
+            </div>
+          )}
 
           <div className="mb-8 p-6 bg-gray-700 rounded-lg">
             <h3 className="text-sm font-medium text-gray-400 mb-3">Review / Notes</h3>

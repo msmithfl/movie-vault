@@ -11,6 +11,9 @@ interface Movie {
   condition: string;
   rating: number;
   review: string;
+  year: number;
+  genres: string[];
+  posterPath: string;
   hdDriveNumber: number;
   shelfNumber: number;
   shelfSection: string;
@@ -29,6 +32,9 @@ function EditMovie() {
     condition: 'New',
     rating: 0,
     review: '',
+    year: new Date().getFullYear(),
+    genres: [],
+    posterPath: '',
     hdDriveNumber: 0,
     shelfNumber: 0,
     shelfSection: '',
@@ -209,6 +215,22 @@ function EditMovie() {
             </div>
 
             <div>
+              <label htmlFor="year" className="block text-sm font-medium text-gray-300 mb-2">
+                Year
+              </label>
+              <input
+                type="number"
+                id="year"
+                value={formData.year}
+                onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) || new Date().getFullYear() })}
+                min="1900"
+                max="2100"
+                placeholder="Release year"
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
                 Formats *
               </label>
@@ -243,6 +265,59 @@ function EditMovie() {
                 <option value="Blu-ray" disabled={formData.formats.includes('Blu-ray')}>Blu-ray</option>
                 <option value="DVD" disabled={formData.formats.includes('DVD')}>DVD</option>
                 <option value="VHS" disabled={formData.formats.includes('VHS')}>VHS</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Genres
+              </label>
+              <div className="mb-2 flex flex-wrap gap-2">
+                {formData.genres.map((genre, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center gap-1 px-3 py-1 bg-purple-600 text-white rounded-full text-sm"
+                  >
+                    {genre}
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, genres: formData.genres.filter((_, i) => i !== index) })}
+                      className="hover:text-red-300 transition cursor-pointer"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <select
+                value=""
+                onChange={(e) => {
+                  if (e.target.value && !formData.genres.includes(e.target.value)) {
+                    setFormData({ ...formData, genres: [...formData.genres, e.target.value] });
+                  }
+                }}
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
+              >
+                <option value="">Add genre...</option>
+                <option value="Action" disabled={formData.genres.includes('Action')}>Action</option>
+                <option value="Adventure" disabled={formData.genres.includes('Adventure')}>Adventure</option>
+                <option value="Animation" disabled={formData.genres.includes('Animation')}>Animation</option>
+                <option value="Comedy" disabled={formData.genres.includes('Comedy')}>Comedy</option>
+                <option value="Crime" disabled={formData.genres.includes('Crime')}>Crime</option>
+                <option value="Documentary" disabled={formData.genres.includes('Documentary')}>Documentary</option>
+                <option value="Drama" disabled={formData.genres.includes('Drama')}>Drama</option>
+                <option value="Family" disabled={formData.genres.includes('Family')}>Family</option>
+                <option value="Fantasy" disabled={formData.genres.includes('Fantasy')}>Fantasy</option>
+                <option value="History" disabled={formData.genres.includes('History')}>History</option>
+                <option value="Horror" disabled={formData.genres.includes('Horror')}>Horror</option>
+                <option value="Music" disabled={formData.genres.includes('Music')}>Music</option>
+                <option value="Mystery" disabled={formData.genres.includes('Mystery')}>Mystery</option>
+                <option value="Romance" disabled={formData.genres.includes('Romance')}>Romance</option>
+                <option value="Sci-Fi" disabled={formData.genres.includes('Sci-Fi')}>Sci-Fi</option>
+                <option value="Thriller" disabled={formData.genres.includes('Thriller')}>Thriller</option>
+                <option value="TV Movie" disabled={formData.genres.includes('TV Movie')}>TV Movie</option>
+                <option value="War" disabled={formData.genres.includes('War')}>War</option>
+                <option value="Western" disabled={formData.genres.includes('Western')}>Western</option>
               </select>
             </div>
 
@@ -475,6 +550,20 @@ function EditMovie() {
                 <span className="text-sm font-medium text-gray-300">On Plex</span>
               </label>
             </div>
+          </div>
+
+          <div>
+            <label htmlFor="posterPath" className="block text-sm font-medium text-gray-300 mb-2">
+              Poster Image URL
+            </label>
+            <input
+              type="text"
+              id="posterPath"
+              value={formData.posterPath}
+              onChange={(e) => setFormData({ ...formData, posterPath: e.target.value })}
+              placeholder="https://example.com/poster.jpg"
+              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            />
           </div>
 
           <div>
