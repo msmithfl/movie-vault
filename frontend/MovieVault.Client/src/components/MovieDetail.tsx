@@ -1,12 +1,13 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
+import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from 'react-icons/ti'
 import ConfirmDialog from './ConfirmDialog'
 
 interface Movie {
   id?: number;
   title: string;
   upcNumber: string;
-  format: string;
+  formats: string[];
   collections: string[];
   condition: string;
   rating: number;
@@ -119,10 +120,18 @@ function MovieDetail() {
         <div className="p-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
             <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-2">Format</h3>
-              <span className="bg-indigo-600 text-white px-4 py-2 rounded-full text-base font-medium inline-block">
-                {movie.format}
-              </span>
+              <h3 className="text-sm font-medium text-gray-400 mb-2">Formats</h3>
+              {movie.formats && movie.formats.length > 0 ? (
+                <div className="flex flex-wrap gap-2">
+                  {[...movie.formats].sort().map((fmt, idx) => (
+                    <span key={idx} className="bg-indigo-600 text-white px-4 py-2 rounded-full text-base font-medium">
+                      {fmt}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-gray-500 italic">None</p>
+              )}
             </div>
 
             <div>
@@ -139,9 +148,24 @@ function MovieDetail() {
 
             <div>
               <h3 className="text-sm font-medium text-gray-400 mb-2">Rating</h3>
-              <p className="text-xl text-white">
-                {movie.rating > 0 ? `${movie.rating} ⭐` : 'Not Rated'}
-              </p>
+              <div className="flex gap-1 items-center">
+                {[1, 2, 3, 4, 5].map((star) => {
+                  const isFullStar = movie.rating >= star;
+                  const isHalfStar = movie.rating === star - 0.5;
+                  
+                  return (
+                    <div key={star}>
+                      {isFullStar ? (
+                        <TiStarFullOutline className="w-7 h-7 text-yellow-400" />
+                      ) : isHalfStar ? (
+                        <TiStarHalfOutline className="w-7 h-7 text-yellow-400" />
+                      ) : (
+                        <TiStarOutline className="w-7 h-7 text-gray-500" />
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             <div>

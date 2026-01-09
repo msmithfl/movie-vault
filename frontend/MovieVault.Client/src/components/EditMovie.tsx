@@ -6,7 +6,7 @@ interface Movie {
   id?: number;
   title: string;
   upcNumber: string;
-  format: string;
+  formats: string[];
   collections: string[];
   condition: string;
   rating: number;
@@ -24,7 +24,7 @@ function EditMovie() {
   const [formData, setFormData] = useState<Movie>({
     title: '',
     upcNumber: '',
-    format: 'DVD',
+    formats: [],
     collections: [],
     condition: 'New',
     rating: 0,
@@ -209,19 +209,39 @@ function EditMovie() {
             </div>
 
             <div>
-              <label htmlFor="format" className="block text-sm font-medium text-gray-300 mb-2">
-                Format *
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Formats *
               </label>
+              <div className="mb-2 flex flex-wrap gap-2">
+                {formData.formats.map((fmt, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center gap-1 px-3 py-1 bg-indigo-600 text-white rounded-full text-sm"
+                  >
+                    {fmt}
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, formats: formData.formats.filter((_, i) => i !== index) })}
+                      className="hover:text-red-300 transition cursor-pointer"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
               <select
-                id="format"
-                value={formData.format}
-                onChange={(e) => setFormData({ ...formData, format: e.target.value })}
-                required
-                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent cursor-pointer"
+                value=""
+                onChange={(e) => {
+                  if (e.target.value && !formData.formats.includes(e.target.value)) {
+                    setFormData({ ...formData, formats: [...formData.formats, e.target.value] });
+                  }
+                }}
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
               >
-                <option value="DVD">DVD</option>
-                <option value="Blu-ray">Blu-ray</option>
-                <option value="4K">4K Ultra HD</option>
+                <option value="">Add format...</option>
+                <option value="4K" disabled={formData.formats.includes('4K')}>4K Ultra HD</option>
+                <option value="Blu-ray" disabled={formData.formats.includes('Blu-ray')}>Blu-ray</option>
+                <option value="DVD" disabled={formData.formats.includes('DVD')}>DVD</option>
               </select>
             </div>
 
@@ -355,7 +375,7 @@ function EditMovie() {
                 <button
                   type="button"
                   onClick={() => setFormData({ ...formData, rating: 0 })}
-                  className="ml-2 text-xs text-gray-400 hover:text-white transition"
+                  className="ml-2 text-xs text-gray-400 hover:text-white transition cursor-pointer"
                 >
                   Clear
                 </button>
@@ -473,14 +493,14 @@ function EditMovie() {
           <div className="flex gap-4 pt-4">
             <button 
               type="submit" 
-              className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-md transition duration-200 ease-in-out transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-800"
+              className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-md transition duration-200 ease-in-out transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-800 cursor-pointer"
             >
               Save Changes
             </button>
             <button
               type="button"
               onClick={() => navigate('/collection')}
-              className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-md transition duration-200"
+              className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-md transition duration-200 cursor-pointer"
             >
               Cancel
             </button>

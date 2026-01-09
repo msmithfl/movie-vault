@@ -5,7 +5,7 @@ public class Movie
     public int Id { get; set; }
     public required string Title { get; set; }
     public required string UpcNumber { get; set; }
-    public required string Format { get; set; } // DVD, Blu-ray, 4K
+    public List<string> Formats { get; set; } = new List<string>(); // DVD, Blu-ray, 4K
     public List<string> Collections { get; set; } = new List<string>(); // Jurassic Park, Criterion, Star Wars
     public required string Condition { get; set; } // New, Good, Skips, Poor
     public float Rating { get; set; }

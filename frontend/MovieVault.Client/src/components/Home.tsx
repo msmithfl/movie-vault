@@ -5,7 +5,7 @@ interface Movie {
   id?: number;
   title: string;
   upcNumber: string;
-  format: string;
+  formats: string[];
   collections: string[];
   condition: string;
   rating: number;
@@ -41,12 +41,21 @@ function Home() {
       if (response.ok) {
         const movies: Movie[] = await response.json();
         
-        // Calculate stats
+        // Calculate stats - count by highest format (first alphabetically)
         const stats = {
           total: movies.length,
-          dvd: movies.filter(m => m.format === 'DVD').length,
-          bluray: movies.filter(m => m.format === 'Blu-ray').length,
-          fourK: movies.filter(m => m.format === '4K').length,
+          dvd: movies.filter(m => {
+            const highestFormat = m.formats.length > 0 ? [...m.formats].sort()[0] : '';
+            return highestFormat === 'DVD';
+          }).length,
+          bluray: movies.filter(m => {
+            const highestFormat = m.formats.length > 0 ? [...m.formats].sort()[0] : '';
+            return highestFormat === 'Blu-ray';
+          }).length,
+          fourK: movies.filter(m => {
+            const highestFormat = m.formats.length > 0 ? [...m.formats].sort()[0] : '';
+            return highestFormat === '4K';
+          }).length,
         };
         setStats(stats);
 
@@ -83,7 +92,7 @@ function Home() {
         <div className="bg-linear-to-br from-purple-600 to-purple-700 rounded-lg shadow-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-purple-200 text-sm font-medium">DVDs</p>
+              <p className="text-purple-200 text-sm font-medium">DVD</p>
               <p className="text-4xl font-bold text-white mt-2">{stats.dvd}</p>
             </div>
             <div className="text-5xl">💿</div>
@@ -129,8 +138,8 @@ function Home() {
             className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg p-8 transition-all duration-200 transform hover:scale-105 text-center"
           >
             <div className="text-5xl mb-4">📚</div>
-            <h3 className="text-xl font-semibold mb-2">View Collection</h3>
-            <p className="text-gray-400">Browse your entire movie library</p>
+            <h3 className="text-xl font-semibold mb-2">View Library</h3>
+            <p className="text-gray-400">Browse your entire collection</p>
           </Link>
 
           <div className="bg-gray-800 rounded-lg shadow-lg p-8 text-center opacity-50">
@@ -158,14 +167,20 @@ function Home() {
                   to={`/movie/${movie.id}`}
                   className="flex items-center justify-between p-4 hover:bg-gray-700 transition-colors"
                 >
-                  <div className="flex-1">
+                  <div className="flex-1 flex items-center gap-3">
                     <h3 className="text-lg font-semibold text-white">{movie.title}</h3>
-                    <p className="text-sm text-gray-400 mt-1">
-                      <span className="bg-indigo-600 text-white px-2 py-1 rounded text-xs font-medium">
-                        {movie.format}
+                    {movie.formats && movie.formats.length > 0 ? (
+                      <span className="inline-flex flex-wrap gap-1">
+                        {[...movie.formats].sort().map((fmt, idx) => (
+                          <span key={idx} className="bg-indigo-600 text-white px-2 py-1 rounded text-xs font-medium">
+                            {fmt}
+                          </span>
+                        ))}
                       </span>
-                      <span className="ml-3 font-mono">{movie.upcNumber}</span>
-                    </p>
+                    ) : (
+                      <span className="text-gray-500 text-sm">-</span>
+                    )}
+                    <span className="text-sm text-gray-400 font-mono">{movie.upcNumber}</span>
                   </div>
                   <div className="text-gray-400">→</div>
                 </Link>

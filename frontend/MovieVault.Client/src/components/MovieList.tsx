@@ -6,7 +6,7 @@ interface Movie {
   id?: number;
   title: string;
   upcNumber: string;
-  format: string;
+  formats: string[];
   collections: string[];
   condition: string;
   rating: number;
@@ -81,7 +81,12 @@ function MovieList() {
       case 'alphabetic':
         return sortedMovies.sort((a, b) => a.title.localeCompare(b.title));
       case 'format':
-        return sortedMovies.sort((a, b) => a.format.localeCompare(b.format));
+        return sortedMovies.sort((a, b) => {
+          // Get first format alphabetically (4K < Blu-ray < DVD)
+          const aFormat = a.formats.length > 0 ? [...a.formats].sort()[0] : 'ZZZ';
+          const bFormat = b.formats.length > 0 ? [...b.formats].sort()[0] : 'ZZZ';
+          return aFormat.localeCompare(bFormat);
+        });
       case 'date':
       default:
         return sortedMovies.sort((a, b) => {
@@ -113,7 +118,7 @@ function MovieList() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-bold">My Collection ({movies.length} items)</h2>
+        <h2 className="text-3xl font-bold">Library ({movies.length} items)</h2>
         <Link
           to="/add"
           className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-md transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900"
@@ -176,7 +181,7 @@ function MovieList() {
               <tr>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Title</th>
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Format</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Condition</th>
+                {/* <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Condition</th> */}
                 {/* <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Rating</th> */}
                 <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Collection</th>
                 <th className="px-6 py-4 text-right text-sm font-semibold text-gray-200">Actions</th>
@@ -195,11 +200,19 @@ function MovieList() {
                     </Link>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-                      {movie.format}
-                    </span>
+                    {movie.formats && movie.formats.length > 0 ? (
+                      <div className="flex flex-wrap gap-1">
+                        {[...movie.formats].sort().map((fmt, idx) => (
+                          <span key={idx} className="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-medium">
+                            {fmt}
+                          </span>
+                        ))}
+                      </div>
+                    ) : (
+                      <span className="text-gray-500">-</span>
+                    )}
                   </td>
-                  <td className="px-6 py-4">
+                  {/* <td className="px-6 py-4">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                       movie.condition === 'New' ? 'bg-green-600 text-white' :
                       movie.condition === 'Good' ? 'bg-blue-600 text-white' :
@@ -208,14 +221,14 @@ function MovieList() {
                     }`}>
                       {movie.condition}
                     </span>
-                  </td>
+                  </td> */}
                   {/* <td className="px-6 py-4 text-gray-300">
                     {movie.rating > 0 ? `${movie.rating} ⭐` : '-'}
                   </td> */}
                   <td className="px-6 py-4">
                     {movie.collections && movie.collections.length > 0 ? (
                       <div className="flex flex-wrap gap-1">
-                        {movie.collections.map((col, idx) => (
+                        {[...movie.collections].sort().map((col, idx) => (
                           <span key={idx} className="px-2 py-1 bg-purple-600 text-white rounded-full text-xs">
                             {col}
                           </span>

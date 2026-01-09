@@ -7,7 +7,7 @@ function Header() {
     <header className="bg-gray-800 border-b border-gray-700">
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          <Link to="/" className="flex items-center gap-1 hover:opacity-80 transition-opacity">
             <PiFilmReel className="w-11 h-11 text-white" />
             <BsSafe2 className="w-10 h-10 text-white" />
           </Link>
@@ -22,7 +22,7 @@ function Header() {
               to="/collection" 
               className="text-gray-300 hover:text-white transition-colors font-medium"
             >
-              My Collection
+              Library
             </Link>
             <Link 
               to="/add" 

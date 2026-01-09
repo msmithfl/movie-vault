@@ -40,7 +40,7 @@ public static class MovieEndpoints
 
             movie.Title = updatedMovie.Title;
             movie.UpcNumber = updatedMovie.UpcNumber;
-            movie.Format = updatedMovie.Format;
+            movie.Formats = updatedMovie.Formats;
             movie.Collections = updatedMovie.Collections;
             movie.Condition = updatedMovie.Condition;
             movie.Rating = updatedMovie.Rating;
