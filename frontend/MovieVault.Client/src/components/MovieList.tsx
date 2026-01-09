@@ -122,16 +122,21 @@ function MovieList() {
               {sortedMovies.map((movie) => (
                 <tr 
                   key={movie.id}
-                  className="hover:bg-gray-750 transition-colors duration-150"
+                  className="hover:bg-gray-700 transition-colors duration-150 cursor-pointer"
+                  onClick={() => window.location.href = `/movie/${movie.id}`}
                 >
-                  <td className="px-6 py-4 text-white font-medium">{movie.title}</td>
+                  <td className="px-6 py-4 text-white font-medium">
+                    <Link to={`/movie/${movie.id}`} className="hover:text-indigo-400 transition-colors">
+                      {movie.title}
+                    </Link>
+                  </td>
                   <td className="px-6 py-4">
                     <span className="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-medium">
                       {movie.format}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-gray-400 font-mono text-sm">{movie.upcNumber}</td>
-                  <td className="px-6 py-4 text-right">
+                  <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
                     <div className="flex gap-2 justify-end">
                       <Link
                         to={`/edit/${movie.id}`}

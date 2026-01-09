@@ -31,8 +31,8 @@ function AddMovie() {
       });
 
       if (response.ok) {
-        // Navigate back to home page after successful add
-        navigate('/');
+        // Navigate back to collection page after successful add
+        navigate('/collection');
       }
     } catch (error) {
       console.error('Error adding movie:', error);
@@ -43,7 +43,7 @@ function AddMovie() {
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="mb-6">
         <button
-          onClick={() => navigate('/')}
+          onClick={() => navigate('/collection')}
           className="text-indigo-400 hover:text-indigo-300 flex items-center gap-2 transition-colors"
         >
           ← Back to Collection
@@ -109,7 +109,7 @@ function AddMovie() {
             </button>
             <button
               type="button"
-              onClick={() => navigate('/')}
+              onClick={() => navigate('/collection')}
               className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-md transition duration-200"
             >
               Cancel
