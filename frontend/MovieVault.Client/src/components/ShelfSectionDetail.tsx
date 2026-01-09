@@ -1,5 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
+import ConfirmDialog from './ConfirmDialog'
+
+interface ShelfSection {
+  id: number;
+  name: string;
+  createdAt: string;
+}
 
 interface Movie {
   id?: number;
@@ -21,9 +28,14 @@ function ShelfSectionDetail() {
   const { sectionName } = useParams<{ sectionName: string }>();
   const navigate = useNavigate();
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [section, setSection] = useState<ShelfSection | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editedName, setEditedName] = useState('');
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const MOVIES_URL = 'http://localhost:5156/api/movies';
+  const SECTIONS_URL = 'http://localhost:5156/api/shelfsections';
 
   useEffect(() => {
     fetchMovies();
@@ -31,20 +43,84 @@ function ShelfSectionDetail() {
 
   const fetchMovies = async () => {
     try {
-      const response = await fetch(MOVIES_URL);
-      if (response.ok) {
-        const data = await response.json();
-        // Filter movies that belong to this shelf section
+      const [moviesRes, sectionsRes] = await Promise.all([
+        fetch(MOVIES_URL),
+        fetch(SECTIONS_URL)
+      ]);
+      
+      if (moviesRes.ok) {
+        const data = await moviesRes.json();
         const filtered = data.filter((movie: Movie) => 
           movie.shelfSection && movie.shelfSection === sectionName
         );
         setMovies(filtered);
       }
+      
+      if (sectionsRes.ok) {
+        const sectionsData = await sectionsRes.json();
+        const foundSection = sectionsData.find((s: ShelfSection) => s.name === sectionName);
+        setSection(foundSection || null);
+      }
     } catch (error) {
-      console.error('Error fetching movies:', error);
+      console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+    setEditedName(sectionName || '');
+  };
+
+  const handleSaveEdit = async () => {
+    if (!section || !editedName.trim()) return;
+
+    try {
+      const response = await fetch(`${SECTIONS_URL}/${section.id}?newName=${encodeURIComponent(editedName)}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        navigate(`/shelfsections/${encodeURIComponent(editedName)}`);
+      }
+    } catch (error) {
+      console.error('Error updating shelf section:', error);
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+    setEditedName('');
+  };
+
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!section) return;
+
+    try {
+      const response = await fetch(`${SECTIONS_URL}/${section.id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        navigate('/shelfsections');
+      }
+    } catch (error) {
+      console.error('Error deleting shelf section:', error);
+    } finally {
+      setShowDeleteConfirm(false);
+    }
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteConfirm(false);
   };
 
   if (loading) {
@@ -60,12 +136,56 @@ function ShelfSectionDetail() {
       <div className="mb-8">
         <button
           onClick={() => navigate('/shelfsections')}
-          className="text-indigo-400 hover:text-indigo-300 mb-4 flex items-center gap-2"
+          className="text-indigo-400 hover:text-indigo-300 mb-4 flex items-center gap-2 cursor-pointer"
         >
           ← Back to Shelf Sections
         </button>
-        <h1 className="text-3xl font-bold mb-2">{sectionName}</h1>
-        <p className="text-gray-400">{movies.length} {movies.length === 1 ? 'movie' : 'movies'} in this shelf section</p>
+        <div className="flex items-start justify-between">
+          <div className="flex-1">
+            {isEditing ? (
+              <div className="flex items-center gap-3 mb-2">
+                <input
+                  type="text"
+                  value={editedName}
+                  onChange={(e) => setEditedName(e.target.value)}
+                  className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white text-2xl font-bold"
+                  autoFocus
+                />
+                <button
+                  onClick={handleSaveEdit}
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md transition"
+                >
+                  Save
+                </button>
+                <button
+                  onClick={handleCancelEdit}
+                  className="bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-md transition"
+                >
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <h1 className="text-3xl font-bold mb-2">{sectionName}</h1>
+            )}
+            <p className="text-gray-400">{movies.length} {movies.length === 1 ? 'movie' : 'movies'} in this shelf section</p>
+          </div>
+          {!isEditing && section && (
+            <div className="flex gap-3">
+              <button
+                onClick={handleEditClick}
+                className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-md transition flex items-center gap-2 cursor-pointer"
+              >
+                Edit
+              </button>
+              <button
+                onClick={handleDeleteClick}
+                className="bg-red-600 hover:bg-red-500 text-white py-2 px-4 rounded-md transition flex items-center gap-2 cursor-pointer"
+              >
+                Delete
+              </button>
+            </div>
+          )}
+        </div>
       </div>
 
       {movies.length === 0 ? (
@@ -133,6 +253,14 @@ function ShelfSectionDetail() {
           ))}
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        title="Delete Shelf Section"
+        message={`Are you sure you want to delete "${sectionName}"? This will remove it from all movies but won't delete the movies themselves.`}
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
+      />
     </div>
   );
 }
