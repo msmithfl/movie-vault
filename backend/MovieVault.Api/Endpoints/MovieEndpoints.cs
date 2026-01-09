@@ -41,6 +41,14 @@ public static class MovieEndpoints
             movie.Title = updatedMovie.Title;
             movie.UpcNumber = updatedMovie.UpcNumber;
             movie.Format = updatedMovie.Format;
+            movie.Collections = updatedMovie.Collections;
+            movie.Condition = updatedMovie.Condition;
+            movie.Rating = updatedMovie.Rating;
+            movie.Review = updatedMovie.Review;
+            movie.HDDriveNumber = updatedMovie.HDDriveNumber;
+            movie.ShelfNumber = updatedMovie.ShelfNumber;
+            movie.ShelfSection = updatedMovie.ShelfSection;
+            movie.IsOnPlex = updatedMovie.IsOnPlex;
 
             await db.SaveChangesAsync();
             return Results.Ok(movie);

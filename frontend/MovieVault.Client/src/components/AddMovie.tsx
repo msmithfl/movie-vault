@@ -1,11 +1,20 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from "react-icons/ti";
 
 interface Movie {
   id?: number;
   title: string;
   upcNumber: string;
   format: string;
+  collections: string[];
+  condition: string;
+  rating: number;
+  review: string;
+  hdDriveNumber: number;
+  shelfNumber: number;
+  shelfSection: string;
+  isOnPlex: boolean;
   createdAt?: string;
 }
 
@@ -14,10 +23,53 @@ function AddMovie() {
   const [formData, setFormData] = useState<Movie>({
     title: '',
     upcNumber: '',
-    format: 'DVD'
+    format: 'DVD',
+    collections: [],
+    condition: 'New',
+    rating: 0,
+    review: '',
+    hdDriveNumber: 0,
+    shelfNumber: 0,
+    shelfSection: '',
+    isOnPlex: false
   });
+  
+  const [collections, setCollections] = useState<{id: number, name: string}[]>([]);
+  const [shelfSections, setShelfSections] = useState<{id: number, name: string}[]>([]);
+  const [showCollectionInput, setShowCollectionInput] = useState(false);
+  const [showShelfSectionInput, setShowShelfSectionInput] = useState(false);
+  const [newCollection, setNewCollection] = useState('');
+  const [newShelfSection, setNewShelfSection] = useState('');
 
   const API_URL = 'http://localhost:5156/api/movies';
+  const COLLECTIONS_URL = 'http://localhost:5156/api/collections';
+  const SHELF_SECTIONS_URL = 'http://localhost:5156/api/shelfsections';
+  
+  useEffect(() => {
+    // Load collections and shelf sections from API
+    const fetchData = async () => {
+      try {
+        const [collectionsRes, shelfSectionsRes] = await Promise.all([
+          fetch(COLLECTIONS_URL),
+          fetch(SHELF_SECTIONS_URL)
+        ]);
+        
+        if (collectionsRes.ok) {
+          const collectionsData = await collectionsRes.json();
+          setCollections(collectionsData);
+        }
+        
+        if (shelfSectionsRes.ok) {
+          const shelfSectionsData = await shelfSectionsRes.json();
+          setShelfSections(shelfSectionsData);
+        }
+      } catch (error) {
+        console.error('Error loading collections and shelf sections:', error);
+      }
+    };
+    
+    fetchData();
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,6 +90,54 @@ function AddMovie() {
       console.error('Error adding movie:', error);
     }
   };
+  
+  const addCollection = async () => {
+    if (newCollection && !collections.find(c => c.name === newCollection)) {
+      try {
+        const response = await fetch(COLLECTIONS_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name: newCollection }),
+        });
+        
+        if (response.ok) {
+          const newCollectionData = await response.json();
+          setCollections([...collections, newCollectionData].sort((a, b) => a.name.localeCompare(b.name)));
+          setFormData({ ...formData, collections: [...formData.collections, newCollection] });
+          setNewCollection('');
+          setShowCollectionInput(false);
+        }
+      } catch (error) {
+        console.error('Error adding collection:', error);
+      }
+    }
+  };
+  
+  const addShelfSection = async () => {
+    if (newShelfSection && !shelfSections.find(s => s.name === newShelfSection)) {
+      try {
+        const response = await fetch(SHELF_SECTIONS_URL, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ name: newShelfSection }),
+        });
+        
+        if (response.ok) {
+          const newShelfSectionData = await response.json();
+          setShelfSections([...shelfSections, newShelfSectionData].sort((a, b) => a.name.localeCompare(b.name)));
+          setFormData({ ...formData, shelfSection: newShelfSection });
+          setNewShelfSection('');
+          setShowShelfSectionInput(false);
+        }
+      } catch (error) {
+        console.error('Error adding shelf section:', error);
+      }
+    }
+  };
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-8">
@@ -53,51 +153,297 @@ function AddMovie() {
       <div className="bg-gray-800 rounded-lg shadow-lg p-8">
         <h2 className="text-3xl font-bold mb-6">Add New Movie</h2>
         <form onSubmit={handleSubmit} className="space-y-6">
-          <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-2">
-              Movie Title *
-            </label>
-            <input
-              type="text"
-              id="title"
-              value={formData.title}
-              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              required
-              placeholder="Enter movie title"
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-2">
+                Movie Title *
+              </label>
+              <input
+                type="text"
+                id="title"
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                required
+                placeholder="Enter movie title"
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-gray-500"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="upc" className="block text-sm font-medium text-gray-300 mb-2">
+                UPC Number *
+              </label>
+              <input
+                type="text"
+                id="upc"
+                value={formData.upcNumber}
+                onChange={(e) => setFormData({ ...formData, upcNumber: e.target.value })}
+                required
+                placeholder="Enter UPC barcode number"
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-gray-500"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="format" className="block text-sm font-medium text-gray-300 mb-2">
+                Format *
+              </label>
+              <select
+                id="format"
+                value={formData.format}
+                onChange={(e) => setFormData({ ...formData, format: e.target.value })}
+                required
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              >
+                <option value="DVD">DVD</option>
+                <option value="Blu-ray">Blu-ray</option>
+                <option value="4K">4K Ultra HD</option>
+              </select>
+            </div>
+
+            <div>
+              <label htmlFor="condition" className="block text-sm font-medium text-gray-300 mb-2">
+                Condition *
+              </label>
+              <select
+                id="condition"
+                value={formData.condition}
+                onChange={(e) => setFormData({ ...formData, condition: e.target.value })}
+                required
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500"
+              >
+                <option value="New">New</option>
+                <option value="Good">Good</option>
+                <option value="Skips">Skips</option>
+                <option value="Poor">Poor</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Collections
+              </label>
+              <div className="mb-2 flex flex-wrap gap-2">
+                {formData.collections.map((col, index) => (
+                  <span
+                    key={index}
+                    className="inline-flex items-center gap-1 px-3 py-1 bg-indigo-600 text-white rounded-full text-sm"
+                  >
+                    {col}
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, collections: formData.collections.filter((_, i) => i !== index) })}
+                      className="hover:text-red-300 transition cursor-pointer"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <select
+                  value=""
+                  onChange={(e) => {
+                    if (e.target.value && !formData.collections.includes(e.target.value)) {
+                      setFormData({ ...formData, collections: [...formData.collections, e.target.value] });
+                    }
+                  }}
+                  className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
+                >
+                  <option value="">Add collection...</option>
+                  {collections.filter(col => !formData.collections.includes(col.name)).map(col => (
+                    <option key={col.id} value={col.name}>{col.name}</option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setShowCollectionInput(!showCollectionInput)}
+                  className="px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition cursor-pointer"
+                >
+                  +
+                </button>
+              </div>
+              {showCollectionInput && (
+                <div className="flex gap-2 mt-2">
+                  <input
+                    type="text"
+                    value={newCollection}
+                    onChange={(e) => setNewCollection(e.target.value)}
+                    placeholder="New collection name"
+                    className="flex-1 px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-gray-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={addCollection}
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition"
+                  >
+                    Add
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowCollectionInput(false)}
+                    className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md transition"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Rating (0-5)
+              </label>
+              <div className="flex gap-1">
+                {[1, 2, 3, 4, 5].map((star) => {
+                  const isFullStar = formData.rating >= star;
+                  const isHalfStar = formData.rating === star - 0.5;
+                  
+                  return (
+                    <div
+                      key={star}
+                      className="relative cursor-pointer group"
+                      style={{ width: '32px', height: '32px' }}
+                    >
+                      {/* Left half clickable area */}
+                      <div
+                        className="absolute left-0 top-0 w-1/2 h-full z-10"
+                        onClick={() => setFormData({ ...formData, rating: star - 0.5 })}
+                        title={`${star - 0.5} stars`}
+                      />
+                      {/* Right half clickable area */}
+                      <div
+                        className="absolute right-0 top-0 w-1/2 h-full z-10"
+                        onClick={() => setFormData({ ...formData, rating: star })}
+                        title={`${star} stars`}
+                      />
+                      {/* Star icon */}
+                      {isFullStar ? (
+                        <TiStarFullOutline className="w-8 h-8 text-yellow-400 absolute top-0 left-0" />
+                      ) : isHalfStar ? (
+                        <TiStarHalfOutline className="w-8 h-8 text-yellow-400 absolute top-0 left-0" />
+                      ) : (
+                        <TiStarOutline className="w-8 h-8 text-gray-500 group-hover:text-yellow-200 absolute top-0 left-0" />
+                      )}
+                    </div>
+                  );
+                })}
+                <button
+                  type="button"
+                  onClick={() => setFormData({ ...formData, rating: 0 })}
+                  className="ml-2 text-xs text-gray-400 hover:text-white transition"
+                >
+                  Clear
+                </button>
+              </div>
+              <p className="text-xs text-gray-400 mt-1">
+                {formData.rating > 0 ? `${formData.rating} stars` : 'Not rated'}
+              </p>
+            </div>
+
+            <div>
+              <label htmlFor="shelfNumber" className="block text-sm font-medium text-gray-300 mb-2">
+                Shelf Number
+              </label>
+              <input
+                type="number"
+                id="shelfNumber"
+                value={formData.shelfNumber}
+                onChange={(e) => setFormData({ ...formData, shelfNumber: parseInt(e.target.value) || 0 })}
+                min="0"
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Shelf Section
+              </label>
+              <div className="flex gap-2">
+                <select
+                  value={formData.shelfSection}
+                  onChange={(e) => setFormData({ ...formData, shelfSection: e.target.value })}
+                  className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500"
+                >
+                  <option value="">None</option>
+                  {shelfSections.map(section => (
+                    <option key={section.id} value={section.name}>{section.name}</option>
+                  ))}
+                </select>
+                <button
+                  type="button"
+                  onClick={() => setShowShelfSectionInput(!showShelfSectionInput)}
+                  className="px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition"
+                >
+                  +
+                </button>
+              </div>
+              {showShelfSectionInput && (
+                <div className="flex gap-2 mt-2">
+                  <input
+                    type="text"
+                    value={newShelfSection}
+                    onChange={(e) => setNewShelfSection(e.target.value)}
+                    placeholder="New shelf section name"
+                    className="flex-1 px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-gray-500"
+                  />
+                  <button
+                    type="button"
+                    onClick={addShelfSection}
+                    className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition"
+                  >
+                    Add
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowShelfSectionInput(false)}
+                    className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md transition"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              )}
+            </div>
+
+            <div>
+              <label htmlFor="hdDriveNumber" className="block text-sm font-medium text-gray-300 mb-2">
+                HD Drive Number
+              </label>
+              <input
+                type="number"
+                id="hdDriveNumber"
+                value={formData.hdDriveNumber}
+                onChange={(e) => setFormData({ ...formData, hdDriveNumber: parseInt(e.target.value) || 0 })}
+                min="0"
+                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500"
+              />
+            </div>
+
+            <div className="flex items-center">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={formData.isOnPlex}
+                  onChange={(e) => setFormData({ ...formData, isOnPlex: e.target.checked })}
+                  className="w-5 h-5 bg-gray-700 border-gray-600 rounded focus:outline-none"
+                />
+                <span className="text-sm font-medium text-gray-300">Available on Plex</span>
+              </label>
+            </div>
           </div>
 
           <div>
-            <label htmlFor="upc" className="block text-sm font-medium text-gray-300 mb-2">
-              UPC Number *
+            <label htmlFor="review" className="block text-sm font-medium text-gray-300 mb-2">
+              Review / Notes
             </label>
-            <input
-              type="text"
-              id="upc"
-              value={formData.upcNumber}
-              onChange={(e) => setFormData({ ...formData, upcNumber: e.target.value })}
-              required
-              placeholder="Enter UPC barcode number"
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            <textarea
+              id="review"
+              value={formData.review}
+              onChange={(e) => setFormData({ ...formData, review: e.target.value })}
+              rows={4}
+              placeholder="Add your review or notes about this movie..."
+              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-gray-500"
             />
-          </div>
-
-          <div>
-            <label htmlFor="format" className="block text-sm font-medium text-gray-300 mb-2">
-              Format *
-            </label>
-            <select
-              id="format"
-              value={formData.format}
-              onChange={(e) => setFormData({ ...formData, format: e.target.value })}
-              required
-              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            >
-              <option value="DVD">DVD</option>
-              <option value="Blu-ray">Blu-ray</option>
-              <option value="4K">4K Ultra HD</option>
-            </select>
           </div>
 
           <div className="flex gap-4 pt-4">

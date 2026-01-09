@@ -1,12 +1,19 @@
 using Microsoft.EntityFrameworkCore;
 using MovieVault.Api.Data;
 using MovieVault.Api.Endpoints;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
+
+// Configure JSON serialization to use camelCase
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+});
 
 // Add DbContext with SQLite
 builder.Services.AddDbContext<MovieDbContext>(options =>
@@ -36,5 +43,7 @@ app.UseHttpsRedirection();
 
 // Map movie endpoints
 app.MapMovieEndpoints();
+app.MapCollectionEndpoints();
+app.MapShelfSectionEndpoints();
 
 app.Run();

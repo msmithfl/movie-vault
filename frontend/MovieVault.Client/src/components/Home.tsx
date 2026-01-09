@@ -6,6 +6,14 @@ interface Movie {
   title: string;
   upcNumber: string;
   format: string;
+  collections: string[];
+  condition: string;
+  rating: number;
+  review: string;
+  hdDriveNumber: number;
+  shelfNumber: number;
+  shelfSection: string;
+  isOnPlex: boolean;
   createdAt?: string;
 }
 
