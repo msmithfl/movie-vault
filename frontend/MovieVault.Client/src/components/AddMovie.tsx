@@ -20,6 +20,7 @@ interface Movie {
 
 function AddMovie() {
   const navigate = useNavigate();
+  const [entryMode, setEntryMode] = useState<'choice' | 'manual' | 'search'>('choice');
   const [formData, setFormData] = useState<Movie>({
     title: '',
     upcNumber: '',
@@ -140,7 +141,7 @@ function AddMovie() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="mb-6">
         <button
           onClick={() => navigate('/library')}
@@ -150,9 +151,62 @@ function AddMovie() {
         </button>
       </div>
 
-      <div className="bg-gray-800 rounded-lg shadow-lg p-8">
-        <h2 className="text-3xl font-bold mb-6">Add New Movie</h2>
-        <form onSubmit={handleSubmit} className="space-y-6">
+      {entryMode === 'choice' && (
+        <div className="bg-gray-800 rounded-lg shadow-lg p-8">
+          <h2 className="text-3xl font-bold mb-6 text-center">Add New Movie</h2>
+          <p className="text-gray-400 text-center mb-8">How would you like to add this movie?</p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <button
+              onClick={() => setEntryMode('search')}
+              className="bg-gray-700 hover:bg-gray-600 rounded-lg p-8 transition-all duration-200 transform hover:scale-105 text-center cursor-pointer"
+            >
+              <div className="text-5xl mb-4">🔍</div>
+              <h3 className="text-xl font-semibold mb-2">Find By Title</h3>
+              <p className="text-gray-400 text-sm">Search for movie information online</p>
+            </button>
+
+            <button
+              onClick={() => setEntryMode('manual')}
+              className="bg-gray-700 hover:bg-gray-600 rounded-lg p-8 transition-all duration-200 transform hover:scale-105 text-center cursor-pointer"
+            >
+              <div className="text-5xl mb-4">✏️</div>
+              <h3 className="text-xl font-semibold mb-2">Manual Entry</h3>
+              <p className="text-gray-400 text-sm">Enter all details manually</p>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {entryMode === 'search' && (
+        <div className="bg-gray-800 rounded-lg shadow-lg p-8">
+          <div className="mb-6">
+            <button
+              onClick={() => setEntryMode('choice')}
+              className="text-indigo-400 hover:text-indigo-300 flex items-center gap-2 transition-colors cursor-pointer"
+            >
+              ← Back to Choice
+            </button>
+          </div>
+          <h2 className="text-3xl font-bold mb-6">Find By Title</h2>
+          <div className="text-center py-12">
+            <p className="text-gray-400 text-lg">This feature is coming soon!</p>
+          </div>
+        </div>
+      )}
+
+      {entryMode === 'manual' && (
+        <div className="bg-gray-800 rounded-lg shadow-lg p-8">
+          <div className="mb-6">
+            <button
+              onClick={() => setEntryMode('choice')}
+              className="text-indigo-400 hover:text-indigo-300 flex items-center gap-2 transition-colors cursor-pointer"
+            >
+              ← Back to Choice
+            </button>
+          </div>
+          <h2 className="text-3xl font-bold mb-6">Manual Entry</h2>
+          <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-2">
@@ -484,6 +538,7 @@ function AddMovie() {
           </div>
         </form>
       </div>
+      )}
     </div>
   )
 }

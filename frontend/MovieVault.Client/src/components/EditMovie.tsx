@@ -164,7 +164,7 @@ function EditMovie() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="mb-6">
         <button
           onClick={() => navigate('/library')}
