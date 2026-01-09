@@ -25,6 +25,18 @@ function Header() {
               Library
             </Link>
             <Link 
+              to="/collections" 
+              className="text-gray-300 hover:text-white transition-colors font-medium"
+            >
+              Collections
+            </Link>
+            <Link 
+              to="/shelfsections" 
+              className="text-gray-300 hover:text-white transition-colors font-medium"
+            >
+              Shelf
+            </Link>
+            <Link 
               to="/add" 
               className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-md transition duration-200"
             >

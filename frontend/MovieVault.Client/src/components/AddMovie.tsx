@@ -218,6 +218,7 @@ function AddMovie() {
                 <option value="4K" disabled={formData.formats.includes('4K')}>4K Ultra HD</option>
                 <option value="Blu-ray" disabled={formData.formats.includes('Blu-ray')}>Blu-ray</option>
                 <option value="DVD" disabled={formData.formats.includes('DVD')}>DVD</option>
+                <option value="VHS" disabled={formData.formats.includes('VHS')}>VHS</option>
               </select>
             </div>
 
