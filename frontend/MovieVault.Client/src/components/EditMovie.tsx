@@ -100,7 +100,7 @@ function EditMovie() {
       });
 
       if (response.ok) {
-        navigate('/collection');
+        navigate('/library');
       }
     } catch (error) {
       console.error('Error updating movie:', error);
@@ -167,10 +167,10 @@ function EditMovie() {
     <div className="max-w-2xl mx-auto px-4 py-8">
       <div className="mb-6">
         <button
-          onClick={() => navigate('/collection')}
+          onClick={() => navigate('/library')}
           className="text-indigo-400 hover:text-indigo-300 flex items-center gap-2 transition-colors cursor-pointer"
         >
-          ← Back to Collection
+          ← Back to Library
         </button>
       </div>
 
@@ -500,7 +500,7 @@ function EditMovie() {
             </button>
             <button
               type="button"
-              onClick={() => navigate('/collection')}
+              onClick={() => navigate('/library')}
               className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-md transition duration-200 cursor-pointer"
             >
               Cancel

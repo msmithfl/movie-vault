@@ -19,7 +19,7 @@ function Header() {
               Dashboard
             </Link>
             <Link 
-              to="/collection" 
+              to="/library" 
               className="text-gray-300 hover:text-white transition-colors font-medium"
             >
               Library

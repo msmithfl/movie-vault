@@ -39,11 +39,11 @@ function MovieDetail() {
         const data = await response.json();
         setMovie(data);
       } else {
-        navigate('/collection');
+        navigate('/library');
       }
     } catch (error) {
       console.error('Error fetching movie:', error);
-      navigate('/collection');
+      navigate('/library');
     } finally {
       setLoading(false);
     }
@@ -60,7 +60,7 @@ function MovieDetail() {
       });
 
       if (response.ok) {
-        navigate('/collection');
+        navigate('/library');
       }
     } catch (error) {
       console.error('Error deleting movie:', error);
@@ -105,10 +105,10 @@ function MovieDetail() {
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="mb-6">
         <button
-          onClick={() => navigate('/collection')}
+          onClick={() => navigate('/library')}
           className="text-indigo-400 hover:text-indigo-300 flex items-center gap-2 transition-colors cursor-pointer"
         >
-          ← Back to Collection
+          ← Back to Library
         </button>
       </div>
 

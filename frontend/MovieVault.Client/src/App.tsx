@@ -19,7 +19,7 @@ function App() {
         <main className="flex-1">
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/collection" element={<MovieList />} />
+            <Route path="/library" element={<MovieList />} />
             <Route path="/collections" element={<CollectionsView />} />
             <Route path="/collections/:collectionName" element={<CollectionDetail />} />
             <Route path="/shelfsections" element={<ShelfSectionsView />} />

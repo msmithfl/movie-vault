@@ -153,13 +153,13 @@ function CollectionDetail() {
                 />
                 <button
                   onClick={handleSaveEdit}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md transition"
+                  className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md transition cursor-pointer"
                 >
                   Save
                 </button>
                 <button
                   onClick={handleCancelEdit}
-                  className="bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-md transition"
+                  className="bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-md transition cursor-pointer"
                 >
                   Cancel
                 </button>
