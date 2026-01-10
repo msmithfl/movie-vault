@@ -54,7 +54,7 @@ function Header() {
           <div className="md:hidden flex items-center gap-3">
             <Link
               to="/add"
-              className="text-white p-2"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white p-2 rounded-md transition"
               aria-label="Add movie"
             >
               <HiPlus className="w-6 h-6" />
@@ -99,13 +99,6 @@ function Header() {
               className="text-gray-300 hover:text-white transition-colors font-medium py-2"
             >
               Shelf
-            </Link>
-            <Link 
-              to="/add" 
-              onClick={() => setIsMenuOpen(false)}
-              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-md transition duration-200 text-center"
-            >
-              + Add Movie
             </Link>
           </nav>
         )}
