@@ -101,9 +101,9 @@ function MovieDetail() {
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
         {/* Movie Details Header */}
         <div className="p-8 border-b border-gray-700">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="grid grid-cols-12 gap-4 lg:gap-6">
             {/* Poster - Left */}
-            <div className="lg:col-span-3">
+            <div className="col-span-4 lg:col-span-3">
               {movie.posterPath ? (
                 <img 
                   src={movie.posterPath} 
@@ -115,17 +115,17 @@ function MovieDetail() {
                 />
               ) : (
                 <div className="bg-gray-700 rounded-lg flex items-center justify-center h-full min-h-75">
-                  <p className="text-gray-500">No poster</p>
+                  <p className="text-gray-500 text-xs lg:text-base">No poster</p>
                 </div>
               )}
             </div>
 
             {/* Title, Year, Rating, Genres - Center */}
-            <div className="lg:col-span-6 flex flex-col justify-center space-y-4">
-              <h1 className="text-4xl font-bold text-white">{movie.title}</h1>
+            <div className="col-span-8 lg:col-span-6 flex flex-col justify-center space-y-2 lg:space-y-4">
+              <h1 className="text-2xl lg:text-4xl font-bold text-white">{movie.title}</h1>
               
               <div>
-                <p className="text-xl text-white">
+                <p className="text-lg lg:text-xl text-white">
                   {movie.year || <span className="text-gray-500">Not set</span>}
                 </p>
               </div>
@@ -139,11 +139,11 @@ function MovieDetail() {
                     return (
                       <div key={star}>
                         {isFullStar ? (
-                          <TiStarFullOutline className="w-8 h-8 text-yellow-400" />
+                          <TiStarFullOutline className="w-6 h-6 lg:w-8 lg:h-8 text-yellow-400" />
                         ) : isHalfStar ? (
-                          <TiStarHalfOutline className="w-8 h-8 text-yellow-400" />
+                          <TiStarHalfOutline className="w-6 h-6 lg:w-8 lg:h-8 text-yellow-400" />
                         ) : (
-                          <TiStarOutline className="w-8 h-8 text-gray-500" />
+                          <TiStarOutline className="w-6 h-6 lg:w-8 lg:h-8 text-gray-500" />
                         )}
                       </div>
                     );
@@ -153,26 +153,26 @@ function MovieDetail() {
 
               <div>
                 {movie.genres && movie.genres.length > 0 ? (
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1 lg:gap-2">
                     {movie.genres.map((genre, idx) => (
-                      <span key={idx} className="bg-purple-600 px-3 py-2 rounded-md text-white text-sm">
+                      <span key={idx} className="bg-purple-600 px-2 py-1 lg:px-3 lg:py-2 rounded-md text-white text-xs lg:text-sm">
                         {genre}
                       </span>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500 italic">No genres</p>
+                  <p className="text-gray-500 italic text-sm lg:text-base">No genres</p>
                 )}
               </div>
             </div>
 
             {/* Product Image & eBay Button - Right */}
-            <div className="lg:col-span-3 flex flex-col justify-end items-end">
+            <div className="col-span-12 lg:col-span-3 flex lg:flex-col items-end gap-4">
               {movie.productPosterPath && (
                 <img 
                   src={movie.productPosterPath} 
                   alt={`${movie.title} product`}
-                  className="rounded-lg shadow-md w-32 h-auto object-cover mb-4"
+                  className="rounded-lg shadow-md w-24 lg:w-32 h-auto object-cover"
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
                   }}
@@ -184,7 +184,7 @@ function MovieDetail() {
                   const query = encodeURIComponent(`${movie.upcNumber}`);
                   window.open(`https://www.ebay.com/sch/i.html?_nkw=${query}`, '_blank', 'noopener,noreferrer');
                 }}
-                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-200 text-sm cursor-pointer w-full"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-200 text-xs lg:text-sm cursor-pointer w-auto lg:w-full"
               >
                 🔍 Search on eBay
               </button>
@@ -195,7 +195,7 @@ function MovieDetail() {
         <div className="p-8">
           {/* Physical Details Section */}
           <div className="mb-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
               <div>
                 <h3 className="text-sm font-medium text-gray-400 mb-2">Formats</h3>
                 {movie.formats && movie.formats.length > 0 ? (
@@ -223,7 +223,7 @@ function MovieDetail() {
                 </span>
               </div>
 
-              <div>
+              <div className="col-span-2 md:col-span-1">
                 <h3 className="text-sm font-medium text-gray-400 mb-2">UPC Number</h3>
                 <p className="text-base font-mono text-white bg-gray-700 px-3 py-2 rounded-md inline-block">
                   {movie.upcNumber}
@@ -250,7 +250,7 @@ function MovieDetail() {
                 )}
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-6">
                 <div>
                   <h3 className="text-sm font-medium text-gray-400 mb-2">Shelf Number</h3>
                   <p className="text-base text-white">
@@ -266,7 +266,7 @@ function MovieDetail() {
 
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-2 gap-6">
                 <div>
                   <h3 className="text-sm font-medium text-gray-400 mb-2">HDD Number</h3>
                   <p className="text-base text-white">
@@ -311,7 +311,7 @@ function MovieDetail() {
           <div className="flex gap-4 pt-6 border-t border-gray-700">
             <Link
               to={`/edit/${movie.id}`}
-              className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-md transition duration-200 text-center"
+              className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-md transition duration-200 flex items-center justify-center"
             >
               Edit Movie
             </Link>
