@@ -89,7 +89,7 @@ function BarcodeScanner({ onDetected, onClose }: BarcodeScannerProps) {
       detectionCountRef.current.set(code, currentCount + 1);
 
       // Clear counts for other codes
-      detectionCountRef.current.forEach((count, key) => {
+      detectionCountRef.current.forEach((_count, key) => {
         if (key !== code) {
           detectionCountRef.current.delete(key);
         }
