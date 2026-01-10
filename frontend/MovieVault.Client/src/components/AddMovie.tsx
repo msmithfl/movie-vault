@@ -557,7 +557,7 @@ function AddMovie() {
 
             <div>
               <label htmlFor="hdDriveNumber" className="block text-sm font-medium text-gray-300 mb-2">
-                HD Drive Number
+                HDD Number
               </label>
               <input
                 type="number"

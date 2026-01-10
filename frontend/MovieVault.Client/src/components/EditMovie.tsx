@@ -106,7 +106,7 @@ function EditMovie() {
       });
 
       if (response.ok) {
-        navigate('/library');
+        navigate(`/movie/${id}`);
       }
     } catch (error) {
       console.error('Error updating movie:', error);
@@ -527,7 +527,7 @@ function EditMovie() {
 
             <div>
               <label htmlFor="hdDriveNumber" className="block text-sm font-medium text-gray-300 mb-2">
-                HD Drive Number
+                HDD Number
               </label>
               <input
                 type="number"
@@ -589,7 +589,7 @@ function EditMovie() {
             </button>
             <button
               type="button"
-              onClick={() => navigate('/library')}
+              onClick={() => navigate(`/movie/${id}`)}
               className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-white font-semibold rounded-md transition duration-200 cursor-pointer"
             >
               Cancel

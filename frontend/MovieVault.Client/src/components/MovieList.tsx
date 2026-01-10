@@ -23,6 +23,7 @@ type SortOption = 'date' | 'alphabetic' | 'format';
 function MovieList() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>('date');
+  const [searchQuery, setSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -98,11 +99,16 @@ function MovieList() {
 
   const sortedMovies = getSortedMovies();
   
+  // Filter movies by search query
+  const filteredMovies = sortedMovies.filter(movie =>
+    movie.title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  
   // Pagination calculations
-  const totalPages = Math.ceil(sortedMovies.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredMovies.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const currentMovies = sortedMovies.slice(startIndex, endIndex);
+  const currentMovies = filteredMovies.slice(startIndex, endIndex);
   
   // Reset to page 1 when changing items per page or sort
   const handleItemsPerPageChange = (value: number) => {
@@ -115,49 +121,72 @@ function MovieList() {
     setCurrentPage(1);
   };
 
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+    setCurrentPage(1);
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold">Library ({movies.length} items)</h2>
-        {/* <Link
-          to="/add"
-          className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-md transition duration-200 ease-in-out transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 focus:ring-offset-gray-900"
-        >
-          + Add Movie
-        </Link> */}
       </div>
 
       {movies.length > 0 && (
-        <div className="mb-6 flex items-center gap-6">
-          <div className="flex items-center gap-3">
-            <label htmlFor="sortBy" className="text-sm font-medium text-gray-300">
-              Sort by:
-            </label>
-            <select
-              id="sortBy"
-              value={sortBy}
-              onChange={(e) => handleSortChange(e.target.value as SortOption)}
-              className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
+        <div className="mb-6 space-y-4">
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Search by title..."
+              value={searchQuery}
+              onChange={(e) => handleSearchChange(e.target.value)}
+              className="w-full px-4 py-3 pl-10 bg-gray-800 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            />
+            <svg
+              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <option value="date">Date Added (Newest First)</option>
-              <option value="alphabetic">Title (A-Z)</option>
-              <option value="format">Format</option>
-            </select>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
           </div>
-          <div className="flex items-center gap-3">
-            <label htmlFor="itemsPerPage" className="text-sm font-medium text-gray-300">
-              Per page:
-            </label>
-            <select
-              id="itemsPerPage"
-              value={itemsPerPage}
-              onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-              className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
-            >
-              <option value={10}>10</option>
-              <option value={25}>25</option>
-              <option value={50}>50</option>
-            </select>
+          <div className="flex items-center gap-6">
+            <div className="flex items-center gap-3">
+              <label htmlFor="sortBy" className="text-sm font-medium text-gray-300">
+                Sort by:
+              </label>
+              <select
+                id="sortBy"
+                value={sortBy}
+                onChange={(e) => handleSortChange(e.target.value as SortOption)}
+                className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
+              >
+                <option value="date">Date Added (Newest First)</option>
+                <option value="alphabetic">Title (A-Z)</option>
+                <option value="format">Format</option>
+              </select>
+            </div>
+            <div className="flex items-center gap-3">
+              <label htmlFor="itemsPerPage" className="text-sm font-medium text-gray-300">
+                Per page:
+              </label>
+              <select
+                id="itemsPerPage"
+                value={itemsPerPage}
+                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
+              >
+                <option value={10}>10</option>
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+              </select>
+            </div>
           </div>
         </div>
       )}
@@ -330,4 +359,4 @@ function MovieList() {
   )
 }
 
-export default MovieList
+export default MovieList;

@@ -116,74 +116,65 @@ function MovieDetail() {
       </div>
 
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-        <div className="bg-linear-to-r from-indigo-600 to-purple-600 px-8 py-6">
-          <h1 className="text-4xl font-bold text-white">{movie.title}</h1>
-        </div>
-
-        <div className="p-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-            <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-2">Formats</h3>
-              {movie.formats && movie.formats.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
-                  {[...movie.formats].sort().map((fmt, idx) => (
-                    <span key={idx} className="bg-indigo-600 text-white px-4 py-2 rounded-full text-base font-medium">
-                      {fmt}
-                    </span>
-                  ))}
-                </div>
+        {/* Movie Details Header */}
+        <div className="p-8 border-b border-gray-700">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            {/* Poster - Left */}
+            <div className="lg:col-span-3">
+              {movie.posterPath ? (
+                <img 
+                  src={movie.posterPath} 
+                  alt={`${movie.title} poster`}
+                  className="rounded-lg shadow-lg w-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.src = 'https://via.placeholder.com/300x450?text=No+Poster';
+                  }}
+                />
               ) : (
-                <p className="text-gray-500 italic">None</p>
+                <div className="bg-gray-700 rounded-lg flex items-center justify-center h-full min-h-75">
+                  <p className="text-gray-500">No poster</p>
+                </div>
               )}
             </div>
 
-            <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-2">Condition</h3>
-              <span className={`px-4 py-2 rounded-full text-base font-medium inline-block ${
-                movie.condition === 'New' ? 'bg-green-600' :
-                movie.condition === 'Good' ? 'bg-blue-600' :
-                movie.condition === 'Skips' ? 'bg-yellow-600' :
-                'bg-red-600'
-              } text-white`}>
-                {movie.condition}
-              </span>
-            </div>
+            {/* Title, Year, Rating - Center */}
+            <div className="lg:col-span-6 flex flex-col justify-center space-y-1">
+              <h1 className="text-4xl font-bold text-white">{movie.title}</h1>
+              
+              <div>
+                <p className="text-xl text-white">
+                  {movie.year || <span className="text-gray-500">Not set</span>}
+                </p>
+              </div>
 
-            <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-2">Rating</h3>
-              <div className="flex gap-1 items-center">
-                {[1, 2, 3, 4, 5].map((star) => {
-                  const isFullStar = movie.rating >= star;
-                  const isHalfStar = movie.rating === star - 0.5;
-                  
-                  return (
-                    <div key={star}>
-                      {isFullStar ? (
-                        <TiStarFullOutline className="w-7 h-7 text-yellow-400" />
-                      ) : isHalfStar ? (
-                        <TiStarHalfOutline className="w-7 h-7 text-yellow-400" />
-                      ) : (
-                        <TiStarOutline className="w-7 h-7 text-gray-500" />
-                      )}
-                    </div>
-                  );
-                })}
+              <div>
+                <div className="flex gap-1 items-center">
+                  {[1, 2, 3, 4, 5].map((star) => {
+                    const isFullStar = movie.rating >= star;
+                    const isHalfStar = movie.rating === star - 0.5;
+                    
+                    return (
+                      <div key={star}>
+                        {isFullStar ? (
+                          <TiStarFullOutline className="w-8 h-8 text-yellow-400" />
+                        ) : isHalfStar ? (
+                          <TiStarHalfOutline className="w-8 h-8 text-yellow-400" />
+                        ) : (
+                          <TiStarOutline className="w-8 h-8 text-gray-500" />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
             </div>
 
-            <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-2">Year</h3>
-              <p className="text-base text-white">
-                {movie.year || <span className="text-gray-500">Not set</span>}
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-2">Genres</h3>
+            {/* Genres - Right */}
+            <div className="lg:col-span-3">
               {movie.genres && movie.genres.length > 0 ? (
                 <div className="flex flex-wrap gap-2">
                   {movie.genres.map((genre, idx) => (
-                    <span key={idx} className="bg-purple-600 px-3 py-2 rounded-md text-white">
+                    <span key={idx} className="bg-purple-600 px-3 py-2 rounded-md text-white text-sm">
                       {genre}
                     </span>
                   ))}
@@ -192,91 +183,122 @@ function MovieDetail() {
                 <p className="text-gray-500 italic">None</p>
               )}
             </div>
+          </div>
+        </div>
 
-            <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-2">UPC Number</h3>
-              <p className="text-base font-mono text-white bg-gray-700 px-3 py-2 rounded-md inline-block">
-                {movie.upcNumber}
-              </p>
-            </div>
+        <div className="p-8">
+          {/* Physical Details Section */}
+          <div className="mb-8">
+            {/* <h2 className="text-2xl font-bold text-white mb-4">Physical Details</h2> */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <h3 className="text-sm font-medium text-gray-400 mb-2">Formats</h3>
+                {movie.formats && movie.formats.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {[...movie.formats].sort().map((fmt, idx) => (
+                      <span key={idx} className="bg-indigo-600 text-white px-4 py-2 rounded-full text-base font-medium">
+                        {fmt}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 italic">None</p>
+                )}
+              </div>
 
-            <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-2">Collections</h3>
-              {movie.collections && movie.collections.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
-                  {movie.collections.map((col, idx) => (
-                    <span key={idx} className="bg-purple-600 px-3 py-2 rounded-md text-white">
-                      {col}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-500 italic">None</p>
-              )}
-            </div>
+              <div>
+                <h3 className="text-sm font-medium text-gray-400 mb-2">Condition</h3>
+                <span className={`px-4 py-2 rounded-full text-base font-medium inline-block ${
+                  movie.condition === 'New' ? 'bg-green-600' :
+                  movie.condition === 'Good' ? 'bg-blue-600' :
+                  movie.condition === 'Skips' ? 'bg-yellow-600' :
+                  'bg-red-600'
+                } text-white`}>
+                  {movie.condition}
+                </span>
+              </div>
 
-            <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-2">Shelf Section</h3>
-              <p className="text-base text-white">
-                {movie.shelfSection || <span className="text-gray-500">None</span>}
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-2">Shelf Number</h3>
-              <p className="text-base text-white">
-                {movie.shelfNumber > 0 ? `Shelf #${movie.shelfNumber}` : <span className="text-gray-500">Not set</span>}
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-2">HD Drive Number</h3>
-              <p className="text-base text-white">
-                {movie.hdDriveNumber > 0 ? `Drive #${movie.hdDriveNumber}` : <span className="text-gray-500">Not set</span>}
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-2">On Plex</h3>
-              <p className="text-base text-white">
-                {movie.isOnPlex ? '✅ Yes' : '❌ No'}
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-2">Date Added</h3>
-              <p className="text-base text-white">{formatDate(movie.createdAt)}</p>
-            </div>
-
-            <div>
-              <h3 className="text-sm font-medium text-gray-400 mb-2">Movie ID</h3>
-              <p className="text-base text-white font-mono">#{movie.id}</p>
+              <div>
+                <h3 className="text-sm font-medium text-gray-400 mb-2">UPC Number</h3>
+                <p className="text-base font-mono text-white bg-gray-700 px-3 py-2 rounded-md inline-block">
+                  {movie.upcNumber}
+                </p>
+              </div>
             </div>
           </div>
 
-          {movie.posterPath && (
-            <div className="mb-8">
-              <h3 className="text-sm font-medium text-gray-400 mb-3">Poster</h3>
-              <div className="flex justify-center">
-                <img 
-                  src={movie.posterPath} 
-                  alt={`${movie.title} poster`}
-                  className="rounded-lg shadow-lg max-h-96 object-contain"
-                  onError={(e) => {
-                    e.currentTarget.style.display = 'none';
-                  }}
-                />
+          {/* Location Details Section */}
+          <div className="mb-8">
+            {/* <h2 className="text-2xl font-bold text-white mb-4">Location Details</h2> */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              <div>
+                <h3 className="text-sm font-medium text-gray-400 mb-2">Collections</h3>
+                {movie.collections && movie.collections.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {movie.collections.map((col, idx) => (
+                      <span key={idx} className="bg-purple-600 px-3 py-2 rounded-md text-white">
+                        {col}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 italic">None</p>
+                )}
+              </div>
+
+              <div>
+                <h3 className="text-sm font-medium text-gray-400 mb-2">Shelf Section</h3>
+                <p className="text-base text-white">
+                  {movie.shelfSection || <span className="text-gray-500">None</span>}
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-medium text-gray-400 mb-2">Shelf Number</h3>
+                <p className="text-base text-white">
+                  {movie.shelfNumber > 0 ? `Shelf #${movie.shelfNumber}` : <span className="text-gray-500">Not set</span>}
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-medium text-gray-400 mb-2">HDD Number</h3>
+                <p className="text-base text-white">
+                  {movie.hdDriveNumber > 0 ? `Drive #${movie.hdDriveNumber}` : <span className="text-gray-500">Not set</span>}
+                </p>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-medium text-gray-400 mb-2">On Plex</h3>
+                <p className="text-base text-white">
+                  {movie.isOnPlex ? '✅ Yes' : '❌ No'}
+                </p>
               </div>
             </div>
-          )}
+          </div>
 
-          <div className="mb-8 p-6 bg-gray-700 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-400 mb-3">Review / Notes</h3>
-            {movie.review ? (
-              <p className="text-white whitespace-pre-wrap">{movie.review}</p>
-            ) : (
-              <p className="text-gray-500 italic">No review or notes added</p>
-            )}
+          {/* Metadata Section */}
+          <div className="mb-8">
+            {/* <h2 className="text-2xl font-bold text-white mb-4">Metadata</h2> */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+              <div>
+                <h3 className="text-sm font-medium text-gray-400 mb-2">Date Added</h3>
+                <p className="text-base text-white">{formatDate(movie.createdAt)}</p>
+              </div>
+
+              <div>
+                <h3 className="text-sm font-medium text-gray-400 mb-2">Movie ID</h3>
+                <p className="text-base text-white font-mono">#{movie.id}</p>
+              </div>
+            </div>
+
+            <div className="p-6 bg-gray-700 rounded-lg">
+              <h3 className="text-sm font-medium text-gray-400 mb-3">Review / Notes</h3>
+              {movie.review ? (
+                <p className="text-white whitespace-pre-wrap">{movie.review}</p>
+              ) : (
+                <p className="text-gray-500 italic">No review or notes added</p>
+              )}
+            </div>
           </div>
 
           <div className="flex gap-4 pt-6 border-t border-gray-700">
