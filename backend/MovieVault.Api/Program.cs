@@ -15,24 +15,22 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 });
 
-// Add DbContext with SQLite (dev) or PostgreSQL (production)
-var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-builder.Services.AddDbContext<MovieDbContext>(options =>
+// Database - handle both Railway URL format and standard connection string
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (string.IsNullOrEmpty(connectionString))
 {
+    // Try DATABASE_URL (Railway default)
+    var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
     if (!string.IsNullOrEmpty(databaseUrl))
     {
-        // Production: Parse Railway's PostgreSQL URL format
-        // postgresql://user:password@host:port/database
+        // Convert postgresql:// URL to Npgsql format
         var uri = new Uri(databaseUrl);
-        var connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={uri.UserInfo.Split(':')[0]};Password={uri.UserInfo.Split(':')[1]};SSL Mode=Require;Trust Server Certificate=true";
-        options.UseNpgsql(connectionString);
+        connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={uri.UserInfo.Split(':')[0]};Password={uri.UserInfo.Split(':')[1]};SSL Mode=Require;Trust Server Certificate=true";
     }
-    else
-    {
-        // Development: Use SQLite
-        options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=movievault.db");
-    }
-});
+}
+
+builder.Services.AddDbContext<MovieDbContext>(options =>
+    options.UseNpgsql(connectionString));
 
 // Add CORS - reads from environment variable or appsettings.{Environment}.json
 var corsOriginsEnv = Environment.GetEnvironmentVariable("CORS_ORIGINS");

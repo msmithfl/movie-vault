@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace MovieVault.Api.Migrations
 {
     [DbContext(typeof(MovieDbContext))]
-    [Migration("20260110061016_CompleteSchema")]
-    partial class CompleteSchema
+    [Migration("20260110062147_InitialCreate")]
+    partial class InitialCreate
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
