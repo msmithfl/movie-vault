@@ -447,14 +447,27 @@ function MovieForm({
 
       <div>
         <label htmlFor="posterPath" className="block text-sm font-medium text-gray-300 mb-2">
-          Poster Image URL
+          Movie Poster URL
         </label>
         <input
           type="text"
           id="posterPath"
           value={formData.posterPath}
           onChange={(e) => setFormData({ ...formData, posterPath: e.target.value })}
-          placeholder="https://example.com/poster.jpg"
+          placeholder="https://example.com/movie-poster.jpg"
+          className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-gray-500"
+        />
+      </div>
+      <div>
+        <label htmlFor="productPosterPath" className="block text-sm font-medium text-gray-300 mb-2">
+          Product Image URL
+        </label>
+        <input
+          type="text"
+          id="productPosterPath"
+          value={formData.productPosterPath}
+          onChange={(e) => setFormData({ ...formData, productPosterPath: e.target.value })}
+          placeholder="https://example.com/product-image.jpg"
           className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-gray-500"
         />
       </div>

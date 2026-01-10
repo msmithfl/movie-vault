@@ -2,25 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from 'react-icons/ti'
 import ConfirmDialog from './ConfirmDialog'
-
-interface Movie {
-  id?: number;
-  title: string;
-  upcNumber: string;
-  formats: string[];
-  collections: string[];
-  condition: string;
-  rating: number;
-  review: string;
-  year: number;
-  genres: string[];
-  posterPath: string;
-  hdDriveNumber: number;
-  shelfNumber: number;
-  shelfSection: string;
-  isOnPlex: boolean;
-  createdAt?: string;
-}
+import type { Movie } from '../types'
 
 function MovieDetail() {
   const navigate = useNavigate();
@@ -138,8 +120,8 @@ function MovieDetail() {
               )}
             </div>
 
-            {/* Title, Year, Rating - Center */}
-            <div className="lg:col-span-6 flex flex-col justify-center space-y-1">
+            {/* Title, Year, Rating, Genres - Center */}
+            <div className="lg:col-span-6 flex flex-col justify-center space-y-4">
               <h1 className="text-4xl font-bold text-white">{movie.title}</h1>
               
               <div>
@@ -168,10 +150,7 @@ function MovieDetail() {
                   })}
                 </div>
               </div>
-            </div>
 
-            {/* Genres - Right */}
-            <div className="lg:col-span-3 flex flex-col justify-between">
               <div>
                 {movie.genres && movie.genres.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
@@ -182,16 +161,30 @@ function MovieDetail() {
                     ))}
                   </div>
                 ) : (
-                  <p className="text-gray-500 italic">None</p>
+                  <p className="text-gray-500 italic">No genres</p>
                 )}
               </div>
+            </div>
+
+            {/* Product Image & eBay Button - Right */}
+            <div className="lg:col-span-3 flex flex-col justify-end items-end">
+              {movie.productPosterPath && (
+                <img 
+                  src={movie.productPosterPath} 
+                  alt={`${movie.title} product`}
+                  className="rounded-lg shadow-md w-32 h-auto object-cover mb-4"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
+              )}
               
               <button
                 onClick={() => {
                   const query = encodeURIComponent(`${movie.upcNumber}`);
                   window.open(`https://www.ebay.com/sch/i.html?_nkw=${query}`, '_blank', 'noopener,noreferrer');
                 }}
-                className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-200 text-sm cursor-pointer"
+                className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-200 text-sm cursor-pointer w-full"
               >
                 🔍 Search on eBay
               </button>
