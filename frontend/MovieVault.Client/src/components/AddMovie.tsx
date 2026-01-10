@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from "react-icons/ti";
+import BarcodeScanner from './BarcodeScanner';
 
 interface Movie {
   id?: number;
@@ -59,11 +60,19 @@ function AddMovie() {
   const [showShelfSectionInput, setShowShelfSectionInput] = useState(false);
   const [newCollection, setNewCollection] = useState('');
   const [newShelfSection, setNewShelfSection] = useState('');
+  const [showScanner, setShowScanner] = useState(false);
+  const [showMobileOnlyMessage, setShowMobileOnlyMessage] = useState(false);
 
   const API_URL = 'http://localhost:5156/api/movies';
   const COLLECTIONS_URL = 'http://localhost:5156/api/collections';
   const SHELF_SECTIONS_URL = 'http://localhost:5156/api/shelfsections';
   const TMDB_API_TOKEN = import.meta.env.VITE_TMDB_API_TOKEN;
+  
+  // Check if device is mobile
+  const isMobile = () => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+           (window.innerWidth <= 768);
+  };
   
   // TMDB genre mapping
   const GENRE_MAP: { [key: number]: string } = {
@@ -245,6 +254,19 @@ function AddMovie() {
     setShowSuggestions(false);
   };
 
+  const handleBarcodeDetected = (code: string) => {
+    setFormData({ ...formData, upcNumber: code });
+    setShowScanner(false);
+  };
+
+  const handleScanClick = () => {
+    if (isMobile()) {
+      setShowScanner(true);
+    } else {
+      setShowMobileOnlyMessage(true);
+    }
+  };
+
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="mb-6">
@@ -397,15 +419,43 @@ function AddMovie() {
               <label htmlFor="upc" className="block text-sm font-medium text-gray-300 mb-2">
                 UPC Number *
               </label>
-              <input
-                type="text"
-                id="upc"
-                value={formData.upcNumber}
-                onChange={(e) => setFormData({ ...formData, upcNumber: e.target.value })}
-                required
-                placeholder="Enter UPC barcode number"
-                className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-gray-500"
-              />
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  id="upc"
+                  value={formData.upcNumber}
+                  onChange={(e) => setFormData({ ...formData, upcNumber: e.target.value })}
+                  required
+                  placeholder="Enter UPC barcode number"
+                  className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-gray-500"
+                />
+                <button
+                  type="button"
+                  onClick={handleScanClick}
+                  className="px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition cursor-pointer flex items-center justify-center"
+                  title="Scan barcode"
+                >
+                  <svg
+                    className="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
 
             <div>
@@ -791,6 +841,38 @@ function AddMovie() {
           </div>
         </form>
       </div>
+      )}
+
+      {showScanner && (
+        <BarcodeScanner
+          onDetected={handleBarcodeDetected}
+          onClose={() => setShowScanner(false)}
+        />
+      )}
+
+      {showMobileOnlyMessage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+          <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-white">Mobile Only Feature</h3>
+              <button
+                onClick={() => setShowMobileOnlyMessage(false)}
+                className="text-gray-400 hover:text-white text-2xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+            <p className="text-gray-300 mb-6">
+              The UPC barcode scanner is only available on mobile devices. Please use a smartphone or tablet to scan barcodes.
+            </p>
+            <button
+              onClick={() => setShowMobileOnlyMessage(false)}
+              className="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition"
+            >
+              OK
+            </button>
+          </div>
+        </div>
       )}
     </div>
   )
