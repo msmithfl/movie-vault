@@ -34,8 +34,9 @@ function CollectionDetail() {
   const [editedName, setEditedName] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const MOVIES_URL = 'http://localhost:5156/api/movies';
-  const COLLECTIONS_URL = 'http://localhost:5156/api/collections';
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5156';
+  const MOVIES_URL = `${API_BASE}/api/movies`;
+  const COLLECTIONS_URL = `${API_BASE}/api/collections`;
 
   useEffect(() => {
     fetchMovies();

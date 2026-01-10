@@ -34,8 +34,9 @@ function ShelfSectionDetail() {
   const [editedName, setEditedName] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
-  const MOVIES_URL = 'http://localhost:5156/api/movies';
-  const SECTIONS_URL = 'http://localhost:5156/api/shelfsections';
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5156';
+  const MOVIES_URL = `${API_BASE}/api/movies`;
+  const SECTIONS_URL = `${API_BASE}/api/shelfsections`;
 
   useEffect(() => {
     fetchMovies();

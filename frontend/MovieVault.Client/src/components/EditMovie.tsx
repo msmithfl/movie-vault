@@ -48,9 +48,10 @@ function EditMovie() {
   const [newCollection, setNewCollection] = useState('');
   const [newShelfSection, setNewShelfSection] = useState('');
 
-  const API_URL = 'http://localhost:5156/api/movies';
-  const COLLECTIONS_URL = 'http://localhost:5156/api/collections';
-  const SHELF_SECTIONS_URL = 'http://localhost:5156/api/shelfsections';
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5156';
+  const API_URL = `${API_BASE}/api/movies`;
+  const COLLECTIONS_URL = `${API_BASE}/api/collections`;
+  const SHELF_SECTIONS_URL = `${API_BASE}/api/shelfsections`;
 
   useEffect(() => {
     fetchMovie();

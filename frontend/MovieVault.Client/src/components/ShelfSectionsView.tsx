@@ -20,8 +20,9 @@ function ShelfSectionsView() {
   const [showCreateInput, setShowCreateInput] = useState(false);
   const [newSectionName, setNewSectionName] = useState('');
 
-  const SECTIONS_URL = 'http://localhost:5156/api/shelfsections';
-  const MOVIES_URL = 'http://localhost:5156/api/movies';
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5156';
+  const SECTIONS_URL = `${API_BASE}/api/shelfsections`;
+  const MOVIES_URL = `${API_BASE}/api/movies`;
 
   useEffect(() => {
     fetchData();

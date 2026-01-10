@@ -63,9 +63,10 @@ function AddMovie() {
   const [showScanner, setShowScanner] = useState(false);
   const [showMobileOnlyMessage, setShowMobileOnlyMessage] = useState(false);
 
-  const API_URL = 'http://localhost:5156/api/movies';
-  const COLLECTIONS_URL = 'http://localhost:5156/api/collections';
-  const SHELF_SECTIONS_URL = 'http://localhost:5156/api/shelfsections';
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5156';
+  const API_URL = `${API_BASE}/api/movies`;
+  const COLLECTIONS_URL = `${API_BASE}/api/collections`;
+  const SHELF_SECTIONS_URL = `${API_BASE}/api/shelfsections`;
   const TMDB_API_TOKEN = import.meta.env.VITE_TMDB_API_TOKEN;
   
   // Check if device is mobile

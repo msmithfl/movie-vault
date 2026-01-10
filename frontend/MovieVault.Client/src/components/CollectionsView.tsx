@@ -20,8 +20,9 @@ function CollectionsView() {
   const [showCreateInput, setShowCreateInput] = useState(false);
   const [newCollectionName, setNewCollectionName] = useState('');
 
-  const COLLECTIONS_URL = 'http://localhost:5156/api/collections';
-  const MOVIES_URL = 'http://localhost:5156/api/movies';
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5156';
+  const COLLECTIONS_URL = `${API_BASE}/api/collections`;
+  const MOVIES_URL = `${API_BASE}/api/movies`;
 
   useEffect(() => {
     fetchData();

@@ -15,16 +15,31 @@ builder.Services.ConfigureHttpJsonOptions(options =>
     options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
 });
 
-// Add DbContext with SQLite
+// Add DbContext with SQLite (dev) or PostgreSQL (production)
+var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 builder.Services.AddDbContext<MovieDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=movievault.db"));
+{
+    if (!string.IsNullOrEmpty(databaseUrl))
+    {
+        // Production: Use PostgreSQL from Railway
+        options.UseNpgsql(databaseUrl);
+    }
+    else
+    {
+        // Development: Use SQLite
+        options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection") ?? "Data Source=movievault.db");
+    }
+});
 
 // Add CORS
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "https://localhost:5173")
+        policy.WithOrigins(
+                "http://localhost:5173", 
+                "https://localhost:5173",
+                "https://movie-vault-six.vercel.app")
               .AllowAnyHeader()
               .AllowAnyMethod();
     });
@@ -39,11 +54,18 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseCors("AllowFrontend");
-app.UseHttpsRedirection();
+
+// Only redirect to HTTPS in production
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 // Map movie endpoints
 app.MapMovieEndpoints();
 app.MapCollectionEndpoints();
 app.MapShelfSectionEndpoints();
 
-app.Run();
+// Use PORT from Railway if available
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5156";
+app.Run($"http://0.0.0.0:{port}");

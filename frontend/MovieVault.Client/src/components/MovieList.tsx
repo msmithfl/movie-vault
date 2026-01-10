@@ -32,7 +32,9 @@ function MovieList() {
   const [movieToDelete, setMovieToDelete] = useState<number | null>(null);
   const [showScanner, setShowScanner] = useState(false);
   const [showMobileOnlyMessage, setShowMobileOnlyMessage] = useState(false);
-  const API_URL = 'http://localhost:5156/api/movies';
+  
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5156';
+  const API_URL = `${API_BASE}/api/movies`;
 
   // Check if device is mobile
   const isMobile = () => {

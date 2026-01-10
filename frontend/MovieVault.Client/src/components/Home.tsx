@@ -29,7 +29,8 @@ function Home() {
   const [recentMovies, setRecentMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const API_URL = 'http://localhost:5156/api/movies';
+  const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5156';
+  const API_URL = `${API_BASE}/api/movies`;
 
   useEffect(() => {
     fetchData();
