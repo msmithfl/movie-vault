@@ -46,12 +46,14 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(corsOrigins)
               .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+              .AllowAnyMethod();
     });
 });
 
 var app = builder.Build();
+
+// Run migrations automatically on startup
+await app.MigrateDbAsync();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
