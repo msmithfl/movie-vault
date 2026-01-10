@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import ConfirmDialog from './ConfirmDialog'
+import BarcodeScanner from './BarcodeScanner'
 
 interface Movie {
   id?: number;
@@ -24,11 +25,20 @@ function MovieList() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>('date');
   const [searchQuery, setSearchQuery] = useState('');
+  const [upcSearchQuery, setUpcSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [movieToDelete, setMovieToDelete] = useState<number | null>(null);
+  const [showScanner, setShowScanner] = useState(false);
+  const [showMobileOnlyMessage, setShowMobileOnlyMessage] = useState(false);
   const API_URL = 'http://localhost:5156/api/movies';
+
+  // Check if device is mobile
+  const isMobile = () => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+           (window.innerWidth <= 768);
+  };
 
   useEffect(() => {
     fetchMovies();
@@ -100,9 +110,11 @@ function MovieList() {
   const sortedMovies = getSortedMovies();
   
   // Filter movies by search query
-  const filteredMovies = sortedMovies.filter(movie =>
-    movie.title.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredMovies = sortedMovies.filter(movie => {
+    const matchesTitle = movie.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesUpc = movie.upcNumber.toLowerCase().includes(upcSearchQuery.toLowerCase());
+    return matchesTitle && matchesUpc;
+  });
   
   // Pagination calculations
   const totalPages = Math.ceil(filteredMovies.length / itemsPerPage);
@@ -126,6 +138,25 @@ function MovieList() {
     setCurrentPage(1);
   };
 
+  const handleUpcSearchChange = (value: string) => {
+    setUpcSearchQuery(value);
+    setCurrentPage(1);
+  };
+
+  const handleScanClick = () => {
+    if (isMobile()) {
+      setShowScanner(true);
+    } else {
+      setShowMobileOnlyMessage(true);
+    }
+  };
+
+  const handleBarcodeDetected = (code: string) => {
+    setUpcSearchQuery(code);
+    setShowScanner(false);
+    setCurrentPage(1);
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
@@ -134,27 +165,64 @@ function MovieList() {
 
       {movies.length > 0 && (
         <div className="mb-6 space-y-4">
-          <div className="relative">
-            <input
-              type="text"
-              placeholder="Search by title..."
-              value={searchQuery}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full px-4 py-3 pl-10 bg-gray-800 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            />
-            <svg
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="Search by title..."
+                value={searchQuery}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                className="w-full px-4 py-3 pl-10 bg-gray-800 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
-            </svg>
+              <svg
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Search by UPC..."
+                value={upcSearchQuery}
+                onChange={(e) => handleUpcSearchChange(e.target.value)}
+                className="flex-1 px-4 py-3 bg-gray-800 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              />
+              <button
+                type="button"
+                onClick={handleScanClick}
+                className="px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition cursor-pointer flex items-center justify-center"
+                title="Scan barcode"
+              >
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                  />
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+              </button>
+            </div>
           </div>
           <div className="flex items-center gap-6">
             <div className="flex items-center gap-3">
@@ -355,6 +423,38 @@ function MovieList() {
         onConfirm={handleDeleteConfirm}
         onCancel={handleDeleteCancel}
       />
+
+      {showScanner && (
+        <BarcodeScanner
+          onDetected={handleBarcodeDetected}
+          onClose={() => setShowScanner(false)}
+        />
+      )}
+
+      {showMobileOnlyMessage && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+          <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-white">Mobile Only Feature</h3>
+              <button
+                onClick={() => setShowMobileOnlyMessage(false)}
+                className="text-gray-400 hover:text-white text-2xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+            <p className="text-gray-300 mb-6">
+              The UPC barcode scanner is only available on mobile devices. Please use a smartphone or tablet to scan barcodes.
+            </p>
+            <button
+              onClick={() => setShowMobileOnlyMessage(false)}
+              className="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition"
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
