@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useState } from 'react'
 import { BsSafe2 } from "react-icons/bs";
 import { PiFilmReel  } from "react-icons/pi";
-import { HiMenu, HiX } from "react-icons/hi";
+import { HiMenu, HiX, HiPlus } from "react-icons/hi";
 
 function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -50,14 +50,23 @@ function Header() {
             </Link>
           </nav>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden text-white p-2"
-            aria-label="Toggle menu"
-          >
-            {isMenuOpen ? <HiX className="w-6 h-6" /> : <HiMenu className="w-6 h-6" />}
-          </button>
+          {/* Mobile Buttons */}
+          <div className="md:hidden flex items-center gap-3">
+            <Link
+              to="/add"
+              className="text-white p-2"
+              aria-label="Add movie"
+            >
+              <HiPlus className="w-6 h-6" />
+            </Link>
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="text-white p-2"
+              aria-label="Toggle menu"
+            >
+              {isMenuOpen ? <HiX className="w-6 h-6" /> : <HiMenu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Navigation */}
