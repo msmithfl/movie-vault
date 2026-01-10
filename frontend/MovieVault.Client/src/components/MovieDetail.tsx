@@ -230,7 +230,7 @@ function MovieDetail() {
           {/* Location Details Section */}
           <div className="mb-8">
             {/* <h2 className="text-2xl font-bold text-white mb-4">Location Details</h2> */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="space-y-6">
               <div>
                 <h3 className="text-sm font-medium text-gray-400 mb-2">Collections</h3>
                 {movie.collections && movie.collections.length > 0 ? (
@@ -246,32 +246,36 @@ function MovieDetail() {
                 )}
               </div>
 
-              <div>
-                <h3 className="text-sm font-medium text-gray-400 mb-2">Shelf Section</h3>
-                <p className="text-base text-white">
-                  {movie.shelfSection || <span className="text-gray-500">None</span>}
-                </p>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-sm font-medium text-gray-400 mb-2">Shelf Number</h3>
+                  <p className="text-base text-white">
+                    {movie.shelfNumber > 0 ? `${movie.shelfNumber}` : <span className="text-gray-500">Not set</span>}
+                  </p>
+                </div>
+                <div>
+                  <h3 className="text-sm font-medium text-gray-400 mb-2">Shelf Section</h3>
+                  <p className="text-base text-white">
+                    {movie.shelfSection || <span className="text-gray-500">None</span>}
+                  </p>
+                </div>
+
               </div>
 
-              <div>
-                <h3 className="text-sm font-medium text-gray-400 mb-2">Shelf Number</h3>
-                <p className="text-base text-white">
-                  {movie.shelfNumber > 0 ? `Shelf #${movie.shelfNumber}` : <span className="text-gray-500">Not set</span>}
-                </p>
-              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <h3 className="text-sm font-medium text-gray-400 mb-2">HDD Number</h3>
+                  <p className="text-base text-white">
+                    {movie.hdDriveNumber > 0 ? `Drive #${movie.hdDriveNumber}` : <span className="text-gray-500">Not set</span>}
+                  </p>
+                </div>
 
-              <div>
-                <h3 className="text-sm font-medium text-gray-400 mb-2">HDD Number</h3>
-                <p className="text-base text-white">
-                  {movie.hdDriveNumber > 0 ? `Drive #${movie.hdDriveNumber}` : <span className="text-gray-500">Not set</span>}
-                </p>
-              </div>
-
-              <div>
-                <h3 className="text-sm font-medium text-gray-400 mb-2">On Plex</h3>
-                <p className="text-base text-white">
-                  {movie.isOnPlex ? '✅ Yes' : '❌ No'}
-                </p>
+                <div>
+                  <h3 className="text-sm font-medium text-gray-400 mb-2">On Plex</h3>
+                  <p className="text-base text-white">
+                    {movie.isOnPlex ? '✅ Yes' : '❌ No'}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
