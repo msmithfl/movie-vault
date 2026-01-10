@@ -77,17 +77,17 @@ function MovieDetail() {
     setShowDeleteConfirm(false);
   };
 
-  const formatDate = (dateString?: string) => {
-    if (!dateString) return 'Unknown';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
+  // const formatDate = (dateString?: string) => {
+  //   if (!dateString) return 'Unknown';
+  //   const date = new Date(dateString);
+  //   return date.toLocaleDateString('en-US', { 
+  //     year: 'numeric', 
+  //     month: 'long', 
+  //     day: 'numeric',
+  //     hour: '2-digit',
+  //     minute: '2-digit'
+  //   });
+  // };
 
   if (loading) {
     return (
@@ -188,10 +188,7 @@ function MovieDetail() {
               
               <button
                 onClick={() => {
-                  const formats = movie.formats && movie.formats.length > 0 
-                    ? movie.formats.join(' ') 
-                    : '';
-                  const query = encodeURIComponent(`${movie.title} ${formats}`);
+                  const query = encodeURIComponent(`${movie.upcNumber}`);
                   window.open(`https://www.ebay.com/sch/i.html?_nkw=${query}`, '_blank', 'noopener,noreferrer');
                 }}
                 className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-200 text-sm cursor-pointer"
@@ -205,7 +202,6 @@ function MovieDetail() {
         <div className="p-8">
           {/* Physical Details Section */}
           <div className="mb-8">
-            {/* <h2 className="text-2xl font-bold text-white mb-4">Physical Details</h2> */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <h3 className="text-sm font-medium text-gray-400 mb-2">Formats</h3>
@@ -245,7 +241,6 @@ function MovieDetail() {
 
           {/* Location Details Section */}
           <div className="mb-8">
-            {/* <h2 className="text-2xl font-bold text-white mb-4">Location Details</h2> */}
             <div className="space-y-6">
               <div>
                 <h3 className="text-sm font-medium text-gray-400 mb-2">Collections</h3>
@@ -298,7 +293,6 @@ function MovieDetail() {
 
           {/* Metadata Section */}
           <div className="mb-8">
-            {/* <h2 className="text-2xl font-bold text-white mb-4">Metadata</h2> */}
             {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                 <h3 className="text-sm font-medium text-gray-400 mb-2">Date Added</h3>
