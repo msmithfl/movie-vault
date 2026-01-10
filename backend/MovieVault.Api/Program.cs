@@ -20,7 +20,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 if (string.IsNullOrEmpty(connectionString))
 {
     // Try DATABASE_URL (Railway default)
-    var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+    var databaseUrl = builder.Configuration["DATABASE_URL"];
     if (!string.IsNullOrEmpty(databaseUrl))
     {
         // Convert postgresql:// URL to Npgsql format
@@ -28,6 +28,8 @@ if (string.IsNullOrEmpty(connectionString))
         connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={uri.UserInfo.Split(':')[0]};Password={uri.UserInfo.Split(':')[1]};SSL Mode=Require;Trust Server Certificate=true";
     }
 }
+
+Console.WriteLine($"Connection String: {(string.IsNullOrEmpty(connectionString) ? "NOT SET" : "SET")}");
 
 builder.Services.AddDbContext<MovieDbContext>(options =>
     options.UseNpgsql(connectionString));
