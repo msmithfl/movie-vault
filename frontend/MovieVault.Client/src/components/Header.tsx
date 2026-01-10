@@ -1,8 +1,12 @@
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
 import { BsSafe2 } from "react-icons/bs";
 import { PiFilmReel  } from "react-icons/pi";
+import { HiMenu, HiX } from "react-icons/hi";
 
 function Header() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   return (
     <header className="bg-gray-800 border-b border-gray-700">
       <div className="max-w-7xl mx-auto px-4 py-4">
@@ -11,7 +15,9 @@ function Header() {
             <PiFilmReel className="w-11 h-11 text-white" />
             <BsSafe2 className="w-10 h-10 text-white" />
           </Link>
-          <nav className="flex items-center gap-6">
+          
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-6">
             <Link 
               to="/" 
               className="text-gray-300 hover:text-white transition-colors font-medium"
@@ -43,7 +49,57 @@ function Header() {
               + Add Movie
             </Link>
           </nav>
+
+          {/* Mobile Menu Button */}
+          <button
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            className="md:hidden text-white p-2"
+            aria-label="Toggle menu"
+          >
+            {isMenuOpen ? <HiX className="w-6 h-6" /> : <HiMenu className="w-6 h-6" />}
+          </button>
         </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <nav className="md:hidden mt-4 pb-2 flex flex-col gap-3">
+            <Link 
+              to="/" 
+              onClick={() => setIsMenuOpen(false)}
+              className="text-gray-300 hover:text-white transition-colors font-medium py-2"
+            >
+              Dashboard
+            </Link>
+            <Link 
+              to="/library" 
+              onClick={() => setIsMenuOpen(false)}
+              className="text-gray-300 hover:text-white transition-colors font-medium py-2"
+            >
+              Library
+            </Link>
+            <Link 
+              to="/collections" 
+              onClick={() => setIsMenuOpen(false)}
+              className="text-gray-300 hover:text-white transition-colors font-medium py-2"
+            >
+              Collections
+            </Link>
+            <Link 
+              to="/shelfsections" 
+              onClick={() => setIsMenuOpen(false)}
+              className="text-gray-300 hover:text-white transition-colors font-medium py-2"
+            >
+              Shelf
+            </Link>
+            <Link 
+              to="/add" 
+              onClick={() => setIsMenuOpen(false)}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-md transition duration-200 text-center"
+            >
+              + Add Movie
+            </Link>
+          </nav>
+        )}
       </div>
     </header>
   )

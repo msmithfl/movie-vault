@@ -23,13 +23,26 @@ if (string.IsNullOrEmpty(connectionString))
     var databaseUrl = builder.Configuration["DATABASE_URL"];
     if (!string.IsNullOrEmpty(databaseUrl))
     {
-        // Convert postgresql:// URL to Npgsql format
-        var uri = new Uri(databaseUrl);
-        connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={uri.UserInfo.Split(':')[0]};Password={uri.UserInfo.Split(':')[1]};SSL Mode=Require;Trust Server Certificate=true";
+        try
+        {
+            // Convert postgresql:// URL to Npgsql format
+            var uri = new Uri(databaseUrl);
+            connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={uri.UserInfo.Split(':')[0]};Password={uri.UserInfo.Split(':')[1]};SSL Mode=Require;Trust Server Certificate=true";
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error parsing DATABASE_URL: {ex.Message}");
+            throw new InvalidOperationException("Failed to parse DATABASE_URL. Please check the format.", ex);
+        }
     }
 }
 
-Console.WriteLine($"Connection String: {(string.IsNullOrEmpty(connectionString) ? "NOT SET" : "SET")}");
+if (string.IsNullOrEmpty(connectionString))
+{
+    throw new InvalidOperationException("No database connection string found. Please set ConnectionStrings:DefaultConnection or DATABASE_URL.");
+}
+
+Console.WriteLine($"Connection String: SET");
 
 builder.Services.AddDbContext<MovieDbContext>(options =>
     options.UseNpgsql(connectionString));
