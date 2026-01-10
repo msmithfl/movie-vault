@@ -171,18 +171,33 @@ function MovieDetail() {
             </div>
 
             {/* Genres - Right */}
-            <div className="lg:col-span-3">
-              {movie.genres && movie.genres.length > 0 ? (
-                <div className="flex flex-wrap gap-2">
-                  {movie.genres.map((genre, idx) => (
-                    <span key={idx} className="bg-purple-600 px-3 py-2 rounded-md text-white text-sm">
-                      {genre}
-                    </span>
-                  ))}
-                </div>
-              ) : (
-                <p className="text-gray-500 italic">None</p>
-              )}
+            <div className="lg:col-span-3 flex flex-col justify-between">
+              <div>
+                {movie.genres && movie.genres.length > 0 ? (
+                  <div className="flex flex-wrap gap-2">
+                    {movie.genres.map((genre, idx) => (
+                      <span key={idx} className="bg-purple-600 px-3 py-2 rounded-md text-white text-sm">
+                        {genre}
+                      </span>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-gray-500 italic">None</p>
+                )}
+              </div>
+              
+              <button
+                onClick={() => {
+                  const formats = movie.formats && movie.formats.length > 0 
+                    ? movie.formats.join(' ') 
+                    : '';
+                  const query = encodeURIComponent(`${movie.title} ${formats}`);
+                  window.open(`https://www.ebay.com/sch/i.html?_nkw=${query}`, '_blank', 'noopener,noreferrer');
+                }}
+                className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-200 text-sm cursor-pointer"
+              >
+                🔍 Search on eBay
+              </button>
             </div>
           </div>
         </div>
@@ -284,7 +299,7 @@ function MovieDetail() {
           {/* Metadata Section */}
           <div className="mb-8">
             {/* <h2 className="text-2xl font-bold text-white mb-4">Metadata</h2> */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            {/* <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
               <div>
                 <h3 className="text-sm font-medium text-gray-400 mb-2">Date Added</h3>
                 <p className="text-base text-white">{formatDate(movie.createdAt)}</p>
@@ -294,7 +309,7 @@ function MovieDetail() {
                 <h3 className="text-sm font-medium text-gray-400 mb-2">Movie ID</h3>
                 <p className="text-base text-white font-mono">#{movie.id}</p>
               </div>
-            </div>
+            </div> */}
 
             <div className="p-6 bg-gray-700 rounded-lg">
               <h3 className="text-sm font-medium text-gray-400 mb-3">Review / Notes</h3>
