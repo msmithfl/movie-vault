@@ -41,7 +41,8 @@ builder.Services.AddCors(options =>
                 "https://localhost:5173",
                 "https://movie-vault-six.vercel.app")
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .SetIsOriginAllowedToAllowWildcardSubdomains();
     });
 });
 
@@ -53,6 +54,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+// CORS must come before UseHttpsRedirection
 app.UseCors("AllowFrontend");
 
 // Only redirect to HTTPS in production
@@ -66,6 +68,8 @@ app.MapMovieEndpoints();
 app.MapCollectionEndpoints();
 app.MapShelfSectionEndpoints();
 
-// Use PORT from Railway if available
+// Use PORT from Railway if available, bind to all interfaces
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5156";
-app.Run($"http://0.0.0.0:{port}");
+app.Urls.Add($"http://0.0.0.0:{port}");
+
+app.Run();
