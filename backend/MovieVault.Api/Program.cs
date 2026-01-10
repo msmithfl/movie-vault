@@ -34,10 +34,24 @@ builder.Services.AddDbContext<MovieDbContext>(options =>
     }
 });
 
-// Add CORS
-var corsOrigins = Environment.GetEnvironmentVariable("CORS_ORIGINS")?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
-    ?? new[] { "http://localhost:5173", "https://localhost:5173", "https://movie-vault-six.vercel.app" };
+// Add CORS - reads from environment variable or appsettings.{Environment}.json
+var corsOriginsEnv = Environment.GetEnvironmentVariable("CORS_ORIGINS");
+string[] corsOrigins;
 
+if (!string.IsNullOrEmpty(corsOriginsEnv))
+{
+    // Split comma-separated environment variable
+    corsOrigins = corsOriginsEnv.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+}
+else
+{
+    // Fallback to JSON configuration
+    var corsOriginsSection = builder.Configuration.GetSection("CorsOrigins");
+    corsOrigins = corsOriginsSection.Get<string[]>() 
+        ?? new[] { "http://localhost:5173", "https://localhost:5173" }; // Final fallback for local dev
+}
+
+Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
 Console.WriteLine($"CORS Origins: {string.Join(", ", corsOrigins)}");
 
 builder.Services.AddCors(options =>
