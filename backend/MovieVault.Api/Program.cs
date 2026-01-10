@@ -21,8 +21,11 @@ builder.Services.AddDbContext<MovieDbContext>(options =>
 {
     if (!string.IsNullOrEmpty(databaseUrl))
     {
-        // Production: Use PostgreSQL from Railway
-        options.UseNpgsql(databaseUrl);
+        // Production: Parse Railway's PostgreSQL URL format
+        // postgresql://user:password@host:port/database
+        var uri = new Uri(databaseUrl);
+        var connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={uri.UserInfo.Split(':')[0]};Password={uri.UserInfo.Split(':')[1]};SSL Mode=Require;Trust Server Certificate=true";
+        options.UseNpgsql(connectionString);
     }
     else
     {
@@ -32,17 +35,19 @@ builder.Services.AddDbContext<MovieDbContext>(options =>
 });
 
 // Add CORS
+var corsOrigins = Environment.GetEnvironmentVariable("CORS_ORIGINS")?.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+    ?? new[] { "http://localhost:5173", "https://localhost:5173", "https://movie-vault-six.vercel.app" };
+
+Console.WriteLine($"CORS Origins: {string.Join(", ", corsOrigins)}");
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins(
-                "http://localhost:5173", 
-                "https://localhost:5173",
-                "https://movie-vault-six.vercel.app")
+        policy.WithOrigins(corsOrigins)
               .AllowAnyHeader()
               .AllowAnyMethod()
-              .SetIsOriginAllowedToAllowWildcardSubdomains();
+              .AllowCredentials();
     });
 });
 
