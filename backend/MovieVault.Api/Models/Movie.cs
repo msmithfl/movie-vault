@@ -13,6 +13,7 @@ public class Movie
     public int Year { get; set; }
     public List<string> Genres { get; set; } = new List<string>();
     public string PosterPath { get; set; } = string.Empty;
+    public string ProductPosterPath { get; set; } = string.Empty;
     public int HDDriveNumber { get; set; }
     public int ShelfNumber { get; set; }
     public string ShelfSection { get; set; } = string.Empty;

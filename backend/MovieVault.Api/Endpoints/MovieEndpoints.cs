@@ -48,6 +48,7 @@ public static class MovieEndpoints
             movie.Year = updatedMovie.Year;
             movie.Genres = updatedMovie.Genres;
             movie.PosterPath = updatedMovie.PosterPath;
+            movie.ProductPosterPath = updatedMovie.ProductPosterPath;
             movie.HDDriveNumber = updatedMovie.HDDriveNumber;
             movie.ShelfNumber = updatedMovie.ShelfNumber;
             movie.ShelfSection = updatedMovie.ShelfSection;

@@ -1,25 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from "react-icons/ti";
-
-interface Movie {
-  id?: number;
-  title: string;
-  upcNumber: string;
-  formats: string[];
-  collections: string[];
-  condition: string;
-  rating: number;
-  review: string;
-  year: number;
-  genres: string[];
-  posterPath: string;
-  hdDriveNumber: number;
-  shelfNumber: number;
-  shelfSection: string;
-  isOnPlex: boolean;
-  createdAt?: string;
-}
+import type { Movie } from '../types';
 
 function EditMovie() {
   const navigate = useNavigate();
@@ -35,6 +17,7 @@ function EditMovie() {
     year: new Date().getFullYear(),
     genres: [],
     posterPath: '',
+    productPosterPath: '',
     hdDriveNumber: 0,
     shelfNumber: 0,
     shelfSection: '',

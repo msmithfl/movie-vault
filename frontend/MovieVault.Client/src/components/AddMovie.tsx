@@ -2,33 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from "react-icons/ti";
 import BarcodeScanner from './BarcodeScanner';
-
-interface Movie {
-  id?: number;
-  title: string;
-  upcNumber: string;
-  formats: string[];
-  collections: string[];
-  condition: string;
-  rating: number;
-  review: string;
-  year: number;
-  genres: string[];
-  posterPath: string;
-  hdDriveNumber: number;
-  shelfNumber: number;
-  shelfSection: string;
-  isOnPlex: boolean;
-  createdAt?: string;
-}
-
-interface TMDBMovie {
-  id: number;
-  title: string;
-  release_date: string;
-  poster_path: string;
-  genre_ids: number[];
-}
+import type { Movie, TMDBMovie } from "../types";
+import { GENRE_MAP } from '../utils/tmdbApi';
 
 function AddMovie() {
   const navigate = useNavigate();
@@ -48,6 +23,7 @@ function AddMovie() {
     year: new Date().getFullYear(),
     genres: [],
     posterPath: '',
+    productPosterPath: '',
     hdDriveNumber: 0,
     shelfNumber: 0,
     shelfSection: '',
@@ -73,29 +49,6 @@ function AddMovie() {
   const isMobile = () => {
     return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
            (window.innerWidth <= 768);
-  };
-  
-  // TMDB genre mapping
-  const GENRE_MAP: { [key: number]: string } = {
-    28: 'Action',
-    12: 'Adventure',
-    16: 'Animation',
-    35: 'Comedy',
-    80: 'Crime',
-    99: 'Documentary',
-    18: 'Drama',
-    10751: 'Family',
-    14: 'Fantasy',
-    36: 'History',
-    27: 'Horror',
-    10402: 'Music',
-    9648: 'Mystery',
-    10749: 'Romance',
-    878: 'Sci-Fi',
-    10770: 'TV Movie',
-    53: 'Thriller',
-    10752: 'War',
-    37: 'Western'
   };
   
   useEffect(() => {
