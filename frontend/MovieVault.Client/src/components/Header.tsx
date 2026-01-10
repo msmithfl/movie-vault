@@ -8,7 +8,7 @@ function Header() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <header className="bg-gray-800 border-b border-gray-700">
+    <header className="bg-gray-800 border-b border-gray-700 relative">
       <div className="max-w-7xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center gap-1 hover:opacity-80 transition-opacity">
@@ -62,7 +62,7 @@ function Header() {
 
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <nav className="md:hidden mt-4 pb-2 flex flex-col gap-3">
+          <nav className="md:hidden absolute top-full left-0 right-0 bg-gray-800 border-b border-gray-700 shadow-lg z-50 px-4 py-4 flex flex-col gap-3">
             <Link 
               to="/" 
               onClick={() => setIsMenuOpen(false)}

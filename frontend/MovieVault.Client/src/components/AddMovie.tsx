@@ -282,7 +282,6 @@ function AddMovie() {
       {entryMode === 'choice' && (
         <div className="bg-gray-800 rounded-lg shadow-lg p-8">
           <h2 className="text-3xl font-bold mb-6 text-center">Add New Movie</h2>
-          <p className="text-gray-400 text-center mb-8">How would you like to add this movie?</p>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <button

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import ConfirmDialog from './ConfirmDialog'
 import BarcodeScanner from './BarcodeScanner'
+import { FaSortAmountDown } from "react-icons/fa";
 
 interface Movie {
   id?: number;
@@ -32,6 +33,7 @@ function MovieList() {
   const [movieToDelete, setMovieToDelete] = useState<number | null>(null);
   const [showScanner, setShowScanner] = useState(false);
   const [showMobileOnlyMessage, setShowMobileOnlyMessage] = useState(false);
+  const [showSortMenu, setShowSortMenu] = useState(false);
   
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5156';
   const API_URL = `${API_BASE}/api/movies`;
@@ -163,6 +165,17 @@ function MovieList() {
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold">Library ({movies.length} items)</h2>
+        
+        {/* Mobile Sort Button */}
+        {movies.length > 0 && (
+          <button
+            onClick={() => setShowSortMenu(!showSortMenu)}
+            className="md:hidden p-2 text-gray-300 hover:text-white transition-colors"
+            aria-label="Sort options"
+          >
+            <FaSortAmountDown className="w-6 h-6" />
+          </button>
+        )}
       </div>
 
       {movies.length > 0 && (
@@ -226,7 +239,9 @@ function MovieList() {
               </button>
             </div>
           </div>
-          <div className="flex items-center gap-6">
+          
+          {/* Desktop Sort Controls - Always Visible */}
+          <div className="hidden md:flex items-center gap-6">
             <div className="flex items-center gap-3">
               <label htmlFor="sortBy" className="text-sm font-medium text-gray-300">
                 Sort by:
@@ -258,6 +273,42 @@ function MovieList() {
               </select>
             </div>
           </div>
+
+          {/* Mobile Sort Controls - Toggle Visibility */}
+          {showSortMenu && (
+            <div className="md:hidden space-y-3 p-4 bg-gray-700 rounded-lg">
+              <div className="flex flex-col gap-2">
+                <label htmlFor="sortBy-mobile" className="text-sm font-medium text-gray-300">
+                  Sort by:
+                </label>
+                <select
+                  id="sortBy-mobile"
+                  value={sortBy}
+                  onChange={(e) => handleSortChange(e.target.value as SortOption)}
+                  className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
+                >
+                  <option value="date">Date Added (Newest First)</option>
+                  <option value="alphabetic">Title (A-Z)</option>
+                  <option value="format">Format</option>
+                </select>
+              </div>
+              <div className="flex flex-col gap-2">
+                <label htmlFor="itemsPerPage-mobile" className="text-sm font-medium text-gray-300">
+                  Per page:
+                </label>
+                <select
+                  id="itemsPerPage-mobile"
+                  value={itemsPerPage}
+                  onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                  className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
+                >
+                  <option value={10}>10</option>
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                </select>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -275,18 +326,19 @@ function MovieList() {
         </div>
       ) : (
         <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
-          <table className="w-full">
-            <thead className="bg-gray-700">
-              <tr>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Title</th>
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Format</th>
-                {/* <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Condition</th> */}
-                {/* <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Rating</th> */}
-                <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Collection</th>
-                <th className="px-6 py-4 text-right text-sm font-semibold text-gray-200">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-700">
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead className="bg-gray-700">
+                <tr>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Title</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Format</th>
+                  {/* <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Condition</th> */}
+                  {/* <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Rating</th> */}
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Collection</th>
+                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-200">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-700">
               {currentMovies.map((movie) => (
                 <tr 
                   key={movie.id}
@@ -358,6 +410,7 @@ function MovieList() {
               ))}
             </tbody>
           </table>
+          </div>
           
           {totalPages > 1 && (
             <div className="px-6 py-4 bg-gray-700 border-t border-gray-600 flex items-center justify-between">

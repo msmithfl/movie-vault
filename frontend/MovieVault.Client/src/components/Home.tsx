@@ -77,7 +77,7 @@ function Home() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto p-4">
       {/* Stats Dashboard */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6 mb-12">
         <div className="bg-linear-to-br from-indigo-600 to-indigo-700 rounded-lg shadow-lg p-6">
