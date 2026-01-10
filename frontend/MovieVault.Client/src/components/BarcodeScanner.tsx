@@ -152,8 +152,18 @@ function BarcodeScanner({ onDetected, onClose }: BarcodeScannerProps) {
             <div
               ref={scannerRef}
               className="relative bg-black rounded-lg overflow-hidden border-2 border-blue-500"
-              style={{ minHeight: '400px' }}
-            />
+              style={{ height: '400px', maxHeight: '60vh' }}
+            >
+              <style>{`
+                #interactive.viewport canvas, #interactive.viewport video {
+                  max-width: 100%;
+                  max-height: 100%;
+                  width: 100%;
+                  height: 100%;
+                  object-fit: contain;
+                }
+              `}</style>
+            </div>
             <div className="mt-4 space-y-2">
               <p className="text-gray-400 text-sm text-center">
                 {isInitialized 
