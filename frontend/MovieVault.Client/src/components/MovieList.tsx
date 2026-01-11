@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import ConfirmDialog from './ConfirmDialog'
 import BarcodeScanner from './BarcodeScanner'
 import { FaSortAmountDown } from "react-icons/fa";
 
@@ -30,8 +29,6 @@ function MovieList() {
   const [upcSearchQuery, setUpcSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(100);
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [movieToDelete, setMovieToDelete] = useState<number | null>(null);
   const [showScanner, setShowScanner] = useState(false);
   const [showMobileOnlyMessage, setShowMobileOnlyMessage] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
@@ -64,35 +61,6 @@ function MovieList() {
     } catch (error) {
       console.error('Error fetching movies:', error);
     }
-  };
-
-  // const handleDeleteClick = (id: number) => {
-  //   setMovieToDelete(id);
-  //   setShowDeleteConfirm(true);
-  // };
-
-  const handleDeleteConfirm = async () => {
-    if (!movieToDelete) return;
-
-    try {
-      const response = await fetch(`${API_URL}/${movieToDelete}`, {
-        method: 'DELETE',
-      });
-
-      if (response.ok) {
-        fetchMovies();
-      }
-    } catch (error) {
-      console.error('Error deleting movie:', error);
-    } finally {
-      setShowDeleteConfirm(false);
-      setMovieToDelete(null);
-    }
-  };
-
-  const handleDeleteCancel = () => {
-    setShowDeleteConfirm(false);
-    setMovieToDelete(null);
   };
 
   const getSortedMovies = () => {
@@ -340,8 +308,7 @@ function MovieList() {
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Year</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Format</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Condition</th>
-                  {/* <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Collection</th> */}
-                  {/* <th className="px-6 py-4 text-right text-sm font-semibold text-gray-200">Actions</th> */}
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Rating</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
@@ -371,52 +338,10 @@ function MovieList() {
                       <span className="text-gray-500">-</span>
                     )}
                   </td>
-                  <td className="px-6 py-2">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      movie.condition === 'Sealed' ? 'bg-purple-600 text-white' :
-                      movie.condition === 'Like New' ? 'bg-green-600 text-white' :
-                      movie.condition === 'Good' ? 'bg-blue-600 text-white' :
-                      movie.condition === 'Poor' ? 'bg-gray-600 text-white' :
-                      movie.condition === 'Damaged' ? 'bg-red-600 text-white' :
-                      'bg-red-600 text-white'
-                    }`}>
-                      {movie.condition}
-                    </span>
-                  </td>
-                  {/* <td className="px-6 py-4 text-gray-300">
+                  <td className="px-6 py-2 text-gray-300">{movie.condition}</td>
+                  <td className="px-6 py-4 text-gray-300">
                     {movie.rating > 0 ? `${movie.rating} ⭐` : '-'}
-                  </td> */}
-                  {/* <td className="px-6 py-2">
-                    {movie.collections && movie.collections.length > 0 ? (
-                      <div className="flex flex-wrap gap-1">
-                        {[...movie.collections].sort().map((col, idx) => (
-                          <span key={idx} className="px-2 py-1 bg-purple-600 text-white rounded-full text-xs">
-                            {col}
-                          </span>
-                        ))}
-                      </div>
-                    ) : (
-                      <span className="text-gray-500">-</span>
-                    )}
-                  </td> */}
-                  {/* <td className="px-6 py-2 text-right">
-                    <div className="flex gap-2 justify-end">
-                      <Link
-                        to={`/edit/${movie.id}`}
-                        className="text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 px-3 py-2 rounded-md transition-colors duration-200"
-                        aria-label="Edit movie"
-                      >
-                        <FaEdit className="w-4 h-4" />
-                      </Link>
-                      <button
-                        onClick={() => movie.id && handleDeleteClick(movie.id)}
-                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10 px-3 py-2 rounded-md transition-colors duration-200 cursor-pointer"
-                        aria-label="Delete movie"
-                      >
-                        <FaTrash className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td> */}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -481,14 +406,6 @@ function MovieList() {
           )}
         </div>
       )}
-      
-      <ConfirmDialog
-        isOpen={showDeleteConfirm}
-        title="Delete Movie"
-        message="Are you sure you want to delete this movie? This action cannot be undone."
-        onConfirm={handleDeleteConfirm}
-        onCancel={handleDeleteCancel}
-      />
 
       {showScanner && (
         <BarcodeScanner
