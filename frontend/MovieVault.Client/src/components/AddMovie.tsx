@@ -18,7 +18,7 @@ function AddMovie() {
     upcNumber: '',
     formats: [],
     collections: [],
-    condition: 'New',
+    condition: 'Like New',
     rating: 0,
     review: '',
     year: new Date().getFullYear(),
@@ -26,9 +26,9 @@ function AddMovie() {
     posterPath: '',
     productPosterPath: '',
     hdDriveNumber: 0,
-    shelfNumber: 0,
+    shelfNumber: 1,
     shelfSection: '',
-    isOnPlex: false
+    isOnPlex: true
   });
   
   const [collections, setCollections] = useState<{id: number, name: string}[]>([]);

@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from "react-icons/ti";
 import type { Movie } from '../types';
 
@@ -46,9 +47,51 @@ function MovieForm({
   onScanClick,
   onManualSearchClick
 }: MovieFormProps) {
+  const [validationError, setValidationError] = useState<string>('');
+  const [yearInput, setYearInput] = useState<string>(formData.year.toString());
+  const [shelfInput, setShelfInput] = useState<string>(formData.shelfNumber.toString());
+  const [hddInput, setHddInput] = useState<string>(formData.hdDriveNumber.toString());
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setValidationError('');
+
+    // Validate and convert numeric fields
+    const yearNum = parseInt(yearInput);
+    if (isNaN(yearNum) || yearNum < 1900 || yearNum > 2100) {
+      setValidationError('Year must be a valid number between 1900 and 2100');
+      return;
+    }
+    
+    const shelfNum = parseInt(shelfInput);
+    if (isNaN(shelfNum)) {
+      setValidationError('Shelf Number must be a valid number');
+      return;
+    }
+    
+    const hddNum = parseInt(hddInput);
+    if (isNaN(hddNum)) {
+      setValidationError('HDD Number must be a valid number');
+      return;
+    }
+
+    // Update formData with validated numbers
+    setFormData({
+      ...formData,
+      year: yearNum,
+      shelfNumber: shelfNum,
+      hdDriveNumber: hddNum
+    });
+
+    await onSubmit(e);
+  };
+
   return (
-    <form onSubmit={onSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <form onSubmit={handleSubmit} className="space-y-6">      {validationError && (
+        <div className="bg-red-600 text-white px-4 py-3 rounded-md">
+          {validationError}
+        </div>
+      )}      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <label htmlFor="title" className="block text-sm font-medium text-gray-300 mb-2">
             Movie Title *
@@ -138,12 +181,10 @@ function MovieForm({
             Year
           </label>
           <input
-            type="number"
+            type="text"
             id="year"
-            value={formData.year}
-            onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) || new Date().getFullYear() })}
-            min="1900"
-            max="2100"
+            value={yearInput}
+            onChange={(e) => setYearInput(e.target.value)}
             placeholder="Release year"
             className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-gray-500"
           />
@@ -251,10 +292,11 @@ function MovieForm({
             required
             className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
           >
-            <option value="New">New</option>
+            <option value="Sealed">Sealed</option>
+            <option value="Like New">Like New</option>
             <option value="Good">Good</option>
-            <option value="Skips">Skips</option>
             <option value="Poor">Poor</option>
+            <option value="Damaged">Damaged</option>
           </select>
         </div>
 
@@ -385,11 +427,10 @@ function MovieForm({
             Shelf Number
           </label>
           <input
-            type="number"
+            type="text"
             id="shelfNumber"
-            value={formData.shelfNumber}
-            onChange={(e) => setFormData({ ...formData, shelfNumber: parseInt(e.target.value) || 0 })}
-            min="0"
+            value={shelfInput}
+            onChange={(e) => setShelfInput(e.target.value)}
             className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500"
           />
         </div>
@@ -449,11 +490,10 @@ function MovieForm({
             HDD Number
           </label>
           <input
-            type="number"
+            type="text"
             id="hdDriveNumber"
-            value={formData.hdDriveNumber}
-            onChange={(e) => setFormData({ ...formData, hdDriveNumber: parseInt(e.target.value) || 0 })}
-            min="0"
+            value={hddInput}
+            onChange={(e) => setHddInput(e.target.value)}
             className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500"
           />
         </div>

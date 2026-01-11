@@ -21,9 +21,9 @@ function EditMovie() {
     posterPath: '',
     productPosterPath: '',
     hdDriveNumber: 0,
-    shelfNumber: 0,
+    shelfNumber: 1,
     shelfSection: '',
-    isOnPlex: false
+    isOnPlex: true
   });
   const [loading, setLoading] = useState(true);
   const [collections, setCollections] = useState<{id: number, name: string}[]>([]);
