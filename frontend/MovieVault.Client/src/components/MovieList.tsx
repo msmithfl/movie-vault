@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import ConfirmDialog from './ConfirmDialog'
 import BarcodeScanner from './BarcodeScanner'
-import { FaSortAmountDown, FaEdit, FaTrash } from "react-icons/fa";
+import { FaSortAmountDown } from "react-icons/fa";
 
 interface Movie {
   id?: number;
@@ -66,10 +66,10 @@ function MovieList() {
     }
   };
 
-  const handleDeleteClick = (id: number) => {
-    setMovieToDelete(id);
-    setShowDeleteConfirm(true);
-  };
+  // const handleDeleteClick = (id: number) => {
+  //   setMovieToDelete(id);
+  //   setShowDeleteConfirm(true);
+  // };
 
   const handleDeleteConfirm = async () => {
     if (!movieToDelete) return;
