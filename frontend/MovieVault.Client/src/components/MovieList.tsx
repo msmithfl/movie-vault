@@ -13,6 +13,7 @@ interface Movie {
   condition: string;
   rating: number;
   review: string;
+  year: number;
   hdDriveNumber: number;
   shelfNumber: number;
   shelfSection: string;
@@ -336,6 +337,7 @@ function MovieList() {
               <thead className="bg-gray-700">
                 <tr>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Title</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Year</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Format</th>
                   {/* <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Condition</th> */}
                   {/* <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Rating</th> */}
@@ -350,10 +352,13 @@ function MovieList() {
                   className="hover:bg-gray-700 transition-colors duration-150 cursor-pointer"
                   onClick={() => window.location.href = `/movie/${movie.id}`}
                 >
-                  <td className="px-6 py-4 text-white font-medium">
-                    <Link to={`/movie/${movie.id}`} className="hover:text-indigo-400 transition-colors">
+                  <td className="pl-6 py-4 text-white font-medium">
+                    <Link to={`/movie/${movie.id}`} className="hover:text-indigo-400 transition-colors block max-w-xs truncate" title={movie.title}>
                       {movie.title}
                     </Link>
+                  </td>
+                  <td className="px-6 py-4 text-gray-300">
+                    {movie.year || '-'}
                   </td>
                   <td className="px-6 py-4">
                     {movie.formats && movie.formats.length > 0 ? (
