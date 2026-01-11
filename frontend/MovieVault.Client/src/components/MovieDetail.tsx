@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from 'react-icons/ti'
+import { FaEdit, FaTrash } from 'react-icons/fa'
 import ConfirmDialog from './ConfirmDialog'
 import type { Movie } from '../types'
 
@@ -89,13 +90,29 @@ function MovieDetail() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="mb-6">
+      <div className="mb-6 flex justify-between items-center">
         <button
           onClick={() => navigate('/library')}
           className="text-indigo-400 hover:text-indigo-300 flex items-center gap-2 transition-colors cursor-pointer"
         >
           ← Back to Library
         </button>
+        <div className="flex gap-2">
+          <Link
+            to={`/edit/${movie.id}`}
+            className="text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 px-3 py-2 rounded-md transition-colors duration-200"
+            aria-label="Edit movie"
+          >
+            <FaEdit className="w-5 h-5" />
+          </Link>
+          <button
+            onClick={handleDeleteClick}
+            className="text-red-400 hover:text-red-300 hover:bg-red-500/10 px-3 py-2 rounded-md transition-colors duration-200 cursor-pointer"
+            aria-label="Delete movie"
+          >
+            <FaTrash className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
       <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
@@ -214,9 +231,11 @@ function MovieDetail() {
               <div>
                 <h3 className="text-sm font-medium text-gray-400 mb-2">Condition</h3>
                 <span className={`px-4 py-2 rounded-full text-base font-medium inline-block ${
-                  movie.condition === 'New' ? 'bg-green-600' :
-                  movie.condition === 'Good' ? 'bg-blue-600' :
-                  movie.condition === 'Skips' ? 'bg-yellow-600' :
+                  movie.condition === 'Sealed' ? 'bg-purple-600 text-white' :
+                  movie.condition === 'Like New' ? 'bg-green-600 text-white' :
+                  movie.condition === 'Good' ? 'bg-blue-600 text-white' :
+                  movie.condition === 'Poor' ? 'bg-gray-600 text-white' :
+                  movie.condition === 'Damaged' ? 'bg-red-600 text-white' :
                   'bg-red-600'
                 } text-white`}>
                   {movie.condition}
@@ -306,21 +325,6 @@ function MovieDetail() {
                 <p className="text-gray-500 italic">No review or notes added</p>
               )}
             </div>
-          </div>
-
-          <div className="flex gap-4 pt-6 border-t border-gray-700">
-            <Link
-              to={`/edit/${movie.id}`}
-              className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-md transition duration-200 flex items-center justify-center"
-            >
-              Edit Movie
-            </Link>
-            <button
-              onClick={handleDeleteClick}
-              className="flex-1 bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-6 rounded-md transition duration-200 cursor-pointer"
-            >
-              Delete Movie
-            </button>
           </div>
         </div>
       </div>

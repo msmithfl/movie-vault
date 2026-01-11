@@ -339,9 +339,8 @@ function MovieList() {
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200 w-96 max-w-96">Title</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Year</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Format</th>
-                  {/* <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Condition</th> */}
-                  {/* <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Rating</th> */}
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Collection</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Condition</th>
+                  {/* <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Collection</th> */}
                   {/* <th className="px-6 py-4 text-right text-sm font-semibold text-gray-200">Actions</th> */}
                 </tr>
               </thead>
@@ -349,18 +348,17 @@ function MovieList() {
               {currentMovies.map((movie) => (
                 <tr 
                   key={movie.id}
-                  className="hover:bg-gray-700 transition-colors duration-150 cursor-pointer"
-                  onClick={() => window.location.href = `/movie/${movie.id}`}
+                  className="hover:bg-gray-700 transition-colors duration-150"
                 >
-                  <td className="px-6 py-4 text-white font-medium w-96 max-w-96">
-                    <Link to={`/movie/${movie.id}`} className="hover:text-indigo-400 transition-colors block truncate" title={movie.title}>
+                  <td className="px-6 py-2 text-white w-96 max-w-96">
+                    <Link to={`/movie/${movie.id}`} className="hover:text-indigo-400 transition-colors inline-block truncate max-w-full" title={movie.title}>
                       {movie.title}
                     </Link>
                   </td>
-                  <td className="px-6 py-4 text-gray-300">
+                  <td className="px-6 py-2 text-gray-300">
                     {movie.year || '-'}
                   </td>
-                  <td className="px-6 py-4">
+                  <td className="px-6 py-2">
                     {movie.formats && movie.formats.length > 0 ? (
                       <div className="flex flex-wrap gap-1">
                         {[...movie.formats].sort().map((fmt, idx) => (
@@ -373,20 +371,22 @@ function MovieList() {
                       <span className="text-gray-500">-</span>
                     )}
                   </td>
-                  {/* <td className="px-6 py-4">
+                  <td className="px-6 py-2">
                     <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      movie.condition === 'New' ? 'bg-green-600 text-white' :
+                      movie.condition === 'Sealed' ? 'bg-purple-600 text-white' :
+                      movie.condition === 'Like New' ? 'bg-green-600 text-white' :
                       movie.condition === 'Good' ? 'bg-blue-600 text-white' :
-                      movie.condition === 'Skips' ? 'bg-yellow-600 text-white' :
+                      movie.condition === 'Poor' ? 'bg-gray-600 text-white' :
+                      movie.condition === 'Damaged' ? 'bg-red-600 text-white' :
                       'bg-red-600 text-white'
                     }`}>
                       {movie.condition}
                     </span>
-                  </td> */}
+                  </td>
                   {/* <td className="px-6 py-4 text-gray-300">
                     {movie.rating > 0 ? `${movie.rating} ⭐` : '-'}
                   </td> */}
-                  <td className="px-6 py-4">
+                  {/* <td className="px-6 py-2">
                     {movie.collections && movie.collections.length > 0 ? (
                       <div className="flex flex-wrap gap-1">
                         {[...movie.collections].sort().map((col, idx) => (
@@ -398,8 +398,8 @@ function MovieList() {
                     ) : (
                       <span className="text-gray-500">-</span>
                     )}
-                  </td>
-                  <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                  </td> */}
+                  {/* <td className="px-6 py-2 text-right">
                     <div className="flex gap-2 justify-end">
                       <Link
                         to={`/edit/${movie.id}`}
@@ -416,7 +416,7 @@ function MovieList() {
                         <FaTrash className="w-4 h-4" />
                       </button>
                     </div>
-                  </td>
+                  </td> */}
                 </tr>
               ))}
             </tbody>

@@ -210,10 +210,10 @@ function EditMovie() {
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="mb-6">
         <button
-          onClick={() => navigate('/library')}
+          onClick={() => navigate(`/movie/${id}`)}
           className="text-indigo-400 hover:text-indigo-300 flex items-center gap-2 transition-colors cursor-pointer"
         >
-          ← Back to Library
+          ← Back to Movie
         </button>
       </div>
 
