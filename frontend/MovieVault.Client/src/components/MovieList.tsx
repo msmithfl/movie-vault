@@ -28,7 +28,7 @@ function MovieList() {
   const [searchQuery, setSearchQuery] = useState('');
   const [upcSearchQuery, setUpcSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(25);
+  const [itemsPerPage, setItemsPerPage] = useState(100);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [movieToDelete, setMovieToDelete] = useState<number | null>(null);
   const [showScanner, setShowScanner] = useState(false);
@@ -267,9 +267,9 @@ function MovieList() {
                 onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
                 className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
               >
-                <option value={10}>10</option>
                 <option value={25}>25</option>
                 <option value={50}>50</option>
+                <option value={100}>100</option>
               </select>
             </div>
           </div>
