@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import ConfirmDialog from './ConfirmDialog'
 import BarcodeScanner from './BarcodeScanner'
-import { FaSortAmountDown } from "react-icons/fa";
+import { FaSortAmountDown, FaEdit, FaTrash } from "react-icons/fa";
 
 interface Movie {
   id?: number;
@@ -336,13 +336,13 @@ function MovieList() {
             <table className="w-full">
               <thead className="bg-gray-700">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Title</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200 w-96 max-w-96">Title</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Year</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Format</th>
                   {/* <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Condition</th> */}
                   {/* <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Rating</th> */}
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Collection</th>
-                  <th className="px-6 py-4 text-right text-sm font-semibold text-gray-200">Actions</th>
+                  {/* <th className="px-6 py-4 text-right text-sm font-semibold text-gray-200">Actions</th> */}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
@@ -352,8 +352,8 @@ function MovieList() {
                   className="hover:bg-gray-700 transition-colors duration-150 cursor-pointer"
                   onClick={() => window.location.href = `/movie/${movie.id}`}
                 >
-                  <td className="pl-6 py-4 text-white font-medium">
-                    <Link to={`/movie/${movie.id}`} className="hover:text-indigo-400 transition-colors block max-w-xs truncate" title={movie.title}>
+                  <td className="px-6 py-4 text-white font-medium w-96 max-w-96">
+                    <Link to={`/movie/${movie.id}`} className="hover:text-indigo-400 transition-colors block truncate" title={movie.title}>
                       {movie.title}
                     </Link>
                   </td>
@@ -404,15 +404,16 @@ function MovieList() {
                       <Link
                         to={`/edit/${movie.id}`}
                         className="text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 px-3 py-2 rounded-md transition-colors duration-200"
+                        aria-label="Edit movie"
                       >
-                        Edit
+                        <FaEdit className="w-4 h-4" />
                       </Link>
                       <button
                         onClick={() => movie.id && handleDeleteClick(movie.id)}
                         className="text-red-400 hover:text-red-300 hover:bg-red-500/10 px-3 py-2 rounded-md transition-colors duration-200 cursor-pointer"
                         aria-label="Delete movie"
                       >
-                        Delete
+                        <FaTrash className="w-4 h-4" />
                       </button>
                     </div>
                   </td>
