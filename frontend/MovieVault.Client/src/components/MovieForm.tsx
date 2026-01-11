@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from "react-icons/ti";
 import type { Movie } from '../types';
 
@@ -52,11 +52,42 @@ function MovieForm({
   const [shelfInput, setShelfInput] = useState<string>(formData.shelfNumber.toString());
   const [hddInput, setHddInput] = useState<string>(formData.hdDriveNumber.toString());
 
+  // Sync local state when formData changes (e.g., from TMDB search or editing different movie)
+  useEffect(() => {
+    setYearInput(formData.year.toString());
+    setShelfInput(formData.shelfNumber.toString());
+    setHddInput(formData.hdDriveNumber.toString());
+  }, [formData.year, formData.shelfNumber, formData.hdDriveNumber]);
+
+  const handleYearChange = (value: string) => {
+    setYearInput(value);
+    const num = parseInt(value);
+    if (!isNaN(num)) {
+      setFormData({ ...formData, year: num });
+    }
+  };
+
+  const handleShelfChange = (value: string) => {
+    setShelfInput(value);
+    const num = parseInt(value);
+    if (!isNaN(num)) {
+      setFormData({ ...formData, shelfNumber: num });
+    }
+  };
+
+  const handleHddChange = (value: string) => {
+    setHddInput(value);
+    const num = parseInt(value);
+    if (!isNaN(num)) {
+      setFormData({ ...formData, hdDriveNumber: num });
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setValidationError('');
 
-    // Validate and convert numeric fields
+    // Validate numeric fields
     const yearNum = parseInt(yearInput);
     if (isNaN(yearNum) || yearNum < 1900 || yearNum > 2100) {
       setValidationError('Year must be a valid number between 1900 and 2100');
@@ -74,14 +105,6 @@ function MovieForm({
       setValidationError('HDD Number must be a valid number');
       return;
     }
-
-    // Update formData with validated numbers
-    setFormData({
-      ...formData,
-      year: yearNum,
-      shelfNumber: shelfNum,
-      hdDriveNumber: hddNum
-    });
 
     await onSubmit(e);
   };
@@ -184,7 +207,7 @@ function MovieForm({
             type="text"
             id="year"
             value={yearInput}
-            onChange={(e) => setYearInput(e.target.value)}
+            onChange={(e) => handleYearChange(e.target.value)}
             placeholder="Release year"
             className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-gray-500"
           />
@@ -430,7 +453,7 @@ function MovieForm({
             type="text"
             id="shelfNumber"
             value={shelfInput}
-            onChange={(e) => setShelfInput(e.target.value)}
+            onChange={(e) => handleShelfChange(e.target.value)}
             className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500"
           />
         </div>
@@ -493,7 +516,7 @@ function MovieForm({
             type="text"
             id="hdDriveNumber"
             value={hddInput}
-            onChange={(e) => setHddInput(e.target.value)}
+            onChange={(e) => handleHddChange(e.target.value)}
             className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500"
           />
         </div>
