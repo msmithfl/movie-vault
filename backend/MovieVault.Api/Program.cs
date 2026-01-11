@@ -73,7 +73,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(corsOrigins)
               .AllowAnyHeader()
-              .AllowAnyMethod();
+              .AllowAnyMethod()
+              .WithExposedHeaders("x-ratelimit-limit", "x-ratelimit-remaining", "x-ratelimit-reset");
     });
 });
 
@@ -101,6 +102,7 @@ if (!app.Environment.IsDevelopment())
 app.MapMovieEndpoints();
 app.MapCollectionEndpoints();
 app.MapShelfSectionEndpoints();
+app.MapUpcEndpoints();
 
 // Use PORT from Railway if available, bind to all interfaces
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5156";

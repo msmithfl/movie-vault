@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import BarcodeScanner from './BarcodeScanner';
+import ProductImageSelector from './ProductImageSelector';
 import MovieForm from './MovieForm';
 import type { Movie, TMDBMovie } from "../types";
 import { GENRE_MAP } from '../utils/tmdbApi';
@@ -38,6 +39,10 @@ function AddMovie() {
   const [newShelfSection, setNewShelfSection] = useState('');
   const [showScanner, setShowScanner] = useState(false);
   const [showMobileOnlyMessage, setShowMobileOnlyMessage] = useState(false);
+  const [showProductImageSelector, setShowProductImageSelector] = useState(false);
+  const [scannedUpc, setScannedUpc] = useState('');
+  const [showManualUpcInput, setShowManualUpcInput] = useState(false);
+  const [manualUpc, setManualUpc] = useState('');
 
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5156';
   const API_URL = `${API_BASE}/api/movies`;
@@ -210,7 +215,20 @@ function AddMovie() {
 
   const handleBarcodeDetected = (code: string) => {
     setFormData({ ...formData, upcNumber: code });
+    setScannedUpc(code);
     setShowScanner(false);
+    setShowProductImageSelector(true);
+  };
+
+  const handleProductImageSelect = (imageUrl: string) => {
+    setFormData({ ...formData, productPosterPath: imageUrl });
+    setShowProductImageSelector(false);
+    setScannedUpc('');
+  };
+
+  const handleProductImageSkip = () => {
+    setShowProductImageSelector(false);
+    setScannedUpc('');
   };
 
   const handleScanClick = () => {
@@ -218,6 +236,19 @@ function AddMovie() {
       setShowScanner(true);
     } else {
       setShowMobileOnlyMessage(true);
+    }
+  };
+
+  const handleManualSearchClick = () => {
+    setManualUpc(formData.upcNumber);
+    setShowManualUpcInput(true);
+  };
+
+  const handleManualUpcSearch = () => {
+    if (manualUpc.trim()) {
+      setScannedUpc(manualUpc);
+      setShowManualUpcInput(false);
+      setShowProductImageSelector(true);
     }
   };
 
@@ -371,6 +402,7 @@ function AddMovie() {
             submitButtonText="Add to Collection"
             showScanButton={true}
             onScanClick={handleScanClick}
+            onManualSearchClick={handleManualSearchClick}
           />
         </div>
       )}
@@ -380,6 +412,55 @@ function AddMovie() {
           onDetected={handleBarcodeDetected}
           onClose={() => setShowScanner(false)}
         />
+      )}
+
+      {showProductImageSelector && scannedUpc && (
+        <ProductImageSelector
+          upc={scannedUpc}
+          onSelect={handleProductImageSelect}
+          onSkip={handleProductImageSkip}
+          onClose={handleProductImageSkip}
+        />
+      )}
+
+      {showManualUpcInput && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
+          <div className="bg-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-xl font-bold text-white">Search Product Images</h3>
+              <button
+                onClick={() => setShowManualUpcInput(false)}
+                className="text-gray-400 hover:text-white text-2xl font-bold"
+              >
+                ×
+              </button>
+            </div>
+            <p className="text-gray-300 mb-4">Enter UPC code to search for product images:</p>
+            <input
+              type="text"
+              value={manualUpc}
+              onChange={(e) => setManualUpc(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handleManualUpcSearch()}
+              placeholder="Enter UPC code"
+              className="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 mb-4"
+              autoFocus
+            />
+            <div className="flex gap-4">
+              <button
+                onClick={handleManualUpcSearch}
+                className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition font-semibold"
+              >
+                Search
+              </button>
+              <button
+                onClick={() => setShowManualUpcInput(false)}
+                className="px-4 py-2 bg-gray-700 hover:bg-gray-600 text-white rounded-md transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
       )}
 
       {showMobileOnlyMessage && (
