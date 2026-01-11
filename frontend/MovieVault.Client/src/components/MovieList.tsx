@@ -48,6 +48,11 @@ function MovieList() {
     fetchMovies();
   }, []);
 
+  // Scroll to top when page changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }, [currentPage]);
+
   const fetchMovies = async () => {
     try {
       const response = await fetch(API_URL);
