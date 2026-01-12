@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import BarcodeScanner from './BarcodeScanner'
 import { FaSortAmountDown } from "react-icons/fa";
+import { getRelativeTimeString } from '../utils/dateUtils';
 
 interface Movie {
   id?: number;
@@ -304,11 +305,12 @@ function MovieList() {
             <table className="w-full">
               <thead className="bg-gray-700">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200 w-46 max-w-46 md:w-96 md:max-w-96">Title</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Year</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Format</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Condition</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Rating</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200 w-46 max-w-46 md:w-96 md:max-w-96 border-r border-gray-600">Title</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Year</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Format</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Condition</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Rating</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Date Added</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
@@ -341,6 +343,9 @@ function MovieList() {
                   <td className="px-6 py-2 text-gray-300 whitespace-nowrap align-middle">{movie.condition}</td>
                   <td className="px-6 py-2 text-gray-300 whitespace-nowrap align-middle">
                     {movie.rating > 0 ? `${movie.rating} ⭐` : '-'}
+                  </td>
+                  <td className="px-6 py-2 text-gray-300 whitespace-nowrap align-middle">
+                    {getRelativeTimeString(movie.createdAt)}
                   </td>
                 </tr>
               ))}
