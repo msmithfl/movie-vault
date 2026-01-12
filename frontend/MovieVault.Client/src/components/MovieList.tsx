@@ -304,7 +304,7 @@ function MovieList() {
             <table className="w-full">
               <thead className="bg-gray-700">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200 w-96 max-w-96">Title</th>
+                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200 w-46 max-w-46 md:w-96 md:max-w-96">Title</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Year</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Format</th>
                   <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Condition</th>
@@ -317,7 +317,7 @@ function MovieList() {
                   key={movie.id}
                   className="hover:bg-gray-700 transition-colors duration-150"
                 >
-                  <td className="px-6 py-2 text-white w-96 max-w-96 align-middle">
+                  <td className="px-6 py-2 text-white w-46 max-w-46 md:w-96 md:max-w-96 align-middle">
                     <Link to={`/movie/${movie.id}`} className="hover:text-indigo-400 transition-colors inline-block truncate max-w-full align-middle" title={movie.title}>
                       {movie.title}
                     </Link>
