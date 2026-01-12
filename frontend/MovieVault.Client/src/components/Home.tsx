@@ -169,7 +169,7 @@ function Home() {
                   className="flex items-center justify-between p-4 hover:bg-gray-700 transition-colors"
                 >
                   <div className="flex-1 flex items-center gap-3 min-w-0">
-                    <h3 className="text-lg font-semibold text-white truncate max-w-xs" title={movie.title}>{movie.title}</h3>
+                    <h3 className="text-lg font-semibold text-white truncate max-w-sm" title={movie.title}>{movie.title}</h3>
                     {movie.formats && movie.formats.length > 0 ? (
                       <span className="inline-flex gap-1 whitespace-nowrap">
                         {[...movie.formats].sort().map((fmt, idx) => (
@@ -181,7 +181,6 @@ function Home() {
                     ) : (
                       <span className="text-gray-500 text-sm">-</span>
                     )}
-                    <span className="text-sm text-gray-400 font-mono whitespace-nowrap">{movie.upcNumber}</span>
                   </div>
                   <div className="text-gray-400">→</div>
                 </Link>
