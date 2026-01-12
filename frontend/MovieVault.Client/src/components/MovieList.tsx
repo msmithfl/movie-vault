@@ -34,8 +34,14 @@ interface VisibleColumns {
 
 function MovieList() {
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [sortBy, setSortBy] = useState<SortOption>('alphabetic');
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
+  const [sortBy, setSortBy] = useState<SortOption>(() => {
+    const saved = localStorage.getItem('movieListSortBy');
+    return (saved as SortOption) || 'alphabetic';
+  });
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>(() => {
+    const saved = localStorage.getItem('movieListSortDirection');
+    return (saved as 'asc' | 'desc') || 'asc';
+  });
   const [searchQuery, setSearchQuery] = useState('');
   const [upcSearchQuery, setUpcSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -72,6 +78,12 @@ function MovieList() {
   useEffect(() => {
     localStorage.setItem('movieListColumns', JSON.stringify(visibleColumns));
   }, [visibleColumns]);
+
+  // Save sorting preferences to localStorage
+  useEffect(() => {
+    localStorage.setItem('movieListSortBy', sortBy);
+    localStorage.setItem('movieListSortDirection', sortDirection);
+  }, [sortBy, sortDirection]);
 
   // Scroll to top when page changes
   useEffect(() => {
@@ -525,80 +537,80 @@ function MovieList() {
             <table className="w-full">
               <thead className="bg-gray-700">
                 <tr>
-                  <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 w-46 max-w-46 md:w-96 md:max-w-96 border-r border-gray-600">
-                    <button
-                      onClick={() => handleColumnClick('alphabetic')}
-                      className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer"
-                    >
+                  <th 
+                    onClick={() => handleColumnClick('alphabetic')}
+                    className="px-6 py-2 text-left text-sm font-semibold text-gray-200 w-46 max-w-46 md:w-96 md:max-w-96 border-r border-gray-600 hover:text-white transition-colors cursor-pointer"
+                  >
+                    <div className="flex items-center gap-2">
                       Title
                       {sortBy === 'alphabetic' && (
                         sortDirection === 'asc' ? <FaArrowUp className="w-3 h-3" /> : <FaArrowDown className="w-3 h-3" />
                       )}
-                    </button>
+                    </div>
                   </th>
                   {visibleColumns.year && (
-                    <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">
-                      <button
-                        onClick={() => handleColumnClick('year' as SortOption)}
-                        className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer"
-                      >
+                    <th 
+                      onClick={() => handleColumnClick('year' as SortOption)}
+                      className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600 hover:text-white transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2">
                         Year
                         {sortBy === 'year' && (
                           sortDirection === 'asc' ? <FaArrowUp className="w-3 h-3" /> : <FaArrowDown className="w-3 h-3" />
                         )}
-                      </button>
+                      </div>
                     </th>
                   )}
                   {visibleColumns.format && (
-                    <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">
-                      <button
-                        onClick={() => handleColumnClick('format')}
-                        className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer"
-                      >
+                    <th 
+                      onClick={() => handleColumnClick('format')}
+                      className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600 hover:text-white transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2">
                         Format
                         {sortBy === 'format' && (
                           sortDirection === 'asc' ? <FaArrowUp className="w-3 h-3" /> : <FaArrowDown className="w-3 h-3" />
                         )}
-                      </button>
+                      </div>
                     </th>
                   )}
                   {visibleColumns.condition && (
-                    <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">
-                      <button
-                        onClick={() => handleColumnClick('condition' as SortOption)}
-                        className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer"
-                      >
+                    <th 
+                      onClick={() => handleColumnClick('condition' as SortOption)}
+                      className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600 hover:text-white transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2">
                         Condition
                         {sortBy === 'condition' && (
                           sortDirection === 'asc' ? <FaArrowUp className="w-3 h-3" /> : <FaArrowDown className="w-3 h-3" />
                         )}
-                      </button>
+                      </div>
                     </th>
                   )}
                   {visibleColumns.rating && (
-                    <th className="pl-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">
-                      <button
-                        onClick={() => handleColumnClick('rating' as SortOption)}
-                        className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer"
-                      >
+                    <th 
+                      onClick={() => handleColumnClick('rating' as SortOption)}
+                      className="pl-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600 hover:text-white transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2">
                         Rating
                         {sortBy === 'rating' && (
                           sortDirection === 'asc' ? <FaArrowUp className="w-3 h-3" /> : <FaArrowDown className="w-3 h-3" />
                         )}
-                      </button>
+                      </div>
                     </th>
                   )}
                   {visibleColumns.dateAdded && (
-                    <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200">
-                      <button
-                        onClick={() => handleColumnClick('date')}
-                        className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer"
-                      >
+                    <th 
+                      onClick={() => handleColumnClick('date')}
+                      className="px-6 py-2 text-left text-sm font-semibold text-gray-200 hover:text-white transition-colors cursor-pointer"
+                    >
+                      <div className="flex items-center gap-2">
                         Date Added
                         {sortBy === 'date' && (
                           sortDirection === 'asc' ? <FaArrowUp className="w-3 h-3" /> : <FaArrowDown className="w-3 h-3" />
                         )}
-                      </button>
+                      </div>
                     </th>
                   )}
                 </tr>
