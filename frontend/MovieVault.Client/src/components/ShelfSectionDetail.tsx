@@ -17,6 +17,7 @@ interface Movie {
   condition: string;
   rating: number;
   review: string;
+  posterPath: string;
   hdDriveNumber: number;
   shelfNumber: number;
   shelfSection: string;
@@ -208,8 +209,19 @@ function ShelfSectionDetail() {
             <Link
               key={movie.id}
               to={`/movie/${movie.id}`}
-              className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg p-6 transition-all duration-200 transform hover:scale-105"
+              className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg overflow-hidden transition-all duration-200 transform hover:scale-105 flex gap-4 p-4"
             >
+              {movie.posterPath && (
+                <img 
+                  src={movie.posterPath} 
+                  alt={`${movie.title} poster`}
+                  className="w-24 h-36 object-cover rounded-md flex-shrink-0"
+                  onError={(e) => {
+                    e.currentTarget.src = 'https://via.placeholder.com/96x144?text=No+Poster';
+                  }}
+                />
+              )}
+              <div className="flex-1 min-w-0">
               <div className="mb-4">
                 <h3 className="text-xl font-bold text-white mb-2">{movie.title}</h3>
                 <p className="text-gray-400 text-sm font-mono">{movie.upcNumber}</p>
@@ -250,6 +262,7 @@ function ShelfSectionDetail() {
                   </span>
                 </div>
               )}
+              </div>
             </Link>
           ))}
         </div>
