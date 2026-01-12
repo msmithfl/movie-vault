@@ -57,6 +57,10 @@ function ShelfSectionsView() {
     ).length;
   };
 
+  const getUnshelvedCount = () => {
+    return movies.filter(movie => !movie.shelfSection || movie.shelfSection.trim() === '').length;
+  };
+
   const createShelfSection = async () => {
     if (newSectionName && !shelfSections.find(s => s.name === newSectionName)) {
       try {
@@ -110,6 +114,23 @@ function ShelfSectionsView() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {/* Unshelved section */}
+          <Link
+            to="/shelfsections/Unshelved"
+            className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg p-6 transition-all duration-200 transform hover:scale-105"
+          >
+            <div className="flex items-start justify-between mb-4">
+              <div>
+                <h3 className="text-xl font-bold text-white mb-2">Unshelved</h3>
+                <p className="text-gray-400 text-sm">
+                  {getUnshelvedCount()} {getUnshelvedCount() === 1 ? 'movie' : 'movies'}
+                </p>
+              </div>
+              <span className="bg-gray-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                {getUnshelvedCount()}
+              </span>
+            </div>
+          </Link>
           {shelfSections.map((section) => {
             const movieCount = getMovieCount(section.name);
             return (

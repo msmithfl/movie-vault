@@ -52,9 +52,18 @@ function ShelfSectionDetail() {
       
       if (moviesRes.ok) {
         const data = await moviesRes.json();
-        const filtered = data.filter((movie: Movie) => 
-          movie.shelfSection && movie.shelfSection === sectionName
-        );
+        let filtered;
+        if (sectionName === 'Unshelved') {
+          // Show movies with no shelf section
+          filtered = data.filter((movie: Movie) => 
+            !movie.shelfSection || movie.shelfSection.trim() === ''
+          );
+        } else {
+          // Show movies matching the shelf section
+          filtered = data.filter((movie: Movie) => 
+            movie.shelfSection && movie.shelfSection === sectionName
+          );
+        }
         setMovies(filtered);
       }
       
@@ -171,7 +180,7 @@ function ShelfSectionDetail() {
             )}
             <p className="text-gray-400">{movies.length} {movies.length === 1 ? 'movie' : 'movies'} in this shelf section</p>
           </div>
-          {!isEditing && section && (
+          {!isEditing && section && sectionName !== 'Unshelved' && (
             <div className="flex gap-3">
               <button
                 onClick={handleEditClick}
