@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import BarcodeScanner from './BarcodeScanner'
-import { FaSortAmountDown, FaCog } from "react-icons/fa";
+import { FaSortAmountDown, FaCog, FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from 'react-icons/ti'
 import { getRelativeTimeString } from '../utils/dateUtils';
 
@@ -22,7 +22,7 @@ interface Movie {
   createdAt?: string;
 }
 
-type SortOption = 'date' | 'alphabetic' | 'format';
+type SortOption = 'date' | 'alphabetic' | 'format' | 'year' | 'condition' | 'rating';
 
 interface VisibleColumns {
   year: boolean;
@@ -34,7 +34,8 @@ interface VisibleColumns {
 
 function MovieList() {
   const [movies, setMovies] = useState<Movie[]>([]);
-  const [sortBy, setSortBy] = useState<SortOption>('date');
+  const [sortBy, setSortBy] = useState<SortOption>('alphabetic');
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc');
   const [searchQuery, setSearchQuery] = useState('');
   const [upcSearchQuery, setUpcSearchQuery] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -94,21 +95,40 @@ function MovieList() {
     
     switch (sortBy) {
       case 'alphabetic':
-        return sortedMovies.sort((a, b) => a.title.localeCompare(b.title));
+        sortedMovies.sort((a, b) => a.title.localeCompare(b.title));
+        break;
+      case 'year':
+        sortedMovies.sort((a, b) => (a.year || 0) - (b.year || 0));
+        break;
       case 'format':
-        return sortedMovies.sort((a, b) => {
+        sortedMovies.sort((a, b) => {
           // Get first format alphabetically (4K < Blu-ray < DVD)
           const aFormat = a.formats.length > 0 ? [...a.formats].sort()[0] : 'ZZZ';
           const bFormat = b.formats.length > 0 ? [...b.formats].sort()[0] : 'ZZZ';
           return aFormat.localeCompare(bFormat);
         });
+        break;
+      case 'condition':
+        sortedMovies.sort((a, b) => a.condition.localeCompare(b.condition));
+        break;
+      case 'rating':
+        sortedMovies.sort((a, b) => a.rating - b.rating);
+        break;
       case 'date':
       default:
-        return sortedMovies.sort((a, b) => {
+        sortedMovies.sort((a, b) => {
           if (!a.createdAt || !b.createdAt) return 0;
-          return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
         });
+        break;
     }
+
+    // Apply sort direction
+    if (sortDirection === 'desc') {
+      sortedMovies.reverse();
+    }
+
+    return sortedMovies;
   };
 
   const sortedMovies = getSortedMovies();
@@ -134,7 +154,23 @@ function MovieList() {
   
   const handleSortChange = (value: SortOption) => {
     setSortBy(value);
+    setSortDirection('asc');
     setCurrentPage(1);
+  };
+
+  const toggleSortDirection = () => {
+    setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+  };
+
+  const handleColumnClick = (column: SortOption) => {
+    if (column === sortBy) {
+      // Same column, toggle direction
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+    } else {
+      // New column, set it and default to ascending
+      setSortBy(column);
+      setSortDirection('asc');
+    }
   };
 
   const handleSearchChange = (value: string) => {
@@ -261,21 +297,34 @@ function MovieList() {
           
           {/* Desktop Sort Controls - Always Visible */}
           <div className="hidden md:flex items-center gap-6">
-            <div className="flex items-center gap-3">
+            {/* <div className="flex items-center gap-3">
               <label htmlFor="sortBy" className="text-sm font-medium text-gray-300">
                 Sort by:
               </label>
-              <select
-                id="sortBy"
-                value={sortBy}
-                onChange={(e) => handleSortChange(e.target.value as SortOption)}
-                className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
-              >
-                <option value="date">Date Added (Newest First)</option>
-                <option value="alphabetic">Title (A-Z)</option>
-                <option value="format">Format</option>
-              </select>
-            </div>
+              <div className="relative flex items-center gap-2">
+                <select
+                  id="sortBy"
+                  value={sortBy}
+                  onChange={(e) => handleSortChange(e.target.value as SortOption)}
+                  className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
+                >
+                  <option value="date">Date Added</option>
+                  <option value="alphabetic">Title</option>
+                  <option value="format">Format</option>
+                </select>
+                <button
+                  onClick={toggleSortDirection}
+                  className="p-2 hover:bg-gray-700 rounded-md transition-colors cursor-pointer"
+                  aria-label="Toggle sort direction"
+                >
+                  {sortDirection === 'asc' ? (
+                    <FaArrowUp className="w-4 h-4 text-gray-400" />
+                  ) : (
+                    <FaArrowDown className="w-4 h-4 text-gray-400" />
+                  )}
+                </button>
+              </div>
+            </div> */}
             <div className="flex items-center gap-3">
               <label htmlFor="itemsPerPage" className="text-sm font-medium text-gray-300">
                 Per page:
@@ -356,21 +405,34 @@ function MovieList() {
           {/* Mobile Sort Controls - Toggle Visibility */}
           {showSortMenu && (
             <div className="md:hidden space-y-3 p-4 bg-gray-700 rounded-lg">
-              <div className="flex flex-col gap-2">
+              {/* <div className="flex flex-col gap-2">
                 <label htmlFor="sortBy-mobile" className="text-sm font-medium text-gray-300">
                   Sort by:
                 </label>
-                <select
-                  id="sortBy-mobile"
-                  value={sortBy}
-                  onChange={(e) => handleSortChange(e.target.value as SortOption)}
-                  className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
-                >
-                  <option value="date">Date Added (Newest First)</option>
-                  <option value="alphabetic">Title (A-Z)</option>
-                  <option value="format">Format</option>
-                </select>
-              </div>
+                <div className="flex items-center gap-2">
+                  <select
+                    id="sortBy-mobile"
+                    value={sortBy}
+                    onChange={(e) => handleSortChange(e.target.value as SortOption)}
+                    className="flex-1 px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
+                  >
+                    <option value="date">Date Added</option>
+                    <option value="alphabetic">Title</option>
+                    <option value="format">Format</option>
+                  </select>
+                  <button
+                    onClick={toggleSortDirection}
+                    className="p-2 hover:bg-gray-600 rounded-md transition-colors cursor-pointer"
+                    aria-label="Toggle sort direction"
+                  >
+                    {sortDirection === 'asc' ? (
+                      <FaArrowUp className="w-4 h-4 text-gray-400" />
+                    ) : (
+                      <FaArrowDown className="w-4 h-4 text-gray-400" />
+                    )}
+                  </button>
+                </div>
+              </div> */}
               <div className="flex flex-col gap-2">
                 <label htmlFor="itemsPerPage-mobile" className="text-sm font-medium text-gray-300">
                   Per page:
@@ -463,12 +525,82 @@ function MovieList() {
             <table className="w-full">
               <thead className="bg-gray-700">
                 <tr>
-                  <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 w-46 max-w-46 md:w-96 md:max-w-96 border-r border-gray-600">Title</th>
-                  {visibleColumns.year && <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Year</th>}
-                  {visibleColumns.format && <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Format</th>}
-                  {visibleColumns.condition && <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Condition</th>}
-                  {visibleColumns.rating && <th className="pl-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Rating</th>}
-                  {visibleColumns.dateAdded && <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200">Date Added</th>}
+                  <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 w-46 max-w-46 md:w-96 md:max-w-96 border-r border-gray-600">
+                    <button
+                      onClick={() => handleColumnClick('alphabetic')}
+                      className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer"
+                    >
+                      Title
+                      {sortBy === 'alphabetic' && (
+                        sortDirection === 'asc' ? <FaArrowUp className="w-3 h-3" /> : <FaArrowDown className="w-3 h-3" />
+                      )}
+                    </button>
+                  </th>
+                  {visibleColumns.year && (
+                    <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">
+                      <button
+                        onClick={() => handleColumnClick('year' as SortOption)}
+                        className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer"
+                      >
+                        Year
+                        {sortBy === 'year' && (
+                          sortDirection === 'asc' ? <FaArrowUp className="w-3 h-3" /> : <FaArrowDown className="w-3 h-3" />
+                        )}
+                      </button>
+                    </th>
+                  )}
+                  {visibleColumns.format && (
+                    <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">
+                      <button
+                        onClick={() => handleColumnClick('format')}
+                        className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer"
+                      >
+                        Format
+                        {sortBy === 'format' && (
+                          sortDirection === 'asc' ? <FaArrowUp className="w-3 h-3" /> : <FaArrowDown className="w-3 h-3" />
+                        )}
+                      </button>
+                    </th>
+                  )}
+                  {visibleColumns.condition && (
+                    <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">
+                      <button
+                        onClick={() => handleColumnClick('condition' as SortOption)}
+                        className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer"
+                      >
+                        Condition
+                        {sortBy === 'condition' && (
+                          sortDirection === 'asc' ? <FaArrowUp className="w-3 h-3" /> : <FaArrowDown className="w-3 h-3" />
+                        )}
+                      </button>
+                    </th>
+                  )}
+                  {visibleColumns.rating && (
+                    <th className="pl-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">
+                      <button
+                        onClick={() => handleColumnClick('rating' as SortOption)}
+                        className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer"
+                      >
+                        Rating
+                        {sortBy === 'rating' && (
+                          sortDirection === 'asc' ? <FaArrowUp className="w-3 h-3" /> : <FaArrowDown className="w-3 h-3" />
+                        )}
+                      </button>
+                    </th>
+                  )}
+                  {visibleColumns.dateAdded && (
+                    <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200">
+                      <button
+                        onClick={() => handleColumnClick('date')}
+                        className="flex items-center gap-2 hover:text-white transition-colors cursor-pointer"
+                      >
+                        Date Added
+                        {sortBy === 'date' && (
+                          sortDirection === 'asc' ? <FaArrowUp className="w-3 h-3" /> : <FaArrowDown className="w-3 h-3" />
+                        )}
+                      </button>
+                    </th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
