@@ -317,19 +317,19 @@ function MovieList() {
                   key={movie.id}
                   className="hover:bg-gray-700 transition-colors duration-150"
                 >
-                  <td className="px-6 py-2 text-white w-96 max-w-96">
-                    <Link to={`/movie/${movie.id}`} className="hover:text-indigo-400 transition-colors inline-block truncate max-w-full" title={movie.title}>
+                  <td className="px-6 py-2 text-white w-96 max-w-96 align-middle">
+                    <Link to={`/movie/${movie.id}`} className="hover:text-indigo-400 transition-colors inline-block truncate max-w-full align-middle" title={movie.title}>
                       {movie.title}
                     </Link>
                   </td>
-                  <td className="px-6 py-2 text-gray-300">
+                  <td className="px-6 py-2 text-gray-300 whitespace-nowrap align-middle">
                     {movie.year || '-'}
                   </td>
-                  <td className="px-6 py-2">
+                  <td className="px-6 py-2 whitespace-nowrap align-middle">
                     {movie.formats && movie.formats.length > 0 ? (
-                      <div className="flex flex-wrap gap-1">
+                      <div className="flex gap-1">
                         {[...movie.formats].sort().map((fmt, idx) => (
-                          <span key={idx} className="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-medium">
+                          <span key={idx} className="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
                             {fmt}
                           </span>
                         ))}
@@ -338,8 +338,8 @@ function MovieList() {
                       <span className="text-gray-500">-</span>
                     )}
                   </td>
-                  <td className="px-6 py-2 text-gray-300">{movie.condition}</td>
-                  <td className="px-6 py-4 text-gray-300">
+                  <td className="px-6 py-2 text-gray-300 whitespace-nowrap align-middle">{movie.condition}</td>
+                  <td className="px-6 py-2 text-gray-300 whitespace-nowrap align-middle">
                     {movie.rating > 0 ? `${movie.rating} ⭐` : '-'}
                   </td>
                 </tr>
