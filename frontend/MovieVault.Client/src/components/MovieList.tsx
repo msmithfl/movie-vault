@@ -171,7 +171,10 @@ function MovieList() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
-        <h2 className="text-3xl font-bold">Library ({movies.length} items)</h2>
+        <div className='flex items-center gap-4'>
+          <h2 className="text-3xl font-bold">Library</h2>
+          <span className='px-3 py-1 bg-gray-800 rounded-md font-medium outline-1 outline-gray-600'>{movies.length}</span>
+        </div>
         
         {/* Mobile Sort and Column Buttons */}
         {movies.length > 0 && (
