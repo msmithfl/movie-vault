@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import BarcodeScanner from './BarcodeScanner'
-import { FaSortAmountDown } from "react-icons/fa";
+import { FaSortAmountDown, FaCog } from "react-icons/fa";
 import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from 'react-icons/ti'
 import { getRelativeTimeString } from '../utils/dateUtils';
 
@@ -24,6 +24,14 @@ interface Movie {
 
 type SortOption = 'date' | 'alphabetic' | 'format';
 
+interface VisibleColumns {
+  year: boolean;
+  format: boolean;
+  condition: boolean;
+  rating: boolean;
+  dateAdded: boolean;
+}
+
 function MovieList() {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [sortBy, setSortBy] = useState<SortOption>('date');
@@ -34,6 +42,17 @@ function MovieList() {
   const [showScanner, setShowScanner] = useState(false);
   const [showMobileOnlyMessage, setShowMobileOnlyMessage] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
+  const [showColumnMenu, setShowColumnMenu] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState<VisibleColumns>(() => {
+    const saved = localStorage.getItem('movieListColumns');
+    return saved ? JSON.parse(saved) : {
+      year: true,
+      format: true,
+      condition: true,
+      rating: true,
+      dateAdded: true,
+    };
+  });
   
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5156';
   const API_URL = `${API_BASE}/api/movies`;
@@ -47,6 +66,11 @@ function MovieList() {
   useEffect(() => {
     fetchMovies();
   }, []);
+
+  // Save column preferences to localStorage
+  useEffect(() => {
+    localStorage.setItem('movieListColumns', JSON.stringify(visibleColumns));
+  }, [visibleColumns]);
 
   // Scroll to top when page changes
   useEffect(() => {
@@ -137,20 +161,36 @@ function MovieList() {
     setCurrentPage(1);
   };
 
+  const toggleColumn = (column: keyof VisibleColumns) => {
+    setVisibleColumns(prev => ({
+      ...prev,
+      [column]: !prev[column]
+    }));
+  };
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       <div className="flex justify-between items-center mb-8">
         <h2 className="text-3xl font-bold">Library ({movies.length} items)</h2>
         
-        {/* Mobile Sort Button */}
+        {/* Mobile Sort and Column Buttons */}
         {movies.length > 0 && (
-          <button
-            onClick={() => setShowSortMenu(!showSortMenu)}
-            className="md:hidden p-2 text-gray-300 hover:text-white transition-colors"
-            aria-label="Sort options"
-          >
-            <FaSortAmountDown className="w-6 h-6" />
-          </button>
+          <div className="md:hidden flex gap-2">
+            <button
+              onClick={() => setShowColumnMenu(!showColumnMenu)}
+              className="p-2 text-gray-300 hover:text-white transition-colors"
+              aria-label="Column options"
+            >
+              <FaCog className="w-6 h-6" />
+            </button>
+            <button
+              onClick={() => setShowSortMenu(!showSortMenu)}
+              className="p-2 text-gray-300 hover:text-white transition-colors"
+              aria-label="Sort options"
+            >
+              <FaSortAmountDown className="w-6 h-6" />
+            </button>
+          </div>
         )}
       </div>
 
@@ -248,6 +288,66 @@ function MovieList() {
                 <option value={100}>100</option>
               </select>
             </div>
+            <div className="relative">
+              <button
+                onClick={() => setShowColumnMenu(!showColumnMenu)}
+                className="flex items-center gap-2 px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white hover:border-gray-500 transition-colors cursor-pointer"
+              >
+                <FaCog className="w-4 h-4" />
+                Columns
+              </button>
+              {showColumnMenu && (
+                <div className="absolute right-0 mt-2 w-56 bg-gray-800 border border-gray-600 rounded-md shadow-lg z-10">
+                  <div className="p-3 space-y-2">
+                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
+                      <input
+                        type="checkbox"
+                        checked={visibleColumns.year}
+                        onChange={() => toggleColumn('year')}
+                        className="cursor-pointer"
+                      />
+                      <span className="text-sm text-white">Year</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
+                      <input
+                        type="checkbox"
+                        checked={visibleColumns.format}
+                        onChange={() => toggleColumn('format')}
+                        className="cursor-pointer"
+                      />
+                      <span className="text-sm text-white">Format</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
+                      <input
+                        type="checkbox"
+                        checked={visibleColumns.condition}
+                        onChange={() => toggleColumn('condition')}
+                        className="cursor-pointer"
+                      />
+                      <span className="text-sm text-white">Condition</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
+                      <input
+                        type="checkbox"
+                        checked={visibleColumns.rating}
+                        onChange={() => toggleColumn('rating')}
+                        className="cursor-pointer"
+                      />
+                      <span className="text-sm text-white">Rating</span>
+                    </label>
+                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
+                      <input
+                        type="checkbox"
+                        checked={visibleColumns.dateAdded}
+                        onChange={() => toggleColumn('dateAdded')}
+                        className="cursor-pointer"
+                      />
+                      <span className="text-sm text-white">Date Added</span>
+                    </label>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Mobile Sort Controls - Toggle Visibility */}
@@ -285,6 +385,60 @@ function MovieList() {
               </div>
             </div>
           )}
+
+          {/* Mobile Column Controls - Toggle Visibility */}
+          {showColumnMenu && (
+            <div className="md:hidden space-y-3 p-4 bg-gray-700 rounded-lg">
+              <h3 className="text-sm font-medium text-gray-300 mb-2">Show Columns:</h3>
+              <div className="space-y-2">
+                <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-600 p-2 rounded">
+                  <input
+                    type="checkbox"
+                    checked={visibleColumns.year}
+                    onChange={() => toggleColumn('year')}
+                    className="cursor-pointer"
+                  />
+                  <span className="text-sm text-white">Year</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-600 p-2 rounded">
+                  <input
+                    type="checkbox"
+                    checked={visibleColumns.format}
+                    onChange={() => toggleColumn('format')}
+                    className="cursor-pointer"
+                  />
+                  <span className="text-sm text-white">Format</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-600 p-2 rounded">
+                  <input
+                    type="checkbox"
+                    checked={visibleColumns.condition}
+                    onChange={() => toggleColumn('condition')}
+                    className="cursor-pointer"
+                  />
+                  <span className="text-sm text-white">Condition</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-600 p-2 rounded">
+                  <input
+                    type="checkbox"
+                    checked={visibleColumns.rating}
+                    onChange={() => toggleColumn('rating')}
+                    className="cursor-pointer"
+                  />
+                  <span className="text-sm text-white">Rating</span>
+                </label>
+                <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-600 p-2 rounded">
+                  <input
+                    type="checkbox"
+                    checked={visibleColumns.dateAdded}
+                    onChange={() => toggleColumn('dateAdded')}
+                    className="cursor-pointer"
+                  />
+                  <span className="text-sm text-white">Date Added</span>
+                </label>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -307,11 +461,11 @@ function MovieList() {
               <thead className="bg-gray-700">
                 <tr>
                   <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 w-46 max-w-46 md:w-96 md:max-w-96 border-r border-gray-600">Title</th>
-                  <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Year</th>
-                  <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Format</th>
-                  <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Condition</th>
-                  <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Rating</th>
-                  <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200">Date Added</th>
+                  {visibleColumns.year && <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Year</th>}
+                  {visibleColumns.format && <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Format</th>}
+                  {visibleColumns.condition && <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Condition</th>}
+                  {visibleColumns.rating && <th className="pl-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Rating</th>}
+                  {visibleColumns.dateAdded && <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200">Date Added</th>}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
@@ -325,46 +479,56 @@ function MovieList() {
                       {movie.title}
                     </Link>
                   </td>
-                  <td className="px-6 py-2 text-gray-300 whitespace-nowrap align-middle">
-                    {movie.year || '-'}
-                  </td>
-                  <td className="px-6 py-2 whitespace-nowrap align-middle">
-                    {movie.formats && movie.formats.length > 0 ? (
-                      <div className="flex gap-1">
-                        {[...movie.formats].sort().map((fmt, idx) => (
-                          <span key={idx} className="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
-                            {fmt}
-                          </span>
-                        ))}
+                  {visibleColumns.year && (
+                    <td className="px-6 py-2 text-gray-300 whitespace-nowrap align-middle">
+                      {movie.year || '-'}
+                    </td>
+                  )}
+                  {visibleColumns.format && (
+                    <td className="px-6 py-2 whitespace-nowrap align-middle">
+                      {movie.formats && movie.formats.length > 0 ? (
+                        <div className="flex gap-1">
+                          {[...movie.formats].sort().map((fmt, idx) => (
+                            <span key={idx} className="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-medium whitespace-nowrap">
+                              {fmt}
+                            </span>
+                          ))}
+                        </div>
+                      ) : (
+                        <span className="text-gray-500">-</span>
+                      )}
+                    </td>
+                  )}
+                  {visibleColumns.condition && (
+                    <td className="px-6 py-2 text-gray-300 whitespace-nowrap align-middle">{movie.condition}</td>
+                  )}
+                  {visibleColumns.rating && (
+                    <td className="pl-6 py-2 whitespace-nowrap align-middle">
+                      <div className="flex gap-0.5">
+                        {[1, 2, 3, 4, 5].map((star) => {
+                          const isFullStar = movie.rating >= star;
+                          const isHalfStar = movie.rating === star - 0.5;
+                          
+                          return (
+                            <div key={star}>
+                              {isFullStar ? (
+                                <TiStarFullOutline className="w-5 h-5 text-yellow-400" />
+                              ) : isHalfStar ? (
+                                <TiStarHalfOutline className="w-5 h-5 text-yellow-400" />
+                              ) : (
+                                <TiStarOutline className="w-5 h-5 text-gray-500" />
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
-                    ) : (
-                      <span className="text-gray-500">-</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-2 text-gray-300 whitespace-nowrap align-middle">{movie.condition}</td>
-                  <td className="px-6 py-2 whitespace-nowrap align-middle">
-                    <div className="flex gap-0.5">
-                      {[1, 2, 3, 4, 5].map((star) => {
-                        const isFullStar = movie.rating >= star;
-                        const isHalfStar = movie.rating === star - 0.5;
-                        
-                        return (
-                          <div key={star}>
-                            {isFullStar ? (
-                              <TiStarFullOutline className="w-5 h-5 text-yellow-400" />
-                            ) : isHalfStar ? (
-                              <TiStarHalfOutline className="w-5 h-5 text-yellow-400" />
-                            ) : (
-                              <TiStarOutline className="w-5 h-5 text-gray-500" />
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  </td>
-                  <td className="px-6 py-2 text-gray-300 whitespace-nowrap align-middle">
-                    {getRelativeTimeString(movie.createdAt)}
-                  </td>
+                    </td>
+                  )}
+                  {visibleColumns.dateAdded && (
+                    <td className="px-6 py-2 text-gray-300 whitespace-nowrap align-middle">
+                      {getRelativeTimeString(movie.createdAt)}
+                    </td>
+                  )}
                 </tr>
               ))}
             </tbody>
