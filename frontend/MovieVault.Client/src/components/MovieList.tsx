@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import BarcodeScanner from './BarcodeScanner'
 import { FaSortAmountDown } from "react-icons/fa";
+import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from 'react-icons/ti'
 import { getRelativeTimeString } from '../utils/dateUtils';
 
 interface Movie {
@@ -305,12 +306,12 @@ function MovieList() {
             <table className="w-full">
               <thead className="bg-gray-700">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200 w-46 max-w-46 md:w-96 md:max-w-96 border-r border-gray-600">Title</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Year</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Format</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Condition</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Rating</th>
-                  <th className="px-6 py-4 text-left text-sm font-semibold text-gray-200">Date Added</th>
+                  <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 w-46 max-w-46 md:w-96 md:max-w-96 border-r border-gray-600">Title</th>
+                  <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Year</th>
+                  <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Format</th>
+                  <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Condition</th>
+                  <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600">Rating</th>
+                  <th className="px-6 py-2 text-left text-sm font-semibold text-gray-200">Date Added</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700">
@@ -341,8 +342,25 @@ function MovieList() {
                     )}
                   </td>
                   <td className="px-6 py-2 text-gray-300 whitespace-nowrap align-middle">{movie.condition}</td>
-                  <td className="px-6 py-2 text-gray-300 whitespace-nowrap align-middle">
-                    {movie.rating > 0 ? `${movie.rating} ⭐` : '-'}
+                  <td className="px-6 py-2 whitespace-nowrap align-middle">
+                    <div className="flex gap-0.5">
+                      {[1, 2, 3, 4, 5].map((star) => {
+                        const isFullStar = movie.rating >= star;
+                        const isHalfStar = movie.rating === star - 0.5;
+                        
+                        return (
+                          <div key={star}>
+                            {isFullStar ? (
+                              <TiStarFullOutline className="w-5 h-5 text-yellow-400" />
+                            ) : isHalfStar ? (
+                              <TiStarHalfOutline className="w-5 h-5 text-yellow-400" />
+                            ) : (
+                              <TiStarOutline className="w-5 h-5 text-gray-500" />
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
                   </td>
                   <td className="px-6 py-2 text-gray-300 whitespace-nowrap align-middle">
                     {getRelativeTimeString(movie.createdAt)}
