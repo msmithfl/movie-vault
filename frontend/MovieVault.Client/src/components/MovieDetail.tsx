@@ -259,9 +259,13 @@ function MovieDetail() {
                 {movie.collections && movie.collections.length > 0 ? (
                   <div className="flex flex-wrap gap-2">
                     {movie.collections.map((col, idx) => (
-                      <span key={idx} className="bg-purple-600 px-3 py-2 rounded-md text-white">
+                      <Link 
+                        key={idx} 
+                        to={`/collections/${encodeURIComponent(col)}`}
+                        className="bg-purple-600 hover:bg-purple-700 px-3 py-2 rounded-md text-white transition-colors cursor-pointer"
+                      >
                         {col}
-                      </span>
+                      </Link>
                     ))}
                   </div>
                 ) : (
