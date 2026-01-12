@@ -215,7 +215,7 @@ function ShelfSectionDetail() {
                 <img 
                   src={movie.posterPath} 
                   alt={`${movie.title} poster`}
-                  className="w-24 h-36 object-cover rounded-md flex-shrink-0"
+                  className="w-24 h-36 object-cover rounded-md shrink-0"
                   onError={(e) => {
                     e.currentTarget.src = 'https://via.placeholder.com/96x144?text=No+Poster';
                   }}

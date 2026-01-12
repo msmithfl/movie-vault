@@ -152,15 +152,15 @@ function MovieList() {
     setCurrentPage(1);
   };
   
-  const handleSortChange = (value: SortOption) => {
-    setSortBy(value);
-    setSortDirection('asc');
-    setCurrentPage(1);
-  };
+  // const handleSortChange = (value: SortOption) => {
+  //   setSortBy(value);
+  //   setSortDirection('asc');
+  //   setCurrentPage(1);
+  // };
 
-  const toggleSortDirection = () => {
-    setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
-  };
+  // const toggleSortDirection = () => {
+  //   setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
+  // };
 
   const handleColumnClick = (column: SortOption) => {
     if (column === sortBy) {
