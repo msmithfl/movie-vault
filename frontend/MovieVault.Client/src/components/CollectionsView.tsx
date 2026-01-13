@@ -123,8 +123,9 @@ function CollectionsView() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Collections</h1>
+      <div className="flex mb-4 gap-4 items-center">
+        <h1 className="text-3xl font-bold">Collections</h1>
+        <span className='px-3 py-1 bg-gray-800 rounded-md font-medium outline-1 outline-gray-600'>{collections.filter(c => !c.isDirectorCollection).length}</span>
       </div>
 
       {collections.length === 0 ? (
@@ -218,7 +219,10 @@ function CollectionsView() {
           {/* Director Collections Section */}
           {collections.filter(c => c.isDirectorCollection).length > 0 && (
             <div>
-              <h2 className="text-2xl font-bold mb-6">Director Collections</h2>
+              <div className='flex mb-4 gap-4'>
+                <h2 className="text-2xl font-bold">Director Collections</h2>
+                <span className='px-3 py-1 bg-gray-800 rounded-md font-medium outline-1 outline-gray-600'>{collections.filter(c => c.isDirectorCollection).length}</span>
+              </div>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {collections
                   .filter(c => c.isDirectorCollection)
