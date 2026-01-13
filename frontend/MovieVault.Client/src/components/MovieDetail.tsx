@@ -199,7 +199,7 @@ function MovieDetail() {
               <button
                 onClick={() => {
                   const query = encodeURIComponent(`${movie.upcNumber}`);
-                  window.open(`https://www.ebay.com/sch/i.html?_nkw=${query}`, '_blank', 'noopener,noreferrer');
+                  window.open(`https://www.ebay.com/sch/i.html?_nkw=${query}&LH_Sold=1&rt=nc&LH_ItemCondition=4`, '_blank', 'noopener,noreferrer');
                 }}
                 className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-md transition duration-200 text-xs lg:text-sm cursor-pointer w-auto lg:w-full"
               >
