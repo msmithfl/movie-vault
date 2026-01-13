@@ -88,8 +88,8 @@ function GenresView() {
                 className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg p-6 transition-all duration-200 transform hover:scale-105"
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-2">{genre}</h3>
+                  <div className='flex-1 max-w-64 md:max-w-50'>
+                    <h3 className="text-xl font-bold text-white mb-2 truncate">{genre}</h3>
                     <p className="text-gray-400 text-sm">
                       {movieCount} {movieCount === 1 ? 'movie' : 'movies'}
                     </p>
