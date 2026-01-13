@@ -317,7 +317,7 @@ function CollectionDetail() {
               <div>
                 <div className='flex items-center gap-4'>
                   <h1 className="text-3xl font-bold mb-2">{collectionName}</h1>
-                  <span className='px-3 py-1 mb-1 bg-gray-800 rounded-md font-medium outline-1 outline-gray-600'>{movies.length}</span>
+                  <span className='px-3 py-1 mb-2 bg-gray-800 rounded-md font-medium outline-1 outline-gray-600'>{movies.length}</span>
                 </div>
                 {listItems.length > 0 && (
                   <div className="flex flex-wrap items-center gap-3 text-sm text-gray-400">
