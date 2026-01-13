@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom'
 import ConfirmDialog from './ConfirmDialog'
 import { searchTMDB } from '../utils/tmdbApi'
 import type { TMDBMovie, CollectionListItem } from '../types'
+import { FaEdit, FaTrash } from 'react-icons/fa'
 
 interface Collection {
   id: number;
@@ -251,12 +252,32 @@ function CollectionDetail() {
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="mb-8">
-        <button
-          onClick={() => navigate('/collections')}
-          className="text-indigo-400 hover:text-indigo-300 mb-4 flex items-center gap-2 cursor-pointer"
-        >
-          ← Back to Collections
-        </button>
+        <div className="flex items-center justify-between mb-4">
+          <button
+            onClick={() => navigate('/collections')}
+            className="text-indigo-400 hover:text-indigo-300 flex items-center gap-2 cursor-pointer"
+          >
+            ← Back to Collections
+          </button>
+          {!isEditing && collection && (
+            <div className="flex gap-2">
+              <button
+                onClick={handleEditClick}
+                className="text-indigo-400 hover:text-indigo-300 hover:bg-indigo-500/10 px-3 py-2 rounded-md transition-colors duration-200 cursor-pointer"
+                aria-label="Edit collection"
+              >
+                <FaEdit className="w-5 h-5" />
+              </button>
+              <button
+                onClick={handleDeleteClick}
+                className="text-red-400 hover:text-red-300 hover:bg-red-500/10 px-3 py-2 rounded-md transition-colors duration-200 cursor-pointer"
+                aria-label="Delete collection"
+              >
+                <FaTrash className="w-5 h-5" />
+              </button>
+            </div>
+          )}
+        </div>
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
           <div className="flex-1">
             {isEditing ? (
@@ -310,22 +331,6 @@ function CollectionDetail() {
               </div>
             )}
           </div>
-          {!isEditing && collection && (
-            <div className="flex flex-wrap gap-3">
-              <button
-                onClick={handleEditClick}
-                className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-md transition flex items-center gap-2 cursor-pointer"
-              >
-                Edit
-              </button>
-              <button
-                onClick={handleDeleteClick}
-                className="bg-red-600 hover:bg-red-500 text-white py-2 px-4 rounded-md transition flex items-center gap-2 cursor-pointer"
-              >
-                Delete
-              </button>
-            </div>
-          )}
         </div>
       </div>
 
@@ -516,9 +521,10 @@ function CollectionDetail() {
                       </div>
                       <button
                         onClick={() => item.id && handleRemoveFromList(item.id)}
-                        className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm cursor-pointer"
+                        className="text-red-400 hover:text-red-300 hover:bg-red-500/10 px-3 py-2 rounded-md transition-colors duration-200 cursor-pointer"
+                        aria-label="Remove from checklist"
                       >
-                        Remove
+                        <FaTrash className="w-4 h-4" />
                       </button>
                     </div>
                   );
