@@ -282,14 +282,23 @@ function CollectionDetail() {
           <div className="flex-1">
             {isEditing ? (
               <div>
-                <div className="flex items-center gap-3 mb-3">
+                <input
+                  type="text"
+                  value={editedName}
+                  onChange={(e) => setEditedName(e.target.value)}
+                  className="w-full md:max-w-md px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white text-2xl font-bold mb-3"
+                  autoFocus
+                />
+                <label className="flex items-center gap-2 text-gray-300 cursor-pointer mb-3">
                   <input
-                    type="text"
-                    value={editedName}
-                    onChange={(e) => setEditedName(e.target.value)}
-                    className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white text-2xl font-bold"
-                    autoFocus
+                    type="checkbox"
+                    checked={editedIsDirector}
+                    onChange={(e) => setEditedIsDirector(e.target.checked)}
+                    className="w-4 h-4 cursor-pointer"
                   />
+                  <span>Director Collection</span>
+                </label>
+                <div className="flex gap-3">
                   <button
                     onClick={handleSaveEdit}
                     className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md transition cursor-pointer"
@@ -303,15 +312,6 @@ function CollectionDetail() {
                     Cancel
                   </button>
                 </div>
-                <label className="flex items-center gap-2 text-gray-300 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={editedIsDirector}
-                    onChange={(e) => setEditedIsDirector(e.target.checked)}
-                    className="w-4 h-4 cursor-pointer"
-                  />
-                  <span>Director Collection</span>
-                </label>
               </div>
             ) : (
               <div>
