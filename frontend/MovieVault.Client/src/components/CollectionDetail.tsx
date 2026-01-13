@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import ConfirmDialog from './ConfirmDialog'
 import { searchTMDB } from '../utils/tmdbApi'
@@ -40,10 +40,10 @@ function CollectionDetail() {
   
   // Collection list state
   const [listItems, setListItems] = useState<CollectionListItem[]>([]);
-  const [showListManager, setShowListManager] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<TMDBMovie[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+  const searchTimeoutRef = useRef<number | null>(null);
 
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5156';
   const MOVIES_URL = `${API_BASE}/api/movies`;
@@ -153,21 +153,32 @@ function CollectionDetail() {
     setShowDeleteConfirm(false);
   };
 
-  const handleSearch = async () => {
-    if (!searchQuery.trim()) {
+  const handleSearchChange = (value: string) => {
+    setSearchQuery(value);
+
+    // Clear previous timeout
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    if (value.length < 2) {
       setSearchResults([]);
       return;
     }
 
+    // Wait 300ms after user stops typing
     setIsSearching(true);
-    try {
-      const results = await searchTMDB(searchQuery);
-      setSearchResults(results);
-    } catch (error) {
-      console.error('Error searching TMDB:', error);
-    } finally {
-      setIsSearching(false);
-    }
+    searchTimeoutRef.current = window.setTimeout(async () => {
+      try {
+        const results = await searchTMDB(value);
+        setSearchResults(results.slice(0, 5)); // Show top 5 results
+      } catch (error) {
+        console.error('Error searching TMDB:', error);
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
   };
 
   const handleAddToList = async (movie: TMDBMovie) => {
@@ -289,12 +300,6 @@ function CollectionDetail() {
           {!isEditing && collection && (
             <div className="flex flex-wrap gap-3">
               <button
-                onClick={() => setShowListManager(!showListManager)}
-                className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md transition flex items-center gap-2 cursor-pointer"
-              >
-                {showListManager ? 'Hide' : 'Manage'} Checklist
-              </button>
-              <button
                 onClick={handleEditClick}
                 className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-md transition flex items-center gap-2 cursor-pointer"
               >
@@ -310,118 +315,6 @@ function CollectionDetail() {
           )}
         </div>
       </div>
-
-      {/* Collection Checklist Manager */}
-      {showListManager && collection && (
-        <div className="mb-8 bg-gray-800 rounded-lg p-6">
-          <h2 className="text-2xl font-bold mb-4">Collection Checklist</h2>
-          <p className="text-gray-400 mb-6">
-            Create a checklist of movies that make up the complete collection. Track which ones you own!
-          </p>
-
-          {/* Search to add movies */}
-          <div className="mb-6">
-            <div className="flex gap-2 mb-4">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                placeholder="Search TMDB to add movies..."
-                className="flex-1 px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <button
-                onClick={handleSearch}
-                disabled={isSearching}
-                className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-600 text-white rounded-md transition cursor-pointer"
-              >
-                {isSearching ? 'Searching...' : 'Search'}
-              </button>
-            </div>
-
-            {/* Search Results */}
-            {searchResults.length > 0 && (
-              <div className="bg-gray-700 rounded-md p-4 max-h-96 overflow-y-auto">
-                <h3 className="text-sm font-semibold text-gray-300 mb-3">Search Results:</h3>
-                <div className="space-y-2">
-                  {searchResults.map((movie) => {
-                    const year = movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A';
-                    const alreadyInList = listItems.some(item => item.tmdbId === movie.id);
-                    
-                    return (
-                      <div key={movie.id} className="flex items-center justify-between bg-gray-800 p-3 rounded">
-                        <div>
-                          <span className="text-white font-medium">{movie.title}</span>
-                          <span className="text-gray-400 ml-2">({year})</span>
-                        </div>
-                        <button
-                          onClick={() => handleAddToList(movie)}
-                          disabled={alreadyInList}
-                          className={`px-3 py-1 rounded text-sm ${
-                            alreadyInList
-                              ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
-                              : 'bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer'
-                          }`}
-                        >
-                          {alreadyInList ? 'Already Added' : 'Add'}
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* List Items */}
-          {listItems.length > 0 ? (
-            <div>
-              <h3 className="text-lg font-semibold mb-3">
-                Checklist ({listItems.filter(item => isMovieOwned(item.title, item.year)).length} of {listItems.length} owned)
-              </h3>
-              <div className="space-y-2">
-                {listItems.sort((a, b) => a.year - b.year).map((item) => {
-                  const owned = isMovieOwned(item.title, item.year);
-                  
-                  return (
-                    <div
-                      key={item.id}
-                      className={`flex items-center justify-between p-3 rounded ${
-                        owned ? 'bg-green-900/30 border border-green-700' : 'bg-gray-700'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="checkbox"
-                          checked={owned}
-                          readOnly
-                          className="w-5 h-5 cursor-default"
-                        />
-                        <div>
-                          <span className={`font-medium ${owned ? 'text-green-400' : 'text-white'}`}>
-                            {item.title}
-                          </span>
-                          <span className="text-gray-400 ml-2">({item.year})</span>
-                        </div>
-                      </div>
-                      <button
-                        onClick={() => item.id && handleRemoveFromList(item.id)}
-                        className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm cursor-pointer"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-          ) : (
-            <div className="text-center py-8 text-gray-400">
-              <p>No items in checklist yet. Search above to add movies!</p>
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Owned Movies Section */}
       <div>
@@ -498,6 +391,136 @@ function CollectionDetail() {
           </div>
         )}
       </div>
+
+      {/* Collection Checklist Manager */}
+      {collection && (
+        <div className="mt-8 bg-gray-800 rounded-lg p-6">
+          <h2 className="text-2xl font-bold mb-4">Collection Checklist</h2>
+
+          {/* Search to add movies */}
+          <div className="mb-6">
+            <div className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => handleSearchChange(e.target.value)}
+                placeholder="Search TMDB to add movies..."
+                className="w-full px-4 py-3 pl-10 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              <svg
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                />
+              </svg>
+              {isSearching && (
+                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-500"></div>
+                </div>
+              )}
+
+              {/* Search Results - Absolute positioned dropdown */}
+              {searchResults.length > 0 && (
+                <div className="absolute z-10 w-full mt-2 bg-gray-700 rounded-md p-4 max-h-96 overflow-y-auto shadow-lg border border-gray-600">
+                  <h3 className="text-sm font-semibold text-gray-300 mb-3">Search Results:</h3>
+                  <div className="space-y-2">
+                    {searchResults.map((movie) => {
+                      const year = movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A';
+                      const alreadyInList = listItems.some(item => item.tmdbId === movie.id);
+                      
+                      return (
+                        <div
+                          key={movie.id}
+                          onClick={() => !alreadyInList && handleAddToList(movie)}
+                          className={`flex items-center gap-4 bg-gray-800 p-3 rounded transition-colors ${
+                            alreadyInList 
+                              ? 'opacity-50 cursor-not-allowed' 
+                              : 'hover:bg-gray-700 cursor-pointer'
+                          }`}
+                        >
+                          {movie.poster_path ? (
+                            <img
+                              src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
+                              alt={movie.title}
+                              className="w-12 h-18 object-cover rounded shrink-0"
+                            />
+                          ) : (
+                            <div className="w-12 h-18 bg-gray-600 rounded flex items-center justify-center shrink-0">
+                              <span className="text-gray-400 text-xs">No Image</span>
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <p className="text-white font-medium truncate">{movie.title}</p>
+                            <p className="text-gray-400 text-sm">({year})</p>
+                            {alreadyInList && (
+                              <p className="text-yellow-400 text-xs mt-1">⚠️ Already in checklist</p>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* List Items */}
+          {listItems.length > 0 ? (
+            <div>
+              <h3 className="text-lg font-semibold mb-3">
+                Checklist ({listItems.filter(item => isMovieOwned(item.title, item.year)).length} of {listItems.length} owned)
+              </h3>
+              <div className="space-y-2">
+                {listItems.sort((a, b) => a.year - b.year).map((item) => {
+                  const owned = isMovieOwned(item.title, item.year);
+                  
+                  return (
+                    <div
+                      key={item.id}
+                      className={`flex items-center justify-between p-3 rounded ${
+                        owned ? 'bg-green-900/30 border border-green-700' : 'bg-gray-700'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          checked={owned}
+                          readOnly
+                          className="w-5 h-5 cursor-default"
+                        />
+                        <div>
+                          <span className={`font-medium ${owned ? 'text-green-400' : 'text-white'}`}>
+                            {item.title}
+                          </span>
+                          <span className="text-gray-400 ml-2">({item.year})</span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => item.id && handleRemoveFromList(item.id)}
+                        className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm cursor-pointer"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-400">
+              <p>No items in checklist yet. Search above to add movies!</p>
+            </div>
+          )}
+        </div>
+      )}
 
       <ConfirmDialog
         isOpen={showDeleteConfirm}
