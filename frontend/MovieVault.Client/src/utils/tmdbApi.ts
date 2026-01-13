@@ -28,7 +28,7 @@ interface TMDBMovie {
   genre_ids: number[];
 }
 
-export async function searchTMDB(query: string): Promise<TMDBMovie[]> {
+export async function searchTMDB(query: string, year?: string): Promise<TMDBMovie[]> {
   const TMDB_API_TOKEN = import.meta.env.VITE_TMDB_API_TOKEN;
   
   if (!TMDB_API_TOKEN) {
@@ -37,17 +37,21 @@ export async function searchTMDB(query: string): Promise<TMDBMovie[]> {
   }
 
   try {
-    const res = await fetch(
-      `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(
-        query
-      )}&include_adult=false&language=en-US&page=1`,
-      {
-        headers: {
-          accept: "application/json",
-          Authorization: `Bearer ${TMDB_API_TOKEN}`,
-        },
-      }
-    );
+    // Build URL with optional year parameter
+    let url = `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(
+      query
+    )}&include_adult=false&language=en-US&page=1`;
+    
+    if (year && year.trim()) {
+      url += `&year=${encodeURIComponent(year.trim())}`;
+    }
+    
+    const res = await fetch(url, {
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${TMDB_API_TOKEN}`,
+      },
+    });
     const data = await res.json();
     return data.results?.slice(0, 10) || [];
   } catch (err) {

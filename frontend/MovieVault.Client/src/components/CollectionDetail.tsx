@@ -44,6 +44,7 @@ function CollectionDetail() {
   // Collection list state
   const [listItems, setListItems] = useState<CollectionListItem[]>([]);
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchYear, setSearchYear] = useState('');
   const [searchResults, setSearchResults] = useState<TMDBMovie[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const searchTimeoutRef = useRef<number | null>(null);
@@ -175,8 +176,8 @@ function CollectionDetail() {
     setIsSearching(true);
     searchTimeoutRef.current = window.setTimeout(async () => {
       try {
-        const results = await searchTMDB(value);
-        setSearchResults(results.slice(0, 5)); // Show top 5 results
+        const results = await searchTMDB(value, searchYear);
+        setSearchResults(results.slice(0, 10)); // Show top 10 results
       } catch (error) {
         console.error('Error searching TMDB:', error);
         setSearchResults([]);
@@ -184,6 +185,31 @@ function CollectionDetail() {
         setIsSearching(false);
       }
     }, 300);
+  };
+
+  const handleYearChange = (value: string) => {
+    setSearchYear(value);
+
+    // Re-search if there's already a search query
+    if (searchQuery.length >= 2) {
+      // Clear previous timeout
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+
+      setIsSearching(true);
+      searchTimeoutRef.current = window.setTimeout(async () => {
+        try {
+          const results = await searchTMDB(searchQuery, value);
+          setSearchResults(results.slice(0, 10));
+        } catch (error) {
+          console.error('Error searching TMDB:', error);
+          setSearchResults([]);
+        } finally {
+          setIsSearching(false);
+        }
+      }, 300);
+    }
   };
 
   const handleAddToList = async (movie: TMDBMovie) => {
@@ -208,6 +234,7 @@ function CollectionDetail() {
         const newItem = await response.json();
         setListItems([...listItems, newItem]);
         setSearchQuery('');
+        setSearchYear('');
         setSearchResults([]);
       }
     } catch (error) {
@@ -415,36 +442,48 @@ function CollectionDetail() {
 
           {/* Search to add movies */}
           <div className="mb-6">
-            <div className="relative">
+            <div className="flex flex-col md:flex-row gap-3 mb-2">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  placeholder="Search TMDB to add movies..."
+                  className="w-full px-4 py-3 pl-10 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <svg
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+                {isSearching && (
+                  <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-500"></div>
+                  </div>
+                )}
+              </div>
               <input
                 type="text"
-                value={searchQuery}
-                onChange={(e) => handleSearchChange(e.target.value)}
-                placeholder="Search TMDB to add movies..."
-                className="w-full px-4 py-3 pl-10 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                value={searchYear}
+                onChange={(e) => handleYearChange(e.target.value)}
+                placeholder="Year (optional)"
+                className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                maxLength={4}
               />
-              <svg
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
-              {isSearching && (
-                <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-indigo-500"></div>
-                </div>
-              )}
+            </div>
+            <div className="relative">
 
               {/* Search Results - Absolute positioned dropdown */}
               {searchResults.length > 0 && (
-                <div className="absolute z-10 w-full mt-2 bg-gray-700 border border-gray-600 rounded-md shadow-lg max-h-50 overflow-y-auto">
+                <div className="absolute z-10 w-full bg-gray-700 border border-gray-600 rounded-md shadow-lg max-h-96 overflow-y-auto">
                   {searchResults.map((movie) => {
                     const year = movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A';
                     const alreadyInList = listItems.some(item => item.tmdbId === movie.id);
