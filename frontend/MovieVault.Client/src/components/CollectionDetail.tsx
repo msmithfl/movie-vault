@@ -294,11 +294,12 @@ function CollectionDetail() {
               </div>
             ) : (
               <div>
-                <h1 className="text-3xl font-bold mb-2">{collectionName}</h1>
+                <div className='flex items-center gap-4'>
+                  <h1 className="text-3xl font-bold mb-2">{collectionName}</h1>
+                  <span className='px-3 py-1 bg-gray-800 rounded-md font-medium outline-1 outline-gray-600'>{movies.length}</span>
+                </div>
                 {listItems.length > 0 && (
                   <div className="flex flex-wrap items-center gap-3 text-sm text-gray-400">
-                    <span>{movies.length} owned</span>
-                    <span>•</span>
                     <span>{listItems.length} total in checklist</span>
                     <span>•</span>
                     <span className={completionPercentage === 100 ? 'text-green-400 font-semibold' : ''}>
@@ -368,7 +369,7 @@ function CollectionDetail() {
               <div className="flex-1 min-w-0">
                 <div className="mb-4">
                   <h3 className="text-xl font-bold text-white mb-2">{movie.title}</h3>
-                  <p className="text-gray-400 text-sm font-mono">{movie.upcNumber}</p>
+                  <p className="text-gray-400 text-sm font-mono">{movie.year}</p>
                 </div>
 
                 {movie.formats && movie.formats.length > 0 && (
