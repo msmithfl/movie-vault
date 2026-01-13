@@ -10,6 +10,8 @@ import CollectionsView from './components/CollectionsView'
 import CollectionDetail from './components/CollectionDetail'
 import ShelfSectionsView from './components/ShelfSectionsView'
 import ShelfSectionDetail from './components/ShelfSectionDetail'
+import GenresView from './components/GenresView'
+import GenreDetail from './components/GenreDetail'
 
 function App() {
   return (
@@ -24,6 +26,8 @@ function App() {
             <Route path="/collections/:collectionName" element={<CollectionDetail />} />
             <Route path="/shelfsections" element={<ShelfSectionsView />} />
             <Route path="/shelfsections/:sectionName" element={<ShelfSectionDetail />} />
+            <Route path="/genres" element={<GenresView />} />
+            <Route path="/genres/:genreName" element={<GenreDetail />} />
             <Route path="/add" element={<AddMovie />} />
             <Route path="/movie/:id" element={<MovieDetail />} />
             <Route path="/edit/:id" element={<EditMovie />} />

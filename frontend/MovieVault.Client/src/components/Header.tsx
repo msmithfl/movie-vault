@@ -37,6 +37,12 @@ function Header() {
               Collections
             </Link>
             <Link 
+              to="/genres" 
+              className="text-gray-300 hover:text-white transition-colors font-medium"
+            >
+              Genres
+            </Link>
+            <Link 
               to="/shelfsections" 
               className="text-gray-300 hover:text-white transition-colors font-medium"
             >
@@ -92,6 +98,13 @@ function Header() {
               className="text-gray-300 hover:text-white transition-colors font-medium py-2"
             >
               Collections
+            </Link>
+            <Link 
+              to="/genres" 
+              onClick={() => setIsMenuOpen(false)}
+              className="text-gray-300 hover:text-white transition-colors font-medium py-2"
+            >
+              Genres
             </Link>
             <Link 
               to="/shelfsections" 
