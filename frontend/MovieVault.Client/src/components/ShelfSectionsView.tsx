@@ -96,7 +96,6 @@ function ShelfSectionsView() {
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-3xl font-bold mb-2">Shelf Sections</h1>
-        <p className="text-gray-400">Browse your shelf sections</p>
       </div>
 
       {shelfSections.length === 0 ? (
