@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import type { CollectionListItem } from '../types'
+import CollectionCard from './CollectionCard'
 
 interface Collection {
   id: number;
@@ -151,48 +152,23 @@ function CollectionsView() {
                     const movieCount = getMovieCount(collection.name);
                     const completionPercentage = getCompletionPercentage(collection.id, collection.name);
                     const listItemCount = collectionListItems[collection.id]?.length || 0;
+                    const listItems = collectionListItems[collection.id] || [];
+                    const ownedCount = listItems.filter(item => 
+                      movies.some(m => 
+                        m.title.toLowerCase() === item.title.toLowerCase() && 
+                        m.collections?.includes(collection.name)
+                      )
+                    ).length;
                     
                     return (
-                      <Link
+                      <CollectionCard
                         key={collection.id}
-                        to={`/collections/${encodeURIComponent(collection.name)}`}
-                        className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg p-6 transition-all duration-200 transform hover:scale-105"
-                      >
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex-1">
-                            <h3 className="text-xl font-bold text-white mb-2">{collection.name}</h3>
-                            <p className="text-gray-400 text-sm">
-                              {movieCount} {movieCount === 1 ? 'movie' : 'movies'}
-                            </p>
-                            {completionPercentage !== null && (
-                              <p className="text-gray-500 text-xs mt-1">
-                                {listItemCount} in checklist
-                              </p>
-                            )}
-                          </div>
-                          <span className="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                            {movieCount}
-                          </span>
-                        </div>
-                        {completionPercentage !== null && (
-                          <div className="mt-4">
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="text-xs text-gray-400">Checklist Progress</span>
-                              <span className={`text-xs font-semibold ${completionPercentage === 100 ? 'text-green-400' : 'text-indigo-400'}`}>
-                                {completionPercentage}%
-                              </span>
-                            </div>
-                            <div className="w-full bg-gray-700 rounded-full h-2">
-                              <div
-                                className={`h-2 rounded-full transition-all duration-300 ${
-                                  completionPercentage === 100 ? 'bg-green-500' : 'bg-indigo-500'
-                                }`}
-                                style={{ width: `${completionPercentage}%` }}
-                              ></div>
-                            </div>
-                          </div>
-                        )}
-                      </Link>
+                        collection={collection}
+                        movieCount={movieCount}
+                        completionPercentage={completionPercentage}
+                        listItemCount={listItemCount}
+                        ownedCount={ownedCount}
+                      />
                     );
                   })}
                 {showCreateInput ? (
@@ -250,48 +226,23 @@ function CollectionsView() {
                     const movieCount = getMovieCount(collection.name);
                     const completionPercentage = getCompletionPercentage(collection.id, collection.name);
                     const listItemCount = collectionListItems[collection.id]?.length || 0;
+                    const listItems = collectionListItems[collection.id] || [];
+                    const ownedCount = listItems.filter(item => 
+                      movies.some(m => 
+                        m.title.toLowerCase() === item.title.toLowerCase() && 
+                        m.collections?.includes(collection.name)
+                      )
+                    ).length;
                     
                     return (
-                      <Link
+                      <CollectionCard
                         key={collection.id}
-                        to={`/collections/${encodeURIComponent(collection.name)}`}
-                        className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg p-6 transition-all duration-200 transform hover:scale-105"
-                      >
-                        <div className="flex items-start justify-between mb-4">
-                          <div className="flex-1">
-                            <h3 className="text-xl font-bold text-white mb-2">{collection.name}</h3>
-                            <p className="text-gray-400 text-sm">
-                              {movieCount} {movieCount === 1 ? 'movie' : 'movies'}
-                            </p>
-                            {completionPercentage !== null && (
-                              <p className="text-gray-500 text-xs mt-1">
-                                {listItemCount} in checklist
-                              </p>
-                            )}
-                          </div>
-                          <span className="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                            {movieCount}
-                          </span>
-                        </div>
-                        {completionPercentage !== null && (
-                          <div className="mt-4">
-                            <div className="flex items-center justify-between mb-1">
-                              <span className="text-xs text-gray-400">Checklist Progress</span>
-                              <span className={`text-xs font-semibold ${completionPercentage === 100 ? 'text-green-400' : 'text-indigo-400'}`}>
-                                {completionPercentage}%
-                              </span>
-                            </div>
-                            <div className="w-full bg-gray-700 rounded-full h-2">
-                              <div
-                                className={`h-2 rounded-full transition-all duration-300 ${
-                                  completionPercentage === 100 ? 'bg-green-500' : 'bg-indigo-500'
-                                }`}
-                                style={{ width: `${completionPercentage}%` }}
-                              ></div>
-                            </div>
-                          </div>
-                        )}
-                      </Link>
+                        collection={collection}
+                        movieCount={movieCount}
+                        completionPercentage={completionPercentage}
+                        listItemCount={listItemCount}
+                        ownedCount={ownedCount}
+                      />
                     );
                   })}
               </div>
