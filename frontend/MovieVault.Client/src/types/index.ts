@@ -25,3 +25,12 @@ export interface TMDBMovie {
   poster_path: string;
   genre_ids: number[];
 }
+
+export interface CollectionListItem {
+  id?: number;
+  collectionId: number;
+  title: string;
+  year: number;
+  tmdbId?: number;
+  createdAt?: string;
+}

@@ -19,3 +19,39 @@ export const GENRE_MAP: { [key: number]: string } = {
     10752: 'War',
     37: 'Western'
 };
+
+interface TMDBMovie {
+  id: number;
+  title: string;
+  release_date: string;
+  poster_path: string;
+  genre_ids: number[];
+}
+
+export async function searchTMDB(query: string): Promise<TMDBMovie[]> {
+  const TMDB_API_TOKEN = import.meta.env.VITE_TMDB_API_TOKEN;
+  
+  if (!TMDB_API_TOKEN) {
+    console.error('TMDB API token not configured');
+    return [];
+  }
+
+  try {
+    const res = await fetch(
+      `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(
+        query
+      )}&include_adult=false&language=en-US&page=1`,
+      {
+        headers: {
+          accept: "application/json",
+          Authorization: `Bearer ${TMDB_API_TOKEN}`,
+        },
+      }
+    );
+    const data = await res.json();
+    return data.results?.slice(0, 10) || [];
+  } catch (err) {
+    console.error("TMDB search failed:", err);
+    return [];
+  }
+}

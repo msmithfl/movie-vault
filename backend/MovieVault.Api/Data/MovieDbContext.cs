@@ -12,4 +12,5 @@ public class MovieDbContext : DbContext
     public DbSet<Movie> Movies => Set<Movie>();
     public DbSet<Collection> Collections => Set<Collection>();
     public DbSet<ShelfSection> ShelfSections => Set<ShelfSection>();
+    public DbSet<CollectionListItem> CollectionListItems => Set<CollectionListItem>();
 }

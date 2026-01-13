@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import ConfirmDialog from './ConfirmDialog'
+import { searchTMDB } from '../utils/tmdbApi'
+import type { TMDBMovie, CollectionListItem } from '../types'
 
 interface Collection {
   id: number;
@@ -17,6 +19,7 @@ interface Movie {
   condition: string;
   rating: number;
   review: string;
+  year: number;
   posterPath: string;
   hdDriveNumber: number;
   shelfNumber: number;
@@ -34,6 +37,13 @@ function CollectionDetail() {
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState('');
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  
+  // Collection list state
+  const [listItems, setListItems] = useState<CollectionListItem[]>([]);
+  const [showListManager, setShowListManager] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<TMDBMovie[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
 
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5156';
   const MOVIES_URL = `${API_BASE}/api/movies`;
@@ -62,11 +72,28 @@ function CollectionDetail() {
         const collectionsData = await collectionsRes.json();
         const foundCollection = collectionsData.find((c: Collection) => c.name === collectionName);
         setCollection(foundCollection || null);
+        
+        // Fetch list items if collection found
+        if (foundCollection) {
+          fetchListItems(foundCollection.id);
+        }
       }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchListItems = async (collectionId: number) => {
+    try {
+      const response = await fetch(`${API_BASE}/api/collections/${collectionId}/items`);
+      if (response.ok) {
+        const data = await response.json();
+        setListItems(data);
+      }
+    } catch (error) {
+      console.error('Error fetching list items:', error);
     }
   };
 
@@ -126,6 +153,78 @@ function CollectionDetail() {
     setShowDeleteConfirm(false);
   };
 
+  const handleSearch = async () => {
+    if (!searchQuery.trim()) {
+      setSearchResults([]);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const results = await searchTMDB(searchQuery);
+      setSearchResults(results);
+    } catch (error) {
+      console.error('Error searching TMDB:', error);
+    } finally {
+      setIsSearching(false);
+    }
+  };
+
+  const handleAddToList = async (movie: TMDBMovie) => {
+    if (!collection) return;
+
+    const year = movie.release_date ? new Date(movie.release_date).getFullYear() : 0;
+    
+    try {
+      const response = await fetch(`${API_BASE}/api/collections/${collection.id}/items`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          title: movie.title,
+          year: year,
+          tmdbId: movie.id,
+        }),
+      });
+
+      if (response.ok) {
+        const newItem = await response.json();
+        setListItems([...listItems, newItem]);
+        setSearchQuery('');
+        setSearchResults([]);
+      }
+    } catch (error) {
+      console.error('Error adding to list:', error);
+    }
+  };
+
+  const handleRemoveFromList = async (itemId: number) => {
+    if (!collection) return;
+
+    try {
+      const response = await fetch(`${API_BASE}/api/collections/${collection.id}/items/${itemId}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setListItems(listItems.filter(item => item.id !== itemId));
+      }
+    } catch (error) {
+      console.error('Error removing from list:', error);
+    }
+  };
+
+  const isMovieOwned = (title: string, year: number) => {
+    return movies.some(m => 
+      m.title.toLowerCase() === title.toLowerCase() && m.year === year
+    );
+  };
+
+  const completionPercentage = listItems.length > 0
+    ? Math.round((listItems.filter(item => isMovieOwned(item.title, item.year)).length / listItems.length) * 100)
+    : 0;
+
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-8">
@@ -143,7 +242,7 @@ function CollectionDetail() {
         >
           ← Back to Collections
         </button>
-        <div className="flex items-start justify-between">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
           <div className="flex-1">
             {isEditing ? (
               <div className="flex items-center gap-3 mb-2">
@@ -168,12 +267,33 @@ function CollectionDetail() {
                 </button>
               </div>
             ) : (
-              <h1 className="text-3xl font-bold mb-2">{collectionName}</h1>
+              <div>
+                <h1 className="text-3xl font-bold mb-2">{collectionName}</h1>
+                {listItems.length > 0 && (
+                  <div className="flex flex-wrap items-center gap-3 text-sm text-gray-400">
+                    <span>{movies.length} owned</span>
+                    <span>•</span>
+                    <span>{listItems.length} total in checklist</span>
+                    <span>•</span>
+                    <span className={completionPercentage === 100 ? 'text-green-400 font-semibold' : ''}>
+                      {completionPercentage}% complete
+                    </span>
+                  </div>
+                )}
+                {listItems.length === 0 && (
+                  <p className="text-gray-400">{movies.length} {movies.length === 1 ? 'movie' : 'movies'} in this collection</p>
+                )}
+              </div>
             )}
-            <p className="text-gray-400">{movies.length} {movies.length === 1 ? 'movie' : 'movies'} in this collection</p>
           </div>
           {!isEditing && collection && (
-            <div className="flex gap-3">
+            <div className="flex flex-wrap gap-3">
+              <button
+                onClick={() => setShowListManager(!showListManager)}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md transition flex items-center gap-2 cursor-pointer"
+              >
+                {showListManager ? 'Hide' : 'Manage'} Checklist
+              </button>
               <button
                 onClick={handleEditClick}
                 className="bg-gray-700 hover:bg-gray-600 text-white py-2 px-4 rounded-md transition flex items-center gap-2 cursor-pointer"
@@ -191,21 +311,136 @@ function CollectionDetail() {
         </div>
       </div>
 
-      {movies.length === 0 ? (
-        <div className="text-center py-20">
-          <div className="text-6xl mb-4">🎬</div>
-          <p className="text-gray-400 text-lg mb-6">
-            No movies in this collection yet.
+      {/* Collection Checklist Manager */}
+      {showListManager && collection && (
+        <div className="mb-8 bg-gray-800 rounded-lg p-6">
+          <h2 className="text-2xl font-bold mb-4">Collection Checklist</h2>
+          <p className="text-gray-400 mb-6">
+            Create a checklist of movies that make up the complete collection. Track which ones you own!
           </p>
-          <Link
-            to="/add"
-            className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-md transition duration-200"
-          >
-            Add a Movie
-          </Link>
+
+          {/* Search to add movies */}
+          <div className="mb-6">
+            <div className="flex gap-2 mb-4">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                placeholder="Search TMDB to add movies..."
+                className="flex-1 px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              <button
+                onClick={handleSearch}
+                disabled={isSearching}
+                className="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:bg-gray-600 text-white rounded-md transition cursor-pointer"
+              >
+                {isSearching ? 'Searching...' : 'Search'}
+              </button>
+            </div>
+
+            {/* Search Results */}
+            {searchResults.length > 0 && (
+              <div className="bg-gray-700 rounded-md p-4 max-h-96 overflow-y-auto">
+                <h3 className="text-sm font-semibold text-gray-300 mb-3">Search Results:</h3>
+                <div className="space-y-2">
+                  {searchResults.map((movie) => {
+                    const year = movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A';
+                    const alreadyInList = listItems.some(item => item.tmdbId === movie.id);
+                    
+                    return (
+                      <div key={movie.id} className="flex items-center justify-between bg-gray-800 p-3 rounded">
+                        <div>
+                          <span className="text-white font-medium">{movie.title}</span>
+                          <span className="text-gray-400 ml-2">({year})</span>
+                        </div>
+                        <button
+                          onClick={() => handleAddToList(movie)}
+                          disabled={alreadyInList}
+                          className={`px-3 py-1 rounded text-sm ${
+                            alreadyInList
+                              ? 'bg-gray-600 text-gray-400 cursor-not-allowed'
+                              : 'bg-indigo-600 hover:bg-indigo-700 text-white cursor-pointer'
+                          }`}
+                        >
+                          {alreadyInList ? 'Already Added' : 'Add'}
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* List Items */}
+          {listItems.length > 0 ? (
+            <div>
+              <h3 className="text-lg font-semibold mb-3">
+                Checklist ({listItems.filter(item => isMovieOwned(item.title, item.year)).length} of {listItems.length} owned)
+              </h3>
+              <div className="space-y-2">
+                {listItems.sort((a, b) => a.year - b.year).map((item) => {
+                  const owned = isMovieOwned(item.title, item.year);
+                  
+                  return (
+                    <div
+                      key={item.id}
+                      className={`flex items-center justify-between p-3 rounded ${
+                        owned ? 'bg-green-900/30 border border-green-700' : 'bg-gray-700'
+                      }`}
+                    >
+                      <div className="flex items-center gap-3">
+                        <input
+                          type="checkbox"
+                          checked={owned}
+                          readOnly
+                          className="w-5 h-5 cursor-default"
+                        />
+                        <div>
+                          <span className={`font-medium ${owned ? 'text-green-400' : 'text-white'}`}>
+                            {item.title}
+                          </span>
+                          <span className="text-gray-400 ml-2">({item.year})</span>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => item.id && handleRemoveFromList(item.id)}
+                        className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded text-sm cursor-pointer"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          ) : (
+            <div className="text-center py-8 text-gray-400">
+              <p>No items in checklist yet. Search above to add movies!</p>
+            </div>
+          )}
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      )}
+
+      {/* Owned Movies Section */}
+      <div>
+        <h2 className="text-2xl font-bold mb-6">Your Movies</h2>
+        {movies.length === 0 ? (
+          <div className="text-center py-20">
+            <div className="text-6xl mb-4">🎬</div>
+            <p className="text-gray-400 text-lg mb-6">
+              No movies in this collection yet.
+            </p>
+            <Link
+              to="/add"
+              className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-md transition duration-200"
+            >
+              Add a Movie
+            </Link>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {movies.map((movie) => (
             <Link
               key={movie.id}
@@ -216,52 +451,53 @@ function CollectionDetail() {
                 <img 
                   src={movie.posterPath} 
                   alt={`${movie.title} poster`}
-                  className="w-24 h-36 object-cover rounded-md flex-shrink-0"
+                  className="w-24 h-36 object-cover rounded-md shrink-0"
                   onError={(e) => {
                     e.currentTarget.src = 'https://via.placeholder.com/96x144?text=No+Poster';
                   }}
                 />
               )}
               <div className="flex-1 min-w-0">
-              <div className="mb-4">
-                <h3 className="text-xl font-bold text-white mb-2">{movie.title}</h3>
-                <p className="text-gray-400 text-sm font-mono">{movie.upcNumber}</p>
-              </div>
+                <div className="mb-4">
+                  <h3 className="text-xl font-bold text-white mb-2">{movie.title}</h3>
+                  <p className="text-gray-400 text-sm font-mono">{movie.upcNumber}</p>
+                </div>
 
-              {movie.formats && movie.formats.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-3">
-                  {[...movie.formats].sort().map((fmt, idx) => (
-                    <span key={idx} className="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-                      {fmt}
+                {movie.formats && movie.formats.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mb-3">
+                    {[...movie.formats].sort().map((fmt, idx) => (
+                      <span key={idx} className="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-medium">
+                        {fmt}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                {movie.rating > 0 && (
+                  <div className="flex items-center gap-2 text-sm text-gray-300">
+                    <span>⭐</span>
+                    <span>{movie.rating}</span>
+                  </div>
+                )}
+
+                {movie.condition && (
+                  <div className="mt-3">
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                      movie.condition === 'New' ? 'bg-green-600 text-white' :
+                      movie.condition === 'Good' ? 'bg-blue-600 text-white' :
+                      movie.condition === 'Skips' ? 'bg-yellow-600 text-white' :
+                      'bg-red-600 text-white'
+                    }`}>
+                      {movie.condition}
                     </span>
-                  ))}
-                </div>
-              )}
-
-              {movie.rating > 0 && (
-                <div className="flex items-center gap-2 text-sm text-gray-300">
-                  <span>⭐</span>
-                  <span>{movie.rating}</span>
-                </div>
-              )}
-
-              {movie.condition && (
-                <div className="mt-3">
-                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                    movie.condition === 'New' ? 'bg-green-600 text-white' :
-                    movie.condition === 'Good' ? 'bg-blue-600 text-white' :
-                    movie.condition === 'Skips' ? 'bg-yellow-600 text-white' :
-                    'bg-red-600 text-white'
-                  }`}>
-                    {movie.condition}
-                  </span>
-                </div>
-              )}
+                  </div>
+                )}
               </div>
             </Link>
           ))}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
 
       <ConfirmDialog
         isOpen={showDeleteConfirm}

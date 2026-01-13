@@ -103,6 +103,7 @@ app.MapMovieEndpoints();
 app.MapCollectionEndpoints();
 app.MapShelfSectionEndpoints();
 app.MapUpcEndpoints();
+app.MapCollectionListItemEndpoints();
 
 // Use PORT from Railway if available, bind to all interfaces
 var port = Environment.GetEnvironmentVariable("PORT") ?? "5156";
