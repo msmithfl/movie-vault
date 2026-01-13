@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import type { CollectionListItem } from '../types'
 
 interface Collection {
   id: number;
@@ -20,6 +21,7 @@ function CollectionsView() {
   const [loading, setLoading] = useState(true);
   const [showCreateInput, setShowCreateInput] = useState(false);
   const [newCollectionName, setNewCollectionName] = useState('');
+  const [collectionListItems, setCollectionListItems] = useState<Record<number, CollectionListItem[]>>({});
 
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5156';
   const COLLECTIONS_URL = `${API_BASE}/api/collections`;
@@ -39,6 +41,21 @@ function CollectionsView() {
       if (collectionsRes.ok) {
         const collectionsData = await collectionsRes.json();
         setCollections(collectionsData);
+        
+        // Fetch list items for all collections in parallel
+        const listItemsPromises = collectionsData.map((collection: Collection) =>
+          fetch(`${API_BASE}/api/collections/${collection.id}/items`)
+            .then(res => res.ok ? res.json() : [])
+            .then(items => ({ collectionId: collection.id, items }))
+            .catch(() => ({ collectionId: collection.id, items: [] }))
+        );
+        
+        const listItemsResults = await Promise.all(listItemsPromises);
+        const listItemsMap: Record<number, CollectionListItem[]> = {};
+        listItemsResults.forEach(result => {
+          listItemsMap[result.collectionId] = result.items;
+        });
+        setCollectionListItems(listItemsMap);
       }
 
       if (moviesRes.ok) {
@@ -56,6 +73,20 @@ function CollectionsView() {
     return movies.filter(movie => 
       movie.collections && movie.collections.includes(collectionName)
     ).length;
+  };
+
+  const getCompletionPercentage = (collectionId: number, collectionName: string) => {
+    const listItems = collectionListItems[collectionId] || [];
+    if (listItems.length === 0) return null;
+    
+    const ownedCount = listItems.filter(item => 
+      movies.some(m => 
+        m.title.toLowerCase() === item.title.toLowerCase() && 
+        m.collections?.includes(collectionName)
+      )
+    ).length;
+    
+    return Math.round((ownedCount / listItems.length) * 100);
   };
 
   const createCollection = async () => {
@@ -118,6 +149,9 @@ function CollectionsView() {
                   .filter(c => !c.isDirectorCollection)
                   .map((collection) => {
                     const movieCount = getMovieCount(collection.name);
+                    const completionPercentage = getCompletionPercentage(collection.id, collection.name);
+                    const listItemCount = collectionListItems[collection.id]?.length || 0;
+                    
                     return (
                       <Link
                         key={collection.id}
@@ -125,16 +159,39 @@ function CollectionsView() {
                         className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg p-6 transition-all duration-200 transform hover:scale-105"
                       >
                         <div className="flex items-start justify-between mb-4">
-                          <div>
+                          <div className="flex-1">
                             <h3 className="text-xl font-bold text-white mb-2">{collection.name}</h3>
                             <p className="text-gray-400 text-sm">
                               {movieCount} {movieCount === 1 ? 'movie' : 'movies'}
                             </p>
+                            {completionPercentage !== null && (
+                              <p className="text-gray-500 text-xs mt-1">
+                                {listItemCount} in checklist
+                              </p>
+                            )}
                           </div>
                           <span className="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-medium">
                             {movieCount}
                           </span>
                         </div>
+                        {completionPercentage !== null && (
+                          <div className="mt-4">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-xs text-gray-400">Checklist Progress</span>
+                              <span className={`text-xs font-semibold ${completionPercentage === 100 ? 'text-green-400' : 'text-indigo-400'}`}>
+                                {completionPercentage}%
+                              </span>
+                            </div>
+                            <div className="w-full bg-gray-700 rounded-full h-2">
+                              <div
+                                className={`h-2 rounded-full transition-all duration-300 ${
+                                  completionPercentage === 100 ? 'bg-green-500' : 'bg-indigo-500'
+                                }`}
+                                style={{ width: `${completionPercentage}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        )}
                       </Link>
                     );
                   })}
@@ -191,6 +248,9 @@ function CollectionsView() {
                   .filter(c => c.isDirectorCollection)
                   .map((collection) => {
                     const movieCount = getMovieCount(collection.name);
+                    const completionPercentage = getCompletionPercentage(collection.id, collection.name);
+                    const listItemCount = collectionListItems[collection.id]?.length || 0;
+                    
                     return (
                       <Link
                         key={collection.id}
@@ -198,16 +258,39 @@ function CollectionsView() {
                         className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg p-6 transition-all duration-200 transform hover:scale-105"
                       >
                         <div className="flex items-start justify-between mb-4">
-                          <div>
+                          <div className="flex-1">
                             <h3 className="text-xl font-bold text-white mb-2">{collection.name}</h3>
                             <p className="text-gray-400 text-sm">
                               {movieCount} {movieCount === 1 ? 'movie' : 'movies'}
                             </p>
+                            {completionPercentage !== null && (
+                              <p className="text-gray-500 text-xs mt-1">
+                                {listItemCount} in checklist
+                              </p>
+                            )}
                           </div>
-                          <span className="bg-indigo-600 text-white  px-3 py-1 rounded-full text-sm font-medium">
+                          <span className="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-medium">
                             {movieCount}
-                  </span>
+                          </span>
                         </div>
+                        {completionPercentage !== null && (
+                          <div className="mt-4">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-xs text-gray-400">Checklist Progress</span>
+                              <span className={`text-xs font-semibold ${completionPercentage === 100 ? 'text-green-400' : 'text-indigo-400'}`}>
+                                {completionPercentage}%
+                              </span>
+                            </div>
+                            <div className="w-full bg-gray-700 rounded-full h-2">
+                              <div
+                                className={`h-2 rounded-full transition-all duration-300 ${
+                                  completionPercentage === 100 ? 'bg-green-500' : 'bg-indigo-500'
+                                }`}
+                                style={{ width: `${completionPercentage}%` }}
+                              ></div>
+                            </div>
+                          </div>
+                        )}
                       </Link>
                     );
                   })}
