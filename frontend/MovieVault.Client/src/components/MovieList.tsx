@@ -613,7 +613,7 @@ function MovieList() {
                   {visibleColumns.dateAdded && (
                     <th 
                       onClick={() => handleColumnClick('date')}
-                      className="px-6 py-2 text-left text-sm font-semibold text-gray-200 hover:text-white transition-colors cursor-pointer"
+                      className="px-6 pr-10 py-2 text-left text-sm font-semibold text-gray-200 hover:text-white transition-colors cursor-pointer"
                     >
                       <div className="flex items-center gap-2">
                         Date Added
