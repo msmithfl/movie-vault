@@ -20,13 +20,19 @@ public static class CollectionEndpoints
             return Results.Created($"/api/collections/{collection.Id}", collection);
         });
 
-        group.MapPut("/{id}", async (int id, string newName, MovieDbContext db) =>
+        group.MapPut("/{id}", async (int id, string newName, bool? isDirectorCollection, MovieDbContext db) =>
         {
             var collection = await db.Collections.FindAsync(id);
             if (collection is null) return Results.NotFound();
 
             var oldName = collection.Name;
             collection.Name = newName;
+            
+            // Update IsDirectorCollection if provided
+            if (isDirectorCollection.HasValue)
+            {
+                collection.IsDirectorCollection = isDirectorCollection.Value;
+            }
 
             // Update all movies that have this collection
             var moviesWithCollection = await db.Movies

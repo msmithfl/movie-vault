@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 interface Collection {
   id: number;
   name: string;
+  isDirectorCollection: boolean;
   createdAt: string;
 }
 
@@ -109,70 +110,113 @@ function CollectionsView() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {collections.map((collection) => {
-            const movieCount = getMovieCount(collection.name);
-            return (
-              <Link
-                key={collection.id}
-                to={`/collections/${encodeURIComponent(collection.name)}`}
-                className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg p-6 transition-all duration-200 transform hover:scale-105"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div>
-                    <h3 className="text-xl font-bold text-white mb-2">{collection.name}</h3>
-                    <p className="text-gray-400 text-sm">
-                      {movieCount} {movieCount === 1 ? 'movie' : 'movies'}
-                    </p>
+        <>
+          {/* Standard Collections Section */}
+          {collections.filter(c => !c.isDirectorCollection).length > 0 && (
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold mb-6">Standard Collections</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {collections
+                  .filter(c => !c.isDirectorCollection)
+                  .map((collection) => {
+                    const movieCount = getMovieCount(collection.name);
+                    return (
+                      <Link
+                        key={collection.id}
+                        to={`/collections/${encodeURIComponent(collection.name)}`}
+                        className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg p-6 transition-all duration-200 transform hover:scale-105"
+                      >
+                        <div className="flex items-start justify-between mb-4">
+                          <div>
+                            <h3 className="text-xl font-bold text-white mb-2">{collection.name}</h3>
+                            <p className="text-gray-400 text-sm">
+                              {movieCount} {movieCount === 1 ? 'movie' : 'movies'}
+                            </p>
+                          </div>
+                          <span className="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-medium">
+                            {movieCount}
+                          </span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+                {showCreateInput ? (
+                  <div className="bg-gray-800 rounded-lg shadow-lg p-6 border-2 border-indigo-500 flex flex-col gap-4 min-h-30">
+                    <input
+                      type="text"
+                      value={newCollectionName}
+                      onChange={(e) => setNewCollectionName(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && createCollection()}
+                      placeholder="Collection name"
+                      autoFocus
+                      className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={createCollection}
+                        className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition cursor-pointer"
+                      >
+                        Create
+                      </button>
+                      <button
+                        onClick={() => {
+                          setShowCreateInput(false);
+                          setNewCollectionName('');
+                        }}
+                        className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md transition cursor-pointer"
+                      >
+                        Cancel
+                      </button>
+                    </div>
                   </div>
-                  <span className="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    {movieCount}
-                  </span>
-                </div>
-              </Link>
-            );
-          })}
-          {showCreateInput ? (
-            <div className="bg-gray-800 rounded-lg shadow-lg p-6 border-2 border-indigo-500 flex flex-col gap-4 min-h-30">
-              <input
-                type="text"
-                value={newCollectionName}
-                onChange={(e) => setNewCollectionName(e.target.value)}
-                onKeyDown={(e) => e.key === 'Enter' && createCollection()}
-                placeholder="Collection name"
-                autoFocus
-                className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-              />
-              <div className="flex gap-2">
-                <button
-                  onClick={createCollection}
-                  className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition cursor-pointer"
-                >
-                  Create
-                </button>
-                <button
-                  onClick={() => {
-                    setShowCreateInput(false);
-                    setNewCollectionName('');
-                  }}
-                  className="flex-1 px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md transition cursor-pointer"
-                >
-                  Cancel
-                </button>
+                ) : (
+                  <button
+                    onClick={() => setShowCreateInput(true)}
+                    className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg p-6 transition-all duration-200 transform hover:scale-105 border-2 border-dashed border-gray-600 hover:border-indigo-500 flex items-center justify-center min-h-30 cursor-pointer"
+                  >
+                    <div className="text-center">
+                      <div className="text-5xl text-gray-500 mb-2">+</div>
+                      <p className="text-gray-400 text-sm">New Collection</p>
+                    </div>
+                  </button>
+                )}
               </div>
             </div>
-          ) : (
-            <button
-              onClick={() => setShowCreateInput(true)}
-              className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg p-6 transition-all duration-200 transform hover:scale-105 border-2 border-dashed border-gray-600 hover:border-indigo-500 flex items-center justify-center min-h-30 cursor-pointer"
-            >
-              <div className="text-center">
-                <div className="text-5xl text-gray-500 mb-2">+</div>
-                <p className="text-gray-400 text-sm">New Collection</p>
-              </div>
-            </button>
           )}
-        </div>
+
+          {/* Director Collections Section */}
+          {collections.filter(c => c.isDirectorCollection).length > 0 && (
+            <div>
+              <h2 className="text-2xl font-bold mb-6">Director Collections</h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                {collections
+                  .filter(c => c.isDirectorCollection)
+                  .map((collection) => {
+                    const movieCount = getMovieCount(collection.name);
+                    return (
+                      <Link
+                        key={collection.id}
+                        to={`/collections/${encodeURIComponent(collection.name)}`}
+                        className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg p-6 transition-all duration-200 transform hover:scale-105"
+                      >
+                        <div className="flex items-start justify-between mb-4">
+                          <div>
+                            <h3 className="text-xl font-bold text-white mb-2">{collection.name}</h3>
+                            <p className="text-gray-400 text-sm">
+                              {movieCount} {movieCount === 1 ? 'movie' : 'movies'}
+                            </p>
+                          </div>
+                          <span className="bg-indigo-600 text-white  px-3 py-1 rounded-full text-sm font-medium">
+                            {movieCount}
+                  </span>
+                        </div>
+                      </Link>
+                    );
+                  })}
+              </div>
+            </div>
+          )}
+        </>
       )}
     </div>
   );

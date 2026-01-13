@@ -7,6 +7,7 @@ import type { TMDBMovie, CollectionListItem } from '../types'
 interface Collection {
   id: number;
   name: string;
+  isDirectorCollection: boolean;
   createdAt: string;
 }
 
@@ -36,6 +37,7 @@ function CollectionDetail() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const [editedName, setEditedName] = useState('');
+  const [editedIsDirector, setEditedIsDirector] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   
   // Collection list state
@@ -100,13 +102,14 @@ function CollectionDetail() {
   const handleEditClick = () => {
     setIsEditing(true);
     setEditedName(collectionName || '');
+    setEditedIsDirector(collection?.isDirectorCollection || false);
   };
 
   const handleSaveEdit = async () => {
     if (!collection || !editedName.trim()) return;
 
     try {
-      const response = await fetch(`${COLLECTIONS_URL}/${collection.id}?newName=${encodeURIComponent(editedName)}`, {
+      const response = await fetch(`${COLLECTIONS_URL}/${collection.id}?newName=${encodeURIComponent(editedName)}&isDirectorCollection=${editedIsDirector}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -125,6 +128,7 @@ function CollectionDetail() {
   const handleCancelEdit = () => {
     setIsEditing(false);
     setEditedName('');
+    setEditedIsDirector(false);
   };
 
   const handleDeleteClick = () => {
@@ -256,26 +260,37 @@ function CollectionDetail() {
         <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
           <div className="flex-1">
             {isEditing ? (
-              <div className="flex items-center gap-3 mb-2">
-                <input
-                  type="text"
-                  value={editedName}
-                  onChange={(e) => setEditedName(e.target.value)}
-                  className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white text-2xl font-bold"
-                  autoFocus
-                />
-                <button
-                  onClick={handleSaveEdit}
-                  className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md transition cursor-pointer"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={handleCancelEdit}
-                  className="bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-md transition cursor-pointer"
-                >
-                  Cancel
-                </button>
+              <div>
+                <div className="flex items-center gap-3 mb-3">
+                  <input
+                    type="text"
+                    value={editedName}
+                    onChange={(e) => setEditedName(e.target.value)}
+                    className="px-3 py-2 bg-gray-700 border border-gray-600 rounded-md text-white text-2xl font-bold"
+                    autoFocus
+                  />
+                  <button
+                    onClick={handleSaveEdit}
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white py-2 px-4 rounded-md transition cursor-pointer"
+                  >
+                    Save
+                  </button>
+                  <button
+                    onClick={handleCancelEdit}
+                    className="bg-gray-600 hover:bg-gray-500 text-white py-2 px-4 rounded-md transition cursor-pointer"
+                  >
+                    Cancel
+                  </button>
+                </div>
+                <label className="flex items-center gap-2 text-gray-300 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={editedIsDirector}
+                    onChange={(e) => setEditedIsDirector(e.target.checked)}
+                    className="w-4 h-4 cursor-pointer"
+                  />
+                  <span>Director Collection</span>
+                </label>
               </div>
             ) : (
               <div>
@@ -476,7 +491,7 @@ function CollectionDetail() {
           {listItems.length > 0 ? (
             <div>
               <h3 className="text-lg font-semibold mb-3">
-                Checklist ({listItems.filter(item => isMovieOwned(item.title, item.year)).length} of {listItems.length} owned)
+                Checklist ({listItems.filter(item => isMovieOwned(item.title, item.year)).length} of {listItems.length})
               </h3>
               <div className="space-y-2">
                 {listItems.sort((a, b) => a.year - b.year).map((item) => {
