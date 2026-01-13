@@ -307,9 +307,6 @@ function CollectionDetail() {
                     </span>
                   </div>
                 )}
-                {listItems.length === 0 && (
-                  <p className="text-gray-400">{movies.length} {movies.length === 1 ? 'movie' : 'movies'} in this collection</p>
-                )}
               </div>
             )}
           </div>
@@ -334,10 +331,8 @@ function CollectionDetail() {
 
       {/* Owned Movies Section */}
       <div>
-        <h2 className="text-2xl font-bold mb-6">Your Movies</h2>
         {movies.length === 0 ? (
-          <div className="text-center py-20">
-            <div className="text-6xl mb-4">🎬</div>
+          <div className="text-center">
             <p className="text-gray-400 text-lg mb-6">
               No movies in this collection yet.
             </p>
@@ -444,45 +439,45 @@ function CollectionDetail() {
 
               {/* Search Results - Absolute positioned dropdown */}
               {searchResults.length > 0 && (
-                <div className="absolute z-10 w-full mt-2 bg-gray-700 rounded-md p-4 max-h-96 overflow-y-auto shadow-lg border border-gray-600">
-                  <h3 className="text-sm font-semibold text-gray-300 mb-3">Search Results:</h3>
-                  <div className="space-y-2">
-                    {searchResults.map((movie) => {
-                      const year = movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A';
-                      const alreadyInList = listItems.some(item => item.tmdbId === movie.id);
-                      
-                      return (
-                        <div
-                          key={movie.id}
-                          onClick={() => !alreadyInList && handleAddToList(movie)}
-                          className={`flex items-center gap-4 bg-gray-800 p-3 rounded transition-colors ${
-                            alreadyInList 
-                              ? 'opacity-50 cursor-not-allowed' 
-                              : 'hover:bg-gray-700 cursor-pointer'
-                          }`}
-                        >
+                <div className="absolute z-10 w-full mt-2 bg-gray-700 border border-gray-600 rounded-md shadow-lg max-h-50 overflow-y-auto">
+                  {searchResults.map((movie) => {
+                    const year = movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A';
+                    const alreadyInList = listItems.some(item => item.tmdbId === movie.id);
+                    
+                    return (
+                      <button
+                        key={movie.id}
+                        onClick={() => !alreadyInList && handleAddToList(movie)}
+                        disabled={alreadyInList}
+                        className={`w-full px-4 py-3 text-left transition-colors border-b border-gray-600 last:border-b-0 ${
+                          alreadyInList 
+                            ? 'opacity-50 cursor-not-allowed' 
+                            : 'hover:bg-gray-600 cursor-pointer'
+                        }`}
+                      >
+                        <div className="flex items-center gap-4">
                           {movie.poster_path ? (
                             <img
                               src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
                               alt={movie.title}
-                              className="w-12 h-18 object-cover rounded shrink-0"
+                              className="w-12 h-18 object-cover rounded"
                             />
                           ) : (
-                            <div className="w-12 h-18 bg-gray-600 rounded flex items-center justify-center shrink-0">
+                            <div className="w-12 h-18 bg-gray-600 rounded flex items-center justify-center">
                               <span className="text-gray-400 text-xs">No Image</span>
                             </div>
                           )}
-                          <div className="flex-1 min-w-0">
-                            <p className="text-white font-medium truncate">{movie.title}</p>
-                            <p className="text-gray-400 text-sm">({year})</p>
-                            {alreadyInList && (
-                              <p className="text-yellow-400 text-xs mt-1">⚠️ Already in checklist</p>
-                            )}
+                          <div>
+                            <p className="text-white font-medium">{movie.title}</p>
+                            <p className="text-gray-400 text-sm">
+                              {year}
+                              {alreadyInList && <span className="text-yellow-400 ml-2">⚠️ Already in checklist</span>}
+                            </p>
                           </div>
                         </div>
-                      );
-                    })}
-                  </div>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>

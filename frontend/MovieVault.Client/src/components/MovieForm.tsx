@@ -142,7 +142,7 @@ function MovieForm({
               onChange={(e) => setFormData({ ...formData, upcNumber: e.target.value })}
               required
               placeholder="Enter UPC barcode number"
-              className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-gray-500"
+              className="flex-1 max-w-42 md:max-w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:border-gray-500"
             />
             {showScanButton && onScanClick && (
               <>
@@ -379,16 +379,9 @@ function MovieForm({
               <button
                 type="button"
                 onClick={addCollection}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition"
+                className="px-4 md:px-8 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition"
               >
                 Add
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowCollectionInput(false)}
-                className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md transition"
-              >
-                Cancel
               </button>
             </div>
           )}
@@ -493,16 +486,9 @@ function MovieForm({
               <button
                 type="button"
                 onClick={addShelfSection}
-                className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition"
+                className="px-4 md:px-8 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md transition"
               >
                 Add
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowShelfSectionInput(false)}
-                className="px-4 py-2 bg-gray-600 hover:bg-gray-700 text-white rounded-md transition"
-              >
-                Cancel
               </button>
             </div>
           )}
