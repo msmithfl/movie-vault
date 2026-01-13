@@ -543,8 +543,10 @@ function MovieList() {
                   >
                     <div className="flex items-center gap-2">
                       Title
-                      {sortBy === 'alphabetic' && (
-                        sortDirection === 'asc' ? <FaArrowUp className="w-3 h-3" /> : <FaArrowDown className="w-3 h-3" />
+                      {sortDirection === 'asc' ? (
+                        <FaArrowUp className={`w-3 h-3 ${sortBy === 'alphabetic' ? '' : 'invisible'}`} />
+                      ) : (
+                        <FaArrowDown className={`w-3 h-3 ${sortBy === 'alphabetic' ? '' : 'invisible'}`} />
                       )}
                     </div>
                   </th>
@@ -555,8 +557,10 @@ function MovieList() {
                     >
                       <div className="flex items-center gap-2">
                         Year
-                        {sortBy === 'year' && (
-                          sortDirection === 'asc' ? <FaArrowUp className="w-3 h-3" /> : <FaArrowDown className="w-3 h-3" />
+                        {sortDirection === 'asc' ? (
+                          <FaArrowUp className={`w-3 h-3 ${sortBy === 'year' ? '' : 'invisible'}`} />
+                        ) : (
+                          <FaArrowDown className={`w-3 h-3 ${sortBy === 'year' ? '' : 'invisible'}`} />
                         )}
                       </div>
                     </th>
@@ -568,8 +572,10 @@ function MovieList() {
                     >
                       <div className="flex items-center gap-2">
                         Format
-                        {sortBy === 'format' && (
-                          sortDirection === 'asc' ? <FaArrowUp className="w-3 h-3" /> : <FaArrowDown className="w-3 h-3" />
+                        {sortDirection === 'asc' ? (
+                          <FaArrowUp className={`w-3 h-3 ${sortBy === 'format' ? '' : 'invisible'}`} />
+                        ) : (
+                          <FaArrowDown className={`w-3 h-3 ${sortBy === 'format' ? '' : 'invisible'}`} />
                         )}
                       </div>
                     </th>
@@ -581,8 +587,10 @@ function MovieList() {
                     >
                       <div className="flex items-center gap-2">
                         Condition
-                        {sortBy === 'condition' && (
-                          sortDirection === 'asc' ? <FaArrowUp className="w-3 h-3" /> : <FaArrowDown className="w-3 h-3" />
+                        {sortDirection === 'asc' ? (
+                          <FaArrowUp className={`w-3 h-3 ${sortBy === 'condition' ? '' : 'invisible'}`} />
+                        ) : (
+                          <FaArrowDown className={`w-3 h-3 ${sortBy === 'condition' ? '' : 'invisible'}`} />
                         )}
                       </div>
                     </th>
@@ -594,8 +602,10 @@ function MovieList() {
                     >
                       <div className="flex items-center gap-2">
                         Rating
-                        {sortBy === 'rating' && (
-                          sortDirection === 'asc' ? <FaArrowUp className="w-3 h-3" /> : <FaArrowDown className="w-3 h-3" />
+                        {sortDirection === 'asc' ? (
+                          <FaArrowUp className={`w-3 h-3 ${sortBy === 'rating' ? '' : 'invisible'}`} />
+                        ) : (
+                          <FaArrowDown className={`w-3 h-3 ${sortBy === 'rating' ? '' : 'invisible'}`} />
                         )}
                       </div>
                     </th>
@@ -607,8 +617,10 @@ function MovieList() {
                     >
                       <div className="flex items-center gap-2">
                         Date Added
-                        {sortBy === 'date' && (
-                          sortDirection === 'asc' ? <FaArrowUp className="w-3 h-3" /> : <FaArrowDown className="w-3 h-3" />
+                        {sortDirection === 'asc' ? (
+                          <FaArrowUp className={`w-3 h-3 ${sortBy === 'date' ? '' : 'invisible'}`} />
+                        ) : (
+                          <FaArrowDown className={`w-3 h-3 ${sortBy === 'date' ? '' : 'invisible'}`} />
                         )}
                       </div>
                     </th>
