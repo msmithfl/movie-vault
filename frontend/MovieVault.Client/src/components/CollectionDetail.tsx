@@ -87,6 +87,7 @@ function CollectionDetail() {
       });
 
       if (response.ok) {
+        setIsEditing(false);
         navigate(`/collections/${encodeURIComponent(editedName)}`);
       }
     } catch (error) {

@@ -96,6 +96,7 @@ function ShelfSectionDetail() {
       });
 
       if (response.ok) {
+        setIsEditing(false);
         navigate(`/shelfsections/${encodeURIComponent(editedName)}`);
       }
     } catch (error) {
