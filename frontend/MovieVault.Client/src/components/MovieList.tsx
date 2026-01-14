@@ -34,6 +34,7 @@ interface VisibleColumns {
 
 function MovieList() {
   const [movies, setMovies] = useState<Movie[]>([]);
+  const [loading, setLoading] = useState(true);
   const [sortBy, setSortBy] = useState<SortOption>(() => {
     const saved = localStorage.getItem('movieListSortBy');
     return (saved as SortOption) || 'alphabetic';
@@ -99,6 +100,8 @@ function MovieList() {
       }
     } catch (error) {
       console.error('Error fetching movies:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -218,6 +221,13 @@ function MovieList() {
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
+      {loading ? (
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-500 mb-4"></div>
+          <p className="text-gray-400">Loading your collection...</p>
+        </div>
+      ) : (
+        <>
       <div className="flex justify-between items-center mb-8">
         <div className='flex items-center gap-4'>
           <h2 className="text-3xl font-bold">Library</h2>
@@ -783,6 +793,8 @@ function MovieList() {
             </button>
           </div>
         </div>
+      )}
+        </>
       )}
     </div>
   )
