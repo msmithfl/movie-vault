@@ -141,7 +141,7 @@ function CollectionsView() {
             to="/add"
             className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-md transition duration-200"
           >
-            Add Your First Movie
+            Add Your First Movie.
           </Link>
         </div>
       ) : (
