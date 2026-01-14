@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import ConfirmDialog from './ConfirmDialog'
+import Counter from './Counter'
 import { searchTMDB } from '../utils/tmdbApi'
 import type { TMDBMovie, CollectionListItem } from '../types'
 import { FaEdit, FaTrash, FaCheck, FaImage  } from 'react-icons/fa'
@@ -385,7 +386,7 @@ function CollectionDetail() {
               <div>
                 <div className='flex items-center gap-4'>
                   <h1 className="text-3xl font-bold mb-2">{collectionName}</h1>
-                  <span className='px-3 py-1 mb-2 bg-gray-800 rounded-md font-medium outline-1 outline-gray-600'>{movies.length}</span>
+                  <Counter count={movies.length} className="mb-2" />
                   <div ref={viewDropdownRef} className="ml-auto relative mb-2">
                     <button
                       onClick={() => setIsViewDropdownOpen(!isViewDropdownOpen)}

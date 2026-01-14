@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import Counter from './Counter';
 import BarcodeScanner from './BarcodeScanner'
 import { FaSortAmountDown, FaCog, FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from 'react-icons/ti'
@@ -231,7 +232,7 @@ function MovieList() {
       <div className="flex justify-between items-center mb-8">
         <div className='flex items-center gap-4'>
           <h2 className="text-3xl font-bold">Library</h2>
-          <span className='px-2 py-1 bg-gray-800 rounded-sm font-medium'>{movies.length}</span>
+          <Counter count={movies.length} />
         </div>
         
         {/* Mobile Sort and Column Buttons */}

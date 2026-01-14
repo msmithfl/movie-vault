@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import Counter from './Counter'
 
 interface ShelfSection {
   id: number;
@@ -99,7 +100,7 @@ function ShelfSectionsView() {
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex items-center mb-4 gap-4">
         <h1 className="text-3xl font-bold">Shelf Sections</h1>
-        <span className='px-3 py-1 bg-gray-800 rounded-md font-medium outline-1 outline-gray-600'>{shelfSections.length}</span>
+        <Counter count={shelfSections.length} />
       </div>
 
       {shelfSections.length === 0 ? (
