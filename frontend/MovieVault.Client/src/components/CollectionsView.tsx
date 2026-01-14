@@ -178,7 +178,6 @@ function CollectionsView() {
                   >
                     <div className="text-center">
                       <div className="text-5xl text-gray-500 mb-2">+</div>
-                      <p className="text-gray-400 text-sm">New Collection</p>
                     </div>
                   </button>
               </div>

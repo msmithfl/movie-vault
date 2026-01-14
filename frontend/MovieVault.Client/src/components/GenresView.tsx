@@ -60,8 +60,9 @@ function GenresView() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold mb-2">Genres</h1>
+      <div className="flex items-center mb-4 gap-4">
+        <h1 className="text-3xl font-bold">Genres</h1>
+        {/* <span className='px-3 py-1 bg-gray-800 rounded-md font-medium outline-1 outline-gray-600'>{genres.length}</span> */}
       </div>
 
       {genres.length === 0 ? (
@@ -90,9 +91,6 @@ function GenresView() {
                 <div className="flex items-start justify-between mb-4">
                   <div className='flex-1 max-w-64 md:max-w-50'>
                     <h3 className="text-xl font-bold text-white mb-2 truncate">{genre}</h3>
-                    <p className="text-gray-400 text-sm">
-                      {movieCount} {movieCount === 1 ? 'movie' : 'movies'}
-                    </p>
                   </div>
                   <span className="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-medium">
                     {movieCount}
