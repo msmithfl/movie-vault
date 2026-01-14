@@ -231,7 +231,7 @@ function MovieList() {
       <div className="flex justify-between items-center mb-8">
         <div className='flex items-center gap-4'>
           <h2 className="text-3xl font-bold">Library</h2>
-          <span className='px-3 py-1 bg-gray-800 rounded-md font-medium outline-1 outline-gray-600'>{movies.length}</span>
+          <span className='px-2 py-1 bg-gray-800 rounded-sm font-medium'>{movies.length}</span>
         </div>
         
         {/* Mobile Sort and Column Buttons */}

@@ -4,7 +4,7 @@ import ConfirmDialog from './ConfirmDialog'
 import { searchTMDB } from '../utils/tmdbApi'
 import type { TMDBMovie, CollectionListItem } from '../types'
 import { FaEdit, FaTrash, FaCheck, FaImage  } from 'react-icons/fa'
-import { FaTableList, FaChevronDown } from "react-icons/fa6";
+import { FaTableList, FaChevronDown, FaChevronUp } from "react-icons/fa6";
 
 interface Collection {
   id: number;
@@ -49,6 +49,7 @@ function CollectionDetail() {
   const [searchResults, setSearchResults] = useState<TMDBMovie[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const searchTimeoutRef = useRef<number | null>(null);
+  const viewDropdownRef = useRef<HTMLDivElement>(null);
   
   // View mode state
   const [viewMode, setViewMode] = useState<'detail' | 'poster'>(() => {
@@ -70,6 +71,29 @@ function CollectionDetail() {
   useEffect(() => {
     fetchMovies();
   }, [collectionName]);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (viewDropdownRef.current && !viewDropdownRef.current.contains(event.target as Node)) {
+        setIsViewDropdownOpen(false);
+      }
+    };
+
+    if (isViewDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      return () => {
+        document.removeEventListener('mousedown', handleClickOutside);
+      };
+    }
+  }, [isViewDropdownOpen]);
+
+  // Close dropdown when editing starts
+  useEffect(() => {
+    if (isEditing) {
+      setIsViewDropdownOpen(false);
+    }
+  }, [isEditing]);
 
   const fetchMovies = async () => {
     try {
@@ -362,7 +386,7 @@ function CollectionDetail() {
                 <div className='flex items-center gap-4'>
                   <h1 className="text-3xl font-bold mb-2">{collectionName}</h1>
                   <span className='px-3 py-1 mb-2 bg-gray-800 rounded-md font-medium outline-1 outline-gray-600'>{movies.length}</span>
-                  <div className="ml-auto relative mb-2">
+                  <div ref={viewDropdownRef} className="ml-auto relative mb-2">
                     <button
                       onClick={() => setIsViewDropdownOpen(!isViewDropdownOpen)}
                       className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md transition-colors text-sm font-medium flex items-center gap-2 cursor-pointer"
@@ -372,13 +396,17 @@ function CollectionDetail() {
                       ) : (
                         <FaTableList className="w-5 h-5" />
                       )}
-                      <FaChevronDown className="w-3 h-3" />
+                      {isViewDropdownOpen ? (
+                        <FaChevronUp className="w-3 h-3" />
+                      ) : (
+                        <FaChevronDown className="w-3 h-3" />
+                      )}
                     </button>
                     {isViewDropdownOpen && (
                       <div className="absolute right-0 mt-2 w-36 bg-gray-700 border border-gray-600 rounded-md shadow-lg z-10">
                         <button
                           onClick={() => handleViewModeChange('poster')}
-                          className="w-full px-4 py-3 text-left hover:bg-gray-600 transition-colors flex items-center justify-between border-b border-gray-600"
+                          className="w-full px-4 py-3 text-left hover:bg-gray-600 transition-colors flex items-center justify-between border-b border-gray-600 cursor-pointer"
                         >
                           <div className="flex items-center gap-3">
                             <span>Poster View</span>
@@ -387,7 +415,7 @@ function CollectionDetail() {
                         </button>
                         <button
                           onClick={() => handleViewModeChange('detail')}
-                          className="w-full px-4 py-3 text-left hover:bg-gray-600 transition-colors flex items-center justify-between"
+                          className="w-full px-4 py-3 text-left hover:bg-gray-600 transition-colors flex items-center justify-between cursor-pointer"
                         >
                           <div className="flex items-center gap-3">
                             <span>Detail View</span>
