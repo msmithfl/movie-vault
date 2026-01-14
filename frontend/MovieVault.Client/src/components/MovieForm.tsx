@@ -451,7 +451,7 @@ function MovieForm({
           />
         </div>
 
-        <div>
+        <div className="min-w-0">
           <label className="block text-sm font-medium text-gray-300 mb-2">
             Shelf Section
           </label>
@@ -459,7 +459,7 @@ function MovieForm({
             <select
               value={formData.shelfSection}
               onChange={(e) => setFormData({ ...formData, shelfSection: e.target.value })}
-              className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
+              className="flex-1 min-w-0 px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
             >
               <option value="">None</option>
               {shelfSections.map(section => (
@@ -469,7 +469,7 @@ function MovieForm({
             <button
               type="button"
               onClick={() => setShowShelfSectionInput(!showShelfSectionInput)}
-              className="px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition cursor-pointer"
+              className="px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition cursor-pointer shrink-0"
             >
               +
             </button>

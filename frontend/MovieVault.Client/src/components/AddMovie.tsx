@@ -4,12 +4,13 @@ import BarcodeScanner from './BarcodeScanner';
 import ProductImageSelector from './ProductImageSelector';
 import MovieForm from './MovieForm';
 import type { Movie, TMDBMovie } from "../types";
-import { GENRE_MAP } from '../utils/tmdbApi';
+import { GENRE_MAP, searchTMDB } from '../utils/tmdbApi';
 
 function AddMovie() {
   const navigate = useNavigate();
   const [entryMode, setEntryMode] = useState<'choice' | 'manual' | 'search'>('choice');
   const [search, setSearch] = useState('');
+  const [searchYear, setSearchYear] = useState('');
   const [suggestions, setSuggestions] = useState<TMDBMovie[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const searchTimeoutRef = useRef<number | null>(null);
@@ -167,24 +168,36 @@ function AddMovie() {
     // Wait 300ms after user stops typing
     searchTimeoutRef.current = window.setTimeout(async () => {
       try {
-        const res = await fetch(
-          `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(
-            value
-          )}&include_adult=false&language=en-US&page=1`,
-          {
-            headers: {
-              accept: "application/json",
-              Authorization: `Bearer ${TMDB_API_TOKEN}`,
-            },
-          }
-        );
-        const data = await res.json();
-        setSuggestions(data.results?.slice(0, 5) || []);
+        const results = await searchTMDB(value, searchYear);
+        setSuggestions(results.slice(0, 5));
         setShowSuggestions(true);
       } catch (err) {
         console.error("Search failed:", err);
       }
     }, 300);
+  };
+
+  const handleYearChange = (value: string) => {
+    setSearchYear(value);
+
+    // Re-search if there's already a search query
+    if (search.length >= 2) {
+      // Clear previous timeout
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+
+      searchTimeoutRef.current = window.setTimeout(async () => {
+        try {
+          const results = await searchTMDB(search, value);
+          setSuggestions(results.slice(0, 5));
+          setShowSuggestions(true);
+        } catch (error) {
+          console.error('Error searching TMDB:', error);
+          setSuggestions([]);
+        }
+      }, 300);
+    }
   };
 
   const handleMovieSelect = (movie: TMDBMovie) => {
@@ -209,6 +222,7 @@ function AddMovie() {
     // Switch to manual entry mode
     setEntryMode('manual');
     setSearch('');
+    setSearchYear('');
     setSuggestions([]);
     setShowSuggestions(false);
   };
@@ -301,63 +315,77 @@ function AddMovie() {
           </div>
           <h2 className="text-3xl font-bold mb-6">Find By Title</h2>
           
-          <div className="relative mb-6">
-            <input
-              type="text"
-              placeholder="Search for a movie..."
-              value={search}
-              onChange={(e) => handleSearchChange(e.target.value)}
-              className="w-full px-4 py-3 pl-10 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            />
-            <svg
-              className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-
-            {/* Suggestions dropdown */}
-            {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute z-10 w-full mt-2 bg-gray-700 border border-gray-600 rounded-md shadow-lg max-h-96 overflow-y-auto">
-                {suggestions.map((movie) => (
-                  <button
-                    key={movie.id}
-                    onClick={() => handleMovieSelect(movie)}
-                    className="w-full px-4 py-3 text-left hover:bg-gray-600 transition-colors border-b border-gray-600 last:border-b-0"
-                  >
-                    <div className="flex items-center gap-4">
-                      {movie.poster_path ? (
-                        <img
-                          src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
-                          alt={movie.title}
-                          className="w-12 h-18 object-cover rounded"
-                        />
-                      ) : (
-                        <div className="w-12 h-18 bg-gray-600 rounded flex items-center justify-center">
-                          <span className="text-gray-400 text-xs">No Image</span>
-                        </div>
-                      )}
-                      <div>
-                        <p className="text-white font-medium">{movie.title}</p>
-                        <p className="text-gray-400 text-sm">
-                          {movie.release_date ? new Date(movie.release_date).getFullYear() : 'Unknown'}
-                        </p>
-                      </div>
-                    </div>
-                  </button>
-                ))}
+          <div className="mb-6">
+            <div className="flex flex-col md:flex-row gap-3 mb-2">
+              <div className="relative flex-1">
+                <input
+                  type="text"
+                  placeholder="Search for a movie..."
+                  value={search}
+                  onChange={(e) => handleSearchChange(e.target.value)}
+                  className="w-full px-4 py-3 pl-10 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                />
+                <svg
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
               </div>
-            )}
+              <input
+                type="text"
+                value={searchYear}
+                onChange={(e) => handleYearChange(e.target.value)}
+                placeholder="Year (optional)"
+                className="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                maxLength={4}
+              />
+            </div>
+            
+            <div className="relative">
+              {/* Suggestions dropdown */}
+              {showSuggestions && suggestions.length > 0 && (
+                <div className="absolute z-10 w-full bg-gray-700 border border-gray-600 rounded-md shadow-lg max-h-96 overflow-y-auto">
+                  {suggestions.map((movie) => (
+                    <button
+                      key={movie.id}
+                      onClick={() => handleMovieSelect(movie)}
+                      className="w-full px-4 py-3 text-left hover:bg-gray-600 transition-colors border-b border-gray-600 last:border-b-0"
+                    >
+                      <div className="flex items-center gap-4">
+                        {movie.poster_path ? (
+                          <img
+                            src={`https://image.tmdb.org/t/p/w92${movie.poster_path}`}
+                            alt={movie.title}
+                            className="w-12 h-18 object-cover rounded"
+                          />
+                        ) : (
+                          <div className="w-12 h-18 bg-gray-600 rounded flex items-center justify-center">
+                            <span className="text-gray-400 text-xs">No Image</span>
+                          </div>
+                        )}
+                        <div>
+                          <p className="text-white font-medium">{movie.title}</p>
+                          <p className="text-gray-400 text-sm">
+                            {movie.release_date ? new Date(movie.release_date).getFullYear() : 'Unknown'}
+                          </p>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
 
-          {search.length > 0 && suggestions.length === 0 && showSuggestions && (
+          {search.length >= 2 && suggestions.length === 0 && showSuggestions && (
             <div className="text-center py-12">
               <p className="text-gray-400">No movies found. Try a different search.</p>
             </div>
