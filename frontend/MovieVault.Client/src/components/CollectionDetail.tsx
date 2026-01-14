@@ -79,7 +79,7 @@ function CollectionDetail() {
         
         // Fetch list items if collection found
         if (foundCollection) {
-          fetchListItems(foundCollection.id);
+          await fetchListItems(foundCollection.id);
         }
       }
     } catch (error) {
