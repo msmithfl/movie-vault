@@ -29,7 +29,7 @@ function CollectionCard({ collection, movieCount, completionPercentage, listItem
         <div className="mt-4">
           <div className="flex items-center justify-between mb-1">
             <span className="text-xs text-gray-400">{ownedCount} / {listItemCount}</span>
-            <span className={`text-xs font-semibold ${completionPercentage === 100 ? 'text-green-400' : 'text-indigo-400'}`}>
+            <span className={`text-xs font-semibold ${completionPercentage === 100 ? 'text-indigo-400' : 'text-indigo-400'}`}>
               {completionPercentage}%
             </span>
           </div>
