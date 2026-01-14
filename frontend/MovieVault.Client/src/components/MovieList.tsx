@@ -319,34 +319,6 @@ function MovieList() {
           
           {/* Desktop Sort Controls - Always Visible */}
           <div className="hidden md:flex items-center gap-6">
-            {/* <div className="flex items-center gap-3">
-              <label htmlFor="sortBy" className="text-sm font-medium text-gray-300">
-                Sort by:
-              </label>
-              <div className="relative flex items-center gap-2">
-                <select
-                  id="sortBy"
-                  value={sortBy}
-                  onChange={(e) => handleSortChange(e.target.value as SortOption)}
-                  className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
-                >
-                  <option value="date">Date Added</option>
-                  <option value="alphabetic">Title</option>
-                  <option value="format">Format</option>
-                </select>
-                <button
-                  onClick={toggleSortDirection}
-                  className="p-2 hover:bg-gray-700 rounded-md transition-colors cursor-pointer"
-                  aria-label="Toggle sort direction"
-                >
-                  {sortDirection === 'asc' ? (
-                    <FaArrowUp className="w-4 h-4 text-gray-400" />
-                  ) : (
-                    <FaArrowDown className="w-4 h-4 text-gray-400" />
-                  )}
-                </button>
-              </div>
-            </div> */}
             <div className="flex items-center gap-3">
               <label htmlFor="itemsPerPage" className="text-sm font-medium text-gray-300">
                 Per page:
@@ -427,34 +399,6 @@ function MovieList() {
           {/* Mobile Sort Controls - Toggle Visibility */}
           {showSortMenu && (
             <div className="md:hidden space-y-3 p-4 bg-gray-700 rounded-lg">
-              {/* <div className="flex flex-col gap-2">
-                <label htmlFor="sortBy-mobile" className="text-sm font-medium text-gray-300">
-                  Sort by:
-                </label>
-                <div className="flex items-center gap-2">
-                  <select
-                    id="sortBy-mobile"
-                    value={sortBy}
-                    onChange={(e) => handleSortChange(e.target.value as SortOption)}
-                    className="flex-1 px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
-                  >
-                    <option value="date">Date Added</option>
-                    <option value="alphabetic">Title</option>
-                    <option value="format">Format</option>
-                  </select>
-                  <button
-                    onClick={toggleSortDirection}
-                    className="p-2 hover:bg-gray-600 rounded-md transition-colors cursor-pointer"
-                    aria-label="Toggle sort direction"
-                  >
-                    {sortDirection === 'asc' ? (
-                      <FaArrowUp className="w-4 h-4 text-gray-400" />
-                    ) : (
-                      <FaArrowDown className="w-4 h-4 text-gray-400" />
-                    )}
-                  </button>
-                </div>
-              </div> */}
               <div className="flex flex-col gap-2">
                 <label htmlFor="itemsPerPage-mobile" className="text-sm font-medium text-gray-300">
                   Per page:

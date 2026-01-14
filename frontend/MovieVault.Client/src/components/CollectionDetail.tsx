@@ -3,7 +3,8 @@ import { Link, useParams, useNavigate } from 'react-router-dom'
 import ConfirmDialog from './ConfirmDialog'
 import { searchTMDB } from '../utils/tmdbApi'
 import type { TMDBMovie, CollectionListItem } from '../types'
-import { FaEdit, FaTrash } from 'react-icons/fa'
+import { FaEdit, FaTrash, FaCheck, FaImage  } from 'react-icons/fa'
+import { FaTableList, FaChevronDown } from "react-icons/fa6";
 
 interface Collection {
   id: number;
@@ -48,6 +49,19 @@ function CollectionDetail() {
   const [searchResults, setSearchResults] = useState<TMDBMovie[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const searchTimeoutRef = useRef<number | null>(null);
+  
+  // View mode state
+  const [viewMode, setViewMode] = useState<'detail' | 'poster'>(() => {
+    const saved = localStorage.getItem('collectionViewMode');
+    return (saved === 'poster' || saved === 'detail') ? saved : 'detail';
+  });
+  const [isViewDropdownOpen, setIsViewDropdownOpen] = useState(false);
+  
+  const handleViewModeChange = (mode: 'detail' | 'poster') => {
+    setViewMode(mode);
+    localStorage.setItem('collectionViewMode', mode);
+    setIsViewDropdownOpen(false);
+  };
 
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5156';
   const MOVIES_URL = `${API_BASE}/api/movies`;
@@ -348,6 +362,41 @@ function CollectionDetail() {
                 <div className='flex items-center gap-4'>
                   <h1 className="text-3xl font-bold mb-2">{collectionName}</h1>
                   <span className='px-3 py-1 mb-2 bg-gray-800 rounded-md font-medium outline-1 outline-gray-600'>{movies.length}</span>
+                  <div className="ml-auto relative mb-2">
+                    <button
+                      onClick={() => setIsViewDropdownOpen(!isViewDropdownOpen)}
+                      className="px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-md transition-colors text-sm font-medium flex items-center gap-2 cursor-pointer"
+                    >
+                      {viewMode === 'poster' ? (
+                        <FaImage className="w-5 h-5" />
+                      ) : (
+                        <FaTableList className="w-5 h-5" />
+                      )}
+                      <FaChevronDown className="w-3 h-3" />
+                    </button>
+                    {isViewDropdownOpen && (
+                      <div className="absolute right-0 mt-2 w-36 bg-gray-700 border border-gray-600 rounded-md shadow-lg z-10">
+                        <button
+                          onClick={() => handleViewModeChange('poster')}
+                          className="w-full px-4 py-3 text-left hover:bg-gray-600 transition-colors flex items-center justify-between border-b border-gray-600"
+                        >
+                          <div className="flex items-center gap-3">
+                            <span>Poster View</span>
+                          </div>
+                          {viewMode === 'poster' && <FaCheck className="w-4 h-4 text-white" />}
+                        </button>
+                        <button
+                          onClick={() => handleViewModeChange('detail')}
+                          className="w-full px-4 py-3 text-left hover:bg-gray-600 transition-colors flex items-center justify-between"
+                        >
+                          <div className="flex items-center gap-3">
+                            <span>Detail View</span>
+                          </div>
+                          {viewMode === 'detail' && <FaCheck className="w-4 h-4 text-green-400" />}
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 {listItems.length > 0 && (
                   <div className="flex flex-wrap items-center gap-3 text-sm text-gray-400">
@@ -379,60 +428,92 @@ function CollectionDetail() {
             </Link>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className={viewMode === 'poster' 
+            ? "grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4" 
+            : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          }>
           {movies.sort((a, b) => a.year - b.year).map((movie) => (
-            <Link
-              key={movie.id}
-              to={`/movie/${movie.id}`}
-              className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg overflow-hidden transition-all duration-200 transform hover:scale-105 flex gap-4 p-4"
-            >
-              {movie.posterPath && (
-                <img 
-                  src={movie.posterPath} 
-                  alt={`${movie.title} poster`}
-                  className="w-24 h-36 object-cover rounded-md shrink-0"
-                  onError={(e) => {
-                    e.currentTarget.src = 'https://via.placeholder.com/96x144?text=No+Poster';
-                  }}
-                />
-              )}
-              <div className="flex-1 min-w-0">
-                <div className="mb-4">
-                  <h3 className="text-xl font-bold text-white mb-2">{movie.title}</h3>
-                  <p className="text-gray-400 text-sm font-mono">{movie.year}</p>
+            viewMode === 'poster' ? (
+              <Link
+                key={movie.id}
+                to={`/movie/${movie.id}`}
+                className="group relative aspect-2/3 rounded-lg overflow-hidden shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-2xl"
+              >
+                {movie.posterPath ? (
+                  <img 
+                    src={movie.posterPath} 
+                    alt={`${movie.title} poster`}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://via.placeholder.com/300x450?text=No+Poster';
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full bg-gray-700 flex items-center justify-center">
+                    <span className="text-gray-400 text-sm text-center px-2">{movie.title}</span>
+                  </div>
+                )}
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                  <div className="absolute bottom-0 left-0 right-0 p-3">
+                    <h3 className="text-white font-bold text-sm line-clamp-2 mb-1">{movie.title}</h3>
+                    <p className="text-gray-300 text-xs">{movie.year}</p>
+                  </div>
                 </div>
+              </Link>
+            ) : (
+              <Link
+                key={movie.id}
+                to={`/movie/${movie.id}`}
+                className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg overflow-hidden transition-all duration-200 transform hover:scale-105 flex gap-4 p-4"
+              >
+                {movie.posterPath && (
+                  <img 
+                    src={movie.posterPath} 
+                    alt={`${movie.title} poster`}
+                    className="w-24 h-36 object-cover rounded-md shrink-0"
+                    onError={(e) => {
+                      e.currentTarget.src = 'https://via.placeholder.com/96x144?text=No+Poster';
+                    }}
+                  />
+                )}
+                <div className="flex-1 min-w-0">
+                  <div className="mb-4">
+                    <h3 className="text-xl font-bold text-white mb-2">{movie.title}</h3>
+                    <p className="text-gray-400 text-sm font-mono">{movie.year}</p>
+                  </div>
 
-                {movie.formats && movie.formats.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mb-3">
-                    {[...movie.formats].sort().map((fmt, idx) => (
-                      <span key={idx} className="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-                        {fmt}
+                  {movie.formats && movie.formats.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      {[...movie.formats].sort().map((fmt, idx) => (
+                        <span key={idx} className="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-medium">
+                          {fmt}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  {movie.rating > 0 && (
+                    <div className="flex items-center gap-2 text-sm text-gray-300">
+                      <span>⭐</span>
+                      <span>{movie.rating}</span>
+                    </div>
+                  )}
+
+                  {movie.condition && (
+                    <div className="mt-3">
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        movie.condition === 'New' ? 'bg-green-600 text-white' :
+                        movie.condition === 'Good' ? 'bg-blue-600 text-white' :
+                        movie.condition === 'Skips' ? 'bg-yellow-600 text-white' :
+                        'bg-red-600 text-white'
+                      }`}>
+                        {movie.condition}
                       </span>
-                    ))}
-                  </div>
-                )}
-
-                {movie.rating > 0 && (
-                  <div className="flex items-center gap-2 text-sm text-gray-300">
-                    <span>⭐</span>
-                    <span>{movie.rating}</span>
-                  </div>
-                )}
-
-                {movie.condition && (
-                  <div className="mt-3">
-                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                      movie.condition === 'New' ? 'bg-green-600 text-white' :
-                      movie.condition === 'Good' ? 'bg-blue-600 text-white' :
-                      movie.condition === 'Skips' ? 'bg-yellow-600 text-white' :
-                      'bg-red-600 text-white'
-                    }`}>
-                      {movie.condition}
-                    </span>
-                  </div>
-                )}
-              </div>
-            </Link>
+                    </div>
+                  )}
+                </div>
+              </Link>
+            )
           ))}
           </div>
         )}
