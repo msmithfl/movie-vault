@@ -75,7 +75,10 @@ function MovieDetail() {
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8">
-        <p className="text-center text-gray-400">Loading...</p>
+        <div className="flex flex-col items-center justify-center py-20">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-500 mb-4"></div>
+          <p className="text-gray-400">Loading movie details...</p>
+        </div>
       </div>
     );
   }
