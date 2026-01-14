@@ -36,7 +36,7 @@ function CollectionCard({ collection, movieCount, completionPercentage, listItem
           <div className="w-full bg-gray-700 rounded-full h-2">
             <div
               className={`h-2 rounded-full transition-all duration-300 ${
-                completionPercentage === 100 ? 'bg-green-500' : 'bg-indigo-500'
+                completionPercentage === 100 ? 'bg-indigo-500' : 'bg-indigo-500'
               }`}
               style={{ width: `${completionPercentage}%` }}
             ></div>
