@@ -49,7 +49,7 @@ function AddMovie() {
   const API_URL = `${API_BASE}/api/movies`;
   const COLLECTIONS_URL = `${API_BASE}/api/collections`;
   const SHELF_SECTIONS_URL = `${API_BASE}/api/shelfsections`;
-  const TMDB_API_TOKEN = import.meta.env.VITE_TMDB_API_TOKEN;
+  // const TMDB_API_TOKEN = import.meta.env.VITE_TMDB_API_TOKEN;
   
   // Check if device is mobile
   const isMobile = () => {
