@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Counter from './Counter'
+import CollectionCard from './CollectionCard';
 
 interface ShelfSection {
   id: number;
@@ -131,9 +132,9 @@ function ShelfSectionsView() {
             to="/shelfsections/Unshelved"
             className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg p-6 transition-all duration-200 transform hover:scale-105"
           >
-            <div className="flex items-start justify-between mb-4">
+            <div className="flex items-start justify-between">
               <div>
-                <h3 className="text-xl font-bold text-white mb-2">Unshelved</h3>
+                <h3 className="text-xl font-bold text-white">Unshelved</h3>
               </div>
               <span className="bg-gray-600 text-white px-3 py-1 rounded-full text-sm font-medium">
                 {getUnshelvedCount()}
@@ -143,20 +144,13 @@ function ShelfSectionsView() {
           {shelfSections.map((section) => {
             const movieCount = getMovieCount(section.name);
             return (
-              <Link
+              <CollectionCard
                 key={section.id}
-                to={`/shelfsections/${encodeURIComponent(section.name)}`}
-                className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg p-6 transition-all duration-200 transform hover:scale-105"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className='flex-1 min-w-0'>
-                    <h3 className="text-xl font-bold text-white mb-2 truncate">{section.name}</h3>
-                  </div>
-                  <span className="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    {movieCount}
-                  </span>
-                </div>
-              </Link>
+                collection={section}
+                movieCount={movieCount}
+                completionPercentage={null}
+                urlPath='shelfsections'
+              />
             );
           })}
         </div>

@@ -164,14 +164,6 @@ function CollectionsView() {
                   .map((collection) => {
                     const movieCount = getMovieCount(collection.name);
                     const completionPercentage = getCompletionPercentage(collection.id, collection.name);
-                    const listItemCount = collectionListItems[collection.id]?.length || 0;
-                    const listItems = collectionListItems[collection.id] || [];
-                    const ownedCount = listItems.filter(item => 
-                      movies.some(m => 
-                        m.title.toLowerCase() === item.title.toLowerCase() && 
-                        m.collections?.includes(collection.name)
-                      )
-                    ).length;
                     
                     return (
                       <CollectionCard
@@ -179,8 +171,7 @@ function CollectionsView() {
                         collection={collection}
                         movieCount={movieCount}
                         completionPercentage={completionPercentage}
-                        listItemCount={listItemCount}
-                        ownedCount={ownedCount}
+                        urlPath='collections'
                       />
                     );
                   })}
@@ -201,14 +192,6 @@ function CollectionsView() {
                   .map((collection) => {
                     const movieCount = getMovieCount(collection.name);
                     const completionPercentage = getCompletionPercentage(collection.id, collection.name);
-                    const listItemCount = collectionListItems[collection.id]?.length || 0;
-                    const listItems = collectionListItems[collection.id] || [];
-                    const ownedCount = listItems.filter(item => 
-                      movies.some(m => 
-                        m.title.toLowerCase() === item.title.toLowerCase() && 
-                        m.collections?.includes(collection.name)
-                      )
-                    ).length;
                     
                     return (
                       <CollectionCard
@@ -216,8 +199,7 @@ function CollectionsView() {
                         collection={collection}
                         movieCount={movieCount}
                         completionPercentage={completionPercentage}
-                        listItemCount={listItemCount}
-                        ownedCount={ownedCount}
+                        urlPath='collections'
                       />
                     );
                   })}

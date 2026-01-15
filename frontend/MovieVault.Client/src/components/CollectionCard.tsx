@@ -2,19 +2,18 @@ import { Link } from 'react-router-dom'
 
 interface CollectionCardProps {
   collection: {
-    id: number;
+    id: number | string;
     name: string;
   };
   movieCount: number;
   completionPercentage: number | null;
-  listItemCount: number;
-  ownedCount: number;
+  urlPath: string;
 }
 
-function CollectionCard({ collection, movieCount, completionPercentage }: CollectionCardProps) {
+function CollectionCard({ collection, movieCount, completionPercentage, urlPath }: CollectionCardProps) {
   return (
     <Link
-      to={`/collections/${encodeURIComponent(collection.name)}`}
+      to={`/${urlPath}/${encodeURIComponent(collection.name)}`}
       className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg pt-6 transition-all duration-200 transform hover:scale-105"
     >
       <div className="flex items-start justify-between mb-4 mx-6">
@@ -28,7 +27,6 @@ function CollectionCard({ collection, movieCount, completionPercentage }: Collec
       {completionPercentage !== null && (
         <div className="mt-4">
           <div className="flex items-center justify-between mb-1 mx-6">
-            {/* <span className="text-xs text-gray-400">{ownedCount} / {listItemCount}</span> */}
             <span className={`text-xs font-semibold ${completionPercentage === 100 ? 'text-indigo-400' : 'text-indigo-400'}`}>
               {completionPercentage}%
             </span>

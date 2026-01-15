@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import CollectionCard from './CollectionCard';
+import Counter from './Counter';
 
 interface Movie {
   id?: number;
@@ -65,7 +67,7 @@ function GenresView() {
     <div className="max-w-7xl mx-auto px-4 py-8">
       <div className="flex items-center mb-4 gap-4">
         <h1 className="text-3xl font-bold">Genres</h1>
-        {/* <span className='px-3 py-1 bg-gray-800 rounded-md font-medium outline-1 outline-gray-600'>{genres.length}</span> */}
+        <Counter count={genres.length} />
       </div>
 
       {genres.length === 0 ? (
@@ -86,20 +88,13 @@ function GenresView() {
           {genres.map((genre) => {
             const movieCount = getMovieCount(genre);
             return (
-              <Link
+              <CollectionCard
                 key={genre}
-                to={`/genres/${encodeURIComponent(genre)}`}
-                className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg p-6 transition-all duration-200 transform hover:scale-105"
-              >
-                <div className="flex items-start justify-between mb-4">
-                  <div className='flex-1 min-w-0'>
-                    <h3 className="text-xl font-bold text-white mb-2 truncate">{genre}</h3>
-                  </div>
-                  <span className="bg-indigo-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    {movieCount}
-                  </span>
-                </div>
-              </Link>
+                collection={{ id: 0, name: genre }}
+                movieCount={movieCount}
+                completionPercentage={null}
+                urlPath='genres'
+              />
             );
           })}
         </div>
