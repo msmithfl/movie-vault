@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import BarcodeScanner from './BarcodeScanner';
-import ProductImageSelector from './ProductImageSelector';
-import MovieForm from './MovieForm';
+import BarcodeScanner from '../components/BarcodeScanner';
+import ProductImageSelector from '../components/ProductImageSelector';
+import MovieForm from '../components/MovieForm';
 import type { Movie, TMDBMovie } from "../types";
 import { GENRE_MAP, searchTMDB } from '../utils/tmdbApi';
 

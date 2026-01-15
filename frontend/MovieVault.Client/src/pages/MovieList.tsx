@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import Counter from './Counter';
-import BarcodeScanner from './BarcodeScanner'
-import LoadingSpinner from './LoadingSpinner';
+import Counter from '../components/Counter';
+import BarcodeScanner from '../components/BarcodeScanner'
+import LoadingSpinner from '../components/LoadingSpinner';
 import { FaSortAmountDown, FaCog, FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from 'react-icons/ti'
 import { getRelativeTimeString } from '../utils/dateUtils';
-import EmptyState from './EmptyState';
+import EmptyState from '../components/EmptyState';
 
 interface Movie {
   id?: number;

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react'
-import CollectionCard from './CollectionCard'
-import Counter from './Counter'
-import EmptyState from './EmptyState'
-import LoadingSpinner from './LoadingSpinner';
+import CollectionCard from '../components/CollectionCard'
+import Counter from '../components/Counter'
+import EmptyState from '../components/EmptyState'
+import LoadingSpinner from '../components/LoadingSpinner';
 
 interface Movie {
   id?: number;

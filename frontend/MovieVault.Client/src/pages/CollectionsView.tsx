@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
-import Counter from './Counter'
+import Counter from '../components/Counter'
 import type { CollectionListItem } from '../types'
-import CollectionCard from './CollectionCard'
-import EmptyState from './EmptyState'
-import LoadingSpinner from './LoadingSpinner'
+import CollectionCard from '../components/CollectionCard'
+import EmptyState from '../components/EmptyState'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 interface Collection {
   id: number;

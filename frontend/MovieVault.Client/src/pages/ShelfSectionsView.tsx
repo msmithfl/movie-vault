@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import Counter from './Counter'
-import CollectionCard from './CollectionCard'
-import EmptyState from './EmptyState'
-import LoadingSpinner from './LoadingSpinner'
+import Counter from '../components/Counter'
+import CollectionCard from '../components/CollectionCard'
+import EmptyState from '../components/EmptyState'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 interface ShelfSection {
   id: number;

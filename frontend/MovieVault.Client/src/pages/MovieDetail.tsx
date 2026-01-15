@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
 import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from 'react-icons/ti'
 import { FaEdit, FaTrash } from 'react-icons/fa'
-import ConfirmDialog from './ConfirmDialog'
+import ConfirmDialog from '../components/ConfirmDialog'
 import type { Movie } from '../types'
-import LoadingSpinner from './LoadingSpinner'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 function MovieDetail() {
   const navigate = useNavigate();

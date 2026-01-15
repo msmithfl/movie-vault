@@ -1,14 +1,14 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
-import ConfirmDialog from './ConfirmDialog'
-import Counter from './Counter'
-import MovieDetailCard from './MovieDetailCard'
+import ConfirmDialog from '../components/ConfirmDialog'
+import Counter from '../components/Counter'
+import MovieDetailCard from '../components/MovieDetailCard'
 import { searchTMDB } from '../utils/tmdbApi'
 import type { TMDBMovie, CollectionListItem } from '../types'
 import { FaEdit, FaTrash, FaCheck, FaImage  } from 'react-icons/fa'
 import { FaTableList, FaChevronDown, FaChevronUp } from "react-icons/fa6";
-import EmptyState from './EmptyState'
-import LoadingSpinner from './LoadingSpinner'
+import EmptyState from '../components/EmptyState'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 interface Collection {
   id: number;

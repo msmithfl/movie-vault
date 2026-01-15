@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
-import ConfirmDialog from './ConfirmDialog'
-import Counter from './Counter'
-import MovieDetailCard from './MovieDetailCard'
-import EmptyState from './EmptyState'
+import ConfirmDialog from '../components/ConfirmDialog'
+import Counter from '../components/Counter'
+import MovieDetailCard from '../components/MovieDetailCard'
+import EmptyState from '../components/EmptyState'
 import { FaEdit, FaTrash, FaCheck, FaImage } from 'react-icons/fa'
 import { FaTableList, FaChevronDown, FaChevronUp } from 'react-icons/fa6'
-import LoadingSpinner from './LoadingSpinner'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 interface ShelfSection {
   id: number;

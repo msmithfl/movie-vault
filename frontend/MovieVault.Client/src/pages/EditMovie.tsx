@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import type { Movie } from '../types';
-import MovieForm from './MovieForm';
-import BarcodeScanner from './BarcodeScanner';
-import ProductImageSelector from './ProductImageSelector';
+import MovieForm from '../components/MovieForm';
+import BarcodeScanner from '../components/BarcodeScanner';
+import ProductImageSelector from '../components/ProductImageSelector';
 
 function EditMovie() {
   const navigate = useNavigate();

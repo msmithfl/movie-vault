@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import EmptyState from './EmptyState'
-import MovieDetailCard from './MovieDetailCard'
-import Counter from './Counter'
-import LoadingSpinner from './LoadingSpinner'
+import EmptyState from '../components/EmptyState'
+import MovieDetailCard from '../components/MovieDetailCard'
+import Counter from '../components/Counter'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 interface Movie {
   id?: number;
