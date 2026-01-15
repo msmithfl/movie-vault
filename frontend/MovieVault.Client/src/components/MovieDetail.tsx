@@ -4,6 +4,7 @@ import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from 'react-icons
 import { FaEdit, FaTrash } from 'react-icons/fa'
 import ConfirmDialog from './ConfirmDialog'
 import type { Movie } from '../types'
+import LoadingSpinner from './LoadingSpinner'
 
 function MovieDetail() {
   const navigate = useNavigate();
@@ -73,14 +74,7 @@ function MovieDetail() {
   // };
 
   if (loading) {
-    return (
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="flex flex-col items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-500 mb-4"></div>
-          <p className="text-gray-400">Loading movie details...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner message="Loading movie details..." />;
   }
 
   if (!movie) {

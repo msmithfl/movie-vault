@@ -6,6 +6,7 @@ import MovieDetailCard from './MovieDetailCard'
 import EmptyState from './EmptyState'
 import { FaEdit, FaTrash, FaCheck, FaImage } from 'react-icons/fa'
 import { FaTableList, FaChevronDown, FaChevronUp } from 'react-icons/fa6'
+import LoadingSpinner from './LoadingSpinner'
 
 interface ShelfSection {
   id: number;
@@ -179,9 +180,7 @@ function ShelfSectionDetail() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <p className="text-center text-gray-400">Loading...</p>
-      </div>
+      <LoadingSpinner message="Loading shelf section details..." />
     );
   }
 

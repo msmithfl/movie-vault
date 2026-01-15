@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
+import LoadingSpinner from './LoadingSpinner'
 
 interface Movie {
   id?: number;
@@ -79,10 +80,7 @@ function Home() {
   return (
     <div className="max-w-7xl mx-auto p-4">
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-500 mb-4"></div>
-          <p className="text-gray-400">Loading your collection...</p>
-        </div>
+        <LoadingSpinner message="Loading your collection..." />
       ) : (
         <>
       {/* Stats Dashboard */}

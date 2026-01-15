@@ -8,6 +8,7 @@ import type { TMDBMovie, CollectionListItem } from '../types'
 import { FaEdit, FaTrash, FaCheck, FaImage  } from 'react-icons/fa'
 import { FaTableList, FaChevronDown, FaChevronUp } from "react-icons/fa6";
 import EmptyState from './EmptyState'
+import LoadingSpinner from './LoadingSpinner'
 
 interface Collection {
   id: number;
@@ -310,14 +311,7 @@ function CollectionDetail() {
     : 0;
 
   if (loading) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex flex-col items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-500 mb-4"></div>
-          <p className="text-gray-400">Loading collection...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner message="Loading collection..." />;
   }
 
   return (

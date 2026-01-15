@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import EmptyState from './EmptyState'
 import MovieDetailCard from './MovieDetailCard'
 import Counter from './Counter'
+import LoadingSpinner from './LoadingSpinner'
 
 interface Movie {
   id?: number;
@@ -56,9 +57,7 @@ function GenreDetail() {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        <p className="text-center text-gray-400">Loading...</p>
-      </div>
+      <LoadingSpinner message="Loading genre details..." />
     );
   }
 

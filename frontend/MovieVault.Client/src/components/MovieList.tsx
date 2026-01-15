@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Counter from './Counter';
 import BarcodeScanner from './BarcodeScanner'
+import LoadingSpinner from './LoadingSpinner';
 import { FaSortAmountDown, FaCog, FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from 'react-icons/ti'
 import { getRelativeTimeString } from '../utils/dateUtils';
@@ -224,10 +225,7 @@ function MovieList() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-20">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-indigo-500 mb-4"></div>
-          <p className="text-gray-400">Loading your collection...</p>
-        </div>
+        <LoadingSpinner message="Loading your collection..." />
       ) : (
         <>
       <div className="flex justify-between items-center mb-8">
