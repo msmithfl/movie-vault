@@ -106,7 +106,7 @@ function ShelfSectionsView() {
       </div>
 
       {shelfSections.length === 0 ? (
-        <EmptyState message="No shelf sections yet. Add movies to create shelf sections." buttonText="Add Your First Movie" />
+        <EmptyState message="No shelf sections yet. " />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           <button

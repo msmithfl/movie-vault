@@ -71,7 +71,7 @@ function GenresView() {
       </div>
 
       {genres.length === 0 ? (
-        <EmptyState message="No genres yet. Add movies to see genres." buttonText="Add Your First Movie" />
+        <EmptyState message="No genres yet." />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {genres.map((genre) => {

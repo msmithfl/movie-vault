@@ -133,7 +133,7 @@ function CollectionsView() {
       </div>
 
       {collections.length === 0 ? (
-        <EmptyState message="No collections yet. Add movies to create collections." buttonText="Add Your First Movie" />
+        <EmptyState message="No collections yet." />
       ) : (
         <>
           {/* Standard Collections Section */}

@@ -5,6 +5,7 @@ import BarcodeScanner from './BarcodeScanner'
 import { FaSortAmountDown, FaCog, FaArrowUp, FaArrowDown } from "react-icons/fa";
 import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from 'react-icons/ti'
 import { getRelativeTimeString } from '../utils/dateUtils';
+import EmptyState from './EmptyState';
 
 interface Movie {
   id?: number;
@@ -475,17 +476,7 @@ function MovieList() {
       )}
 
       {movies.length === 0 ? (
-        <div className="text-center py-20">
-          <p className="text-gray-400 text-lg mb-6">
-            No movies in your collection yet.
-          </p>
-          <Link
-            to="/add"
-            className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-md transition duration-200"
-          >
-            Add Your First Movie
-          </Link>
-        </div>
+        <EmptyState message="No movies in your collection yet." />
       ) : (
         <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
           <div className="overflow-x-auto">
