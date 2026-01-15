@@ -116,7 +116,7 @@ function CollectionsView() {
   };
 
   if (loading) {
-    return <LoadingSpinner message="Loading collections..." />;
+    return <LoadingSpinner />;
   }
 
   return (

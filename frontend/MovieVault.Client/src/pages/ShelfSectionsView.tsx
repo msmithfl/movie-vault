@@ -89,7 +89,7 @@ function ShelfSectionsView() {
   };
 
   if (loading) {
-    return <LoadingSpinner message="Loading shelf sections..." />;
+    return <LoadingSpinner />;
   }
 
   return (

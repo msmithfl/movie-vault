@@ -74,7 +74,7 @@ function MovieDetail() {
   // };
 
   if (loading) {
-    return <LoadingSpinner message="Loading movie details..." />;
+    return <LoadingSpinner />;
   }
 
   if (!movie) {

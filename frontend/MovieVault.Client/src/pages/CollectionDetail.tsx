@@ -311,7 +311,7 @@ function CollectionDetail() {
     : 0;
 
   if (loading) {
-    return <LoadingSpinner message="Loading collection..." />;
+    return <LoadingSpinner />;
   }
 
   return (

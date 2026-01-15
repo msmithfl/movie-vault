@@ -225,7 +225,7 @@ function MovieList() {
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
       {loading ? (
-        <LoadingSpinner message="Loading your collection..." />
+        <LoadingSpinner />
       ) : (
         <>
       <div className="flex justify-between items-center mb-8">

@@ -54,7 +54,7 @@ function GenresView() {
   };
 
   if (loading) {
-    return <LoadingSpinner message="Loading genres..." />;
+    return <LoadingSpinner />;
   }
 
   return (

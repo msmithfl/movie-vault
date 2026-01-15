@@ -57,7 +57,7 @@ function GenreDetail() {
 
   if (loading) {
     return (
-      <LoadingSpinner message="Loading genre details..." />
+      <LoadingSpinner />
     );
   }
 

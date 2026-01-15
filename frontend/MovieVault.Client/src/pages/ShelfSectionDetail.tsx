@@ -180,7 +180,7 @@ function ShelfSectionDetail() {
 
   if (loading) {
     return (
-      <LoadingSpinner message="Loading shelf section details..." />
+      <LoadingSpinner />
     );
   }
 
