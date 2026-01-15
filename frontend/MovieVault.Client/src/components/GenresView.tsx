@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import CollectionCard from './CollectionCard'
 import Counter from './Counter'
 import EmptyState from './EmptyState'

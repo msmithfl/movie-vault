@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import EmptyState from './EmptyState'
 import MovieDetailCard from './MovieDetailCard'
 import Counter from './Counter'

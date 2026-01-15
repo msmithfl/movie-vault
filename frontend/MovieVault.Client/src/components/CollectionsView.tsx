@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import Counter from './Counter'
 import type { CollectionListItem } from '../types'
 import CollectionCard from './CollectionCard'
