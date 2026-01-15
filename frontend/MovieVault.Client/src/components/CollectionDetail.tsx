@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import ConfirmDialog from './ConfirmDialog'
 import Counter from './Counter'
+import MovieDetailCard from './MovieDetailCard'
 import { searchTMDB } from '../utils/tmdbApi'
 import type { TMDBMovie, CollectionListItem } from '../types'
 import { FaEdit, FaTrash, FaCheck, FaImage  } from 'react-icons/fa'
@@ -490,58 +491,7 @@ function CollectionDetail() {
                 </div>
               </Link>
             ) : (
-              <Link
-                key={movie.id}
-                to={`/movie/${movie.id}`}
-                className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg overflow-hidden transition-all duration-200 transform hover:scale-105 flex gap-4 p-4"
-              >
-                {movie.posterPath && (
-                  <img 
-                    src={movie.posterPath} 
-                    alt={`${movie.title} poster`}
-                    className="w-24 h-36 object-cover rounded-md shrink-0"
-                    onError={(e) => {
-                      e.currentTarget.src = 'https://via.placeholder.com/96x144?text=No+Poster';
-                    }}
-                  />
-                )}
-                <div className="flex-1 min-w-0">
-                  <div className="mb-4">
-                    <h3 className="text-xl font-bold text-white mb-2">{movie.title}</h3>
-                    <p className="text-gray-400 text-sm font-mono">{movie.year}</p>
-                  </div>
-
-                  {movie.formats && movie.formats.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      {[...movie.formats].sort().map((fmt, idx) => (
-                        <span key={idx} className="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-medium">
-                          {fmt}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  {movie.rating > 0 && (
-                    <div className="flex items-center gap-2 text-sm text-gray-300">
-                      <span>⭐</span>
-                      <span>{movie.rating}</span>
-                    </div>
-                  )}
-
-                  {movie.condition && (
-                    <div className="mt-3">
-                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                        movie.condition === 'New' ? 'bg-green-600 text-white' :
-                        movie.condition === 'Good' ? 'bg-blue-600 text-white' :
-                        movie.condition === 'Skips' ? 'bg-yellow-600 text-white' :
-                        'bg-red-600 text-white'
-                      }`}>
-                        {movie.condition}
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </Link>
+              <MovieDetailCard key={movie.id} movie={movie} showYear />
             )
           ))}
           </div>
