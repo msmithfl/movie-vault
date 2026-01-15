@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import CollectionCard from './CollectionCard';
-import Counter from './Counter';
+import CollectionCard from './CollectionCard'
+import Counter from './Counter'
+import EmptyState from './EmptyState'
 
 interface Movie {
   id?: number;
@@ -71,18 +72,7 @@ function GenresView() {
       </div>
 
       {genres.length === 0 ? (
-        <div className="text-center py-20">
-          <div className="text-6xl mb-4">🎭</div>
-          <p className="text-gray-400 text-lg mb-6">
-            No genres yet. Add movies to see genres.
-          </p>
-          <Link
-            to="/add"
-            className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-md transition duration-200"
-          >
-            Add Your First Movie
-          </Link>
-        </div>
+        <EmptyState message="No genres yet. Add movies to see genres." buttonText="Add Your First Movie" />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {genres.map((genre) => {

@@ -3,6 +3,7 @@ import { Link, useParams, useNavigate } from 'react-router-dom'
 import ConfirmDialog from './ConfirmDialog'
 import Counter from './Counter'
 import MovieDetailCard from './MovieDetailCard'
+import EmptyState from './EmptyState'
 import { FaEdit, FaTrash, FaCheck, FaImage } from 'react-icons/fa'
 import { FaTableList, FaChevronDown, FaChevronUp } from 'react-icons/fa6'
 
@@ -291,18 +292,7 @@ function ShelfSectionDetail() {
       </div>
 
       {movies.length === 0 ? (
-        <div className="text-center py-20">
-          <div className="text-6xl mb-4">📦</div>
-          <p className="text-gray-400 text-lg mb-6">
-            No movies in this shelf section yet.
-          </p>
-          <Link
-            to="/add"
-            className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-md transition duration-200"
-          >
-            Add a Movie
-          </Link>
-        </div>
+        <EmptyState message="No movies in this shelf section yet." />
       ) : (
         <div className={viewMode === 'poster' 
           ? "grid grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4" 

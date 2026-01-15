@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Counter from './Counter'
-import CollectionCard from './CollectionCard';
+import CollectionCard from './CollectionCard'
+import EmptyState from './EmptyState'
 
 interface ShelfSection {
   id: number;
@@ -105,18 +106,7 @@ function ShelfSectionsView() {
       </div>
 
       {shelfSections.length === 0 ? (
-        <div className="text-center py-20">
-          <div className="text-6xl mb-4">📦</div>
-          <p className="text-gray-400 text-lg mb-6">
-            No shelf sections yet. Add movies to create shelf sections.
-          </p>
-          <Link
-            to="/add"
-            className="inline-block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-md transition duration-200"
-          >
-            Add Your First Movie
-          </Link>
-        </div>
+        <EmptyState message="No shelf sections yet. Add movies to create shelf sections." buttonText="Add Your First Movie" />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           <button
