@@ -422,7 +422,7 @@ function CollectionDetail() {
                           <div className="flex items-center gap-3">
                             <span>Detail View</span>
                           </div>
-                          {viewMode === 'detail' && <FaCheck className="w-4 h-4 text-green-400" />}
+                          {viewMode === 'detail' && <FaCheck className="w-4 h-4 text-white" />}
                         </button>
                       </div>
                     )}

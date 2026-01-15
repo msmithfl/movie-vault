@@ -118,6 +118,14 @@ function ShelfSectionsView() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <button
+            onClick={() => setShowCreateInput(true)}
+            className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105 border-2 border-dashed border-gray-600 hover:border-indigo-500 flex items-center justify-center cursor-pointer"
+          >
+            <div className="text-center">
+              <div className="text-5xl text-gray-500 mb-2">+</div>
+            </div>
+          </button>
           {/* Unshelved section */}
           <Link
             to="/shelfsections/Unshelved"
@@ -151,14 +159,6 @@ function ShelfSectionsView() {
               </Link>
             );
           })}
-          <button
-            onClick={() => setShowCreateInput(true)}
-            className="bg-gray-800 hover:bg-gray-700 rounded-lg shadow-lg transition-all duration-200 transform hover:scale-105 border-2 border-dashed border-gray-600 hover:border-indigo-500 flex items-center justify-center cursor-pointer"
-          >
-            <div className="text-center">
-              <div className="text-5xl text-gray-500 mb-2">+</div>
-            </div>
-          </button>
         </div>
       )}
 
