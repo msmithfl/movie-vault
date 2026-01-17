@@ -6,7 +6,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import SortableTableHeader from '../components/SortableTableHeader';
 import FilterDropdown from '../components/FilterDropdown';
 import ConfirmDialog from '../components/ConfirmDialog';
-import { FaSortAmountDown, FaPencilAlt, FaTrash } from "react-icons/fa";
+import { FaSortAmountDown, FaPencilAlt, FaTrash, FaRegCircle, FaCheckCircle } from "react-icons/fa";
 import { FaMagnifyingGlass, FaCheck } from "react-icons/fa6";
 import { IoMdCloseCircle } from "react-icons/io";
 import { LuTable2 } from "react-icons/lu";
@@ -574,7 +574,7 @@ function MovieList() {
       {movies.length === 0 ? (
         <EmptyState message="No movies in your collection yet." />
       ) : (
-        <div className="bg-gray-800 shadow-lg overflow-hidden">
+        <div className="bg-gray-800 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-700">
@@ -692,19 +692,20 @@ function MovieList() {
               {currentMovies.map((movie, index) => (
                 <tr 
                   key={movie.id}
-                  className={`${index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-900'} hover:bg-gray-700 transition-colors duration-150 focus:outline-none focus-within:outline-none`}
+                  className={`text-sm group ${index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-900'} hover:bg-gray-700 transition-colors duration-150 focus:outline-none focus-within:outline-none`}
                 >
-                  <td className="flex px-3 py-2 w-12 justify-center mt-2">
-                    <input
-                      type="checkbox"
-                      className="cursor-pointer"
-                      checked={selectedMovieIds.has(movie.id || 0)}
-                      onChange={(e) => handleCheckboxChange(movie.id, e.target.checked)}
-                      onClick={(e) => e.stopPropagation()}
-                    />
+                  <td 
+                    className="w-12 text-center bg-gray-900 cursor-pointer"
+                    onClick={() => handleCheckboxChange(movie.id, !selectedMovieIds.has(movie.id || 0))}
+                  >
+                    {selectedMovieIds.has(movie.id || 0) ? (
+                      <FaCheckCircle className="w-5 h-5 text-indigo-500 inline-block" />
+                    ) : (
+                      <FaRegCircle className={`w-4 h-4 text-gray-500 transition-opacity opacity-0 group-hover:opacity-100 inline-block`} />
+                    )}
                   </td>
                   <td className="px-6 py-2 text-white w-46 max-w-46 md:w-96 md:max-w-96 align-middle">
-                    <Link to={`/movie/${movie.id}`} className="hover:text-indigo-400 transition-colors inline-block truncate max-w-full align-middle" title={movie.title}>
+                    <Link to={`/movie/${movie.id}`} className="hover:underline transition-colors inline-block truncate max-w-full align-middle" title={movie.title}>
                       {movie.title}
                     </Link>
                   </td>
