@@ -4,6 +4,7 @@ import Counter from '../components/Counter';
 import BarcodeScanner from '../components/BarcodeScanner'
 import LoadingSpinner from '../components/LoadingSpinner';
 import SortableTableHeader from '../components/SortableTableHeader';
+import FilterDropdown from '../components/FilterDropdown';
 import { FaSortAmountDown, FaCog } from "react-icons/fa";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from 'react-icons/ti'
@@ -68,6 +69,7 @@ function MovieList() {
       dateAdded: true,
     };
   });
+  const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
   
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5156';
   const API_URL = `${API_BASE}/api/movies`;
@@ -155,8 +157,22 @@ function MovieList() {
 
   const sortedMovies = getSortedMovies();
   
-  // Filter movies by search query
-  const filteredMovies = sortedMovies.filter(movie => {
+  // Apply filters
+  const applyFilters = (movies: Movie[]) => {
+    let filtered = [...movies];
+    
+    // Format filter
+    if (selectedFilters.format && selectedFilters.format.length > 0) {
+      filtered = filtered.filter(movie => 
+        movie.formats.some(format => selectedFilters.format.includes(format))
+      );
+    }
+    
+    return filtered;
+  };
+  
+  // Filter movies by search query and filters
+  const filteredMovies = applyFilters(sortedMovies).filter(movie => {
     const matchesTitle = movie.title.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesUpc = movie.upcNumber.toLowerCase().includes(upcSearchQuery.toLowerCase());
     return matchesTitle && matchesUpc;
@@ -226,6 +242,28 @@ function MovieList() {
       [column]: !prev[column]
     }));
   };
+
+  const handleFilterChange = (categoryId: string, values: string[]) => {
+    setSelectedFilters(prev => ({
+      ...prev,
+      [categoryId]: values
+    }));
+    setCurrentPage(1);
+  };
+
+  // Define filter categories
+  const filterCategories = [
+    {
+      id: 'format',
+      label: 'Format',
+      options: [
+        { label: '4K', value: '4K' },
+        { label: 'Blu-ray', value: 'Blu-ray' },
+        { label: 'DVD', value: 'DVD' },
+        { label: 'VHS', value: 'VHS' },
+      ]
+    }
+  ];
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-8">
@@ -309,6 +347,11 @@ function MovieList() {
                 <option value={100}>100</option>
               </select>
             </div>
+            <FilterDropdown
+              categories={filterCategories}
+              selectedFilters={selectedFilters}
+              onFilterChange={handleFilterChange}
+            />
             <div className="relative">
               <button
                 onClick={() => setShowColumnMenu(!showColumnMenu)}
