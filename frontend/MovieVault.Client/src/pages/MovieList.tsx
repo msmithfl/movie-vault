@@ -3,8 +3,11 @@ import { Link } from 'react-router-dom'
 import Counter from '../components/Counter';
 import BarcodeScanner from '../components/BarcodeScanner'
 import LoadingSpinner from '../components/LoadingSpinner';
-import { FaSortAmountDown, FaCog, FaArrowUp, FaArrowDown } from "react-icons/fa";
+import SortableTableHeader from '../components/SortableTableHeader';
+import { FaSortAmountDown, FaCog } from "react-icons/fa";
+import { FaMagnifyingGlass } from "react-icons/fa6";
 import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from 'react-icons/ti'
+import { IoCameraOutline } from "react-icons/io5";
 import { getRelativeTimeString } from '../utils/dateUtils';
 import EmptyState from '../components/EmptyState';
 
@@ -180,7 +183,8 @@ function MovieList() {
   //   setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
   // };
 
-  const handleColumnClick = (column: SortOption) => {
+  const handleColumnClick = (sortKey: string) => {
+    const column = sortKey as SortOption;
     if (column === sortBy) {
       // Same column, toggle direction
       setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
@@ -266,19 +270,7 @@ function MovieList() {
                 onChange={(e) => handleSearchChange(e.target.value)}
                 className="w-full px-4 py-3 pl-10 bg-gray-800 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               />
-              <svg
-                className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
+              <FaMagnifyingGlass className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
             </div>
             <div className="flex gap-2">
               <input
@@ -294,25 +286,7 @@ function MovieList() {
                 className="px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-md transition cursor-pointer flex items-center justify-center"
                 title="Scan barcode"
               >
-                <svg
-                  className="w-6 h-6"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
-                  />
-                </svg>
+                <IoCameraOutline className="w-6 h-6" />  
               </button>
             </div>
           </div>
@@ -481,93 +455,60 @@ function MovieList() {
             <table className="w-full">
               <thead className="bg-gray-700">
                 <tr>
-                  <th 
-                    onClick={() => handleColumnClick('alphabetic')}
-                    className="px-6 py-2 text-left text-sm font-semibold text-gray-200 w-46 max-w-46 md:w-96 md:max-w-96 border-r border-gray-600 hover:text-white transition-colors cursor-pointer"
-                  >
-                    <div className="flex items-center gap-2">
-                      Title
-                      {sortDirection === 'asc' ? (
-                        <FaArrowUp className={`w-3 h-3 ${sortBy === 'alphabetic' ? '' : 'invisible'}`} />
-                      ) : (
-                        <FaArrowDown className={`w-3 h-3 ${sortBy === 'alphabetic' ? '' : 'invisible'}`} />
-                      )}
-                    </div>
-                  </th>
+                  <SortableTableHeader
+                    label="Title"
+                    sortKey="alphabetic"
+                    currentSortBy={sortBy}
+                    sortDirection={sortDirection}
+                    onClick={handleColumnClick}
+                    className="w-46 max-w-46 md:w-96 md:max-w-96"
+                  />
                   {visibleColumns.year && (
-                    <th 
-                      onClick={() => handleColumnClick('year' as SortOption)}
-                      className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600 hover:text-white transition-colors cursor-pointer"
-                    >
-                      <div className="flex items-center gap-2">
-                        Year
-                        {sortDirection === 'asc' ? (
-                          <FaArrowUp className={`w-3 h-3 ${sortBy === 'year' ? '' : 'invisible'}`} />
-                        ) : (
-                          <FaArrowDown className={`w-3 h-3 ${sortBy === 'year' ? '' : 'invisible'}`} />
-                        )}
-                      </div>
-                    </th>
+                    <SortableTableHeader
+                      label="Year"
+                      sortKey="year"
+                      currentSortBy={sortBy}
+                      sortDirection={sortDirection}
+                      onClick={handleColumnClick}
+                    />
                   )}
                   {visibleColumns.format && (
-                    <th 
-                      onClick={() => handleColumnClick('format')}
-                      className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600 hover:text-white transition-colors cursor-pointer"
-                    >
-                      <div className="flex items-center gap-2">
-                        Format
-                        {sortDirection === 'asc' ? (
-                          <FaArrowUp className={`w-3 h-3 ${sortBy === 'format' ? '' : 'invisible'}`} />
-                        ) : (
-                          <FaArrowDown className={`w-3 h-3 ${sortBy === 'format' ? '' : 'invisible'}`} />
-                        )}
-                      </div>
-                    </th>
+                    <SortableTableHeader
+                      label="Format"
+                      sortKey="format"
+                      currentSortBy={sortBy}
+                      sortDirection={sortDirection}
+                      onClick={handleColumnClick}
+                    />
                   )}
                   {visibleColumns.condition && (
-                    <th 
-                      onClick={() => handleColumnClick('condition' as SortOption)}
-                      className="px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600 hover:text-white transition-colors cursor-pointer"
-                    >
-                      <div className="flex items-center gap-2">
-                        Condition
-                        {sortDirection === 'asc' ? (
-                          <FaArrowUp className={`w-3 h-3 ${sortBy === 'condition' ? '' : 'invisible'}`} />
-                        ) : (
-                          <FaArrowDown className={`w-3 h-3 ${sortBy === 'condition' ? '' : 'invisible'}`} />
-                        )}
-                      </div>
-                    </th>
+                    <SortableTableHeader
+                      label="Condition"
+                      sortKey="condition"
+                      currentSortBy={sortBy}
+                      sortDirection={sortDirection}
+                      onClick={handleColumnClick}
+                    />
                   )}
                   {visibleColumns.rating && (
-                    <th 
-                      onClick={() => handleColumnClick('rating' as SortOption)}
-                      className="pl-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600 hover:text-white transition-colors cursor-pointer"
-                    >
-                      <div className="flex items-center gap-2">
-                        Rating
-                        {sortDirection === 'asc' ? (
-                          <FaArrowUp className={`w-3 h-3 ${sortBy === 'rating' ? '' : 'invisible'}`} />
-                        ) : (
-                          <FaArrowDown className={`w-3 h-3 ${sortBy === 'rating' ? '' : 'invisible'}`} />
-                        )}
-                      </div>
-                    </th>
+                    <SortableTableHeader
+                      label="Rating"
+                      sortKey="rating"
+                      currentSortBy={sortBy}
+                      sortDirection={sortDirection}
+                      onClick={handleColumnClick}
+                      className="pl-6"
+                    />
                   )}
                   {visibleColumns.dateAdded && (
-                    <th 
-                      onClick={() => handleColumnClick('date')}
-                      className="px-6 pr-10 py-2 text-left text-sm font-semibold text-gray-200 hover:text-white transition-colors cursor-pointer"
-                    >
-                      <div className="flex items-center gap-2">
-                        Date Added
-                        {sortDirection === 'asc' ? (
-                          <FaArrowUp className={`w-3 h-3 ${sortBy === 'date' ? '' : 'invisible'}`} />
-                        ) : (
-                          <FaArrowDown className={`w-3 h-3 ${sortBy === 'date' ? '' : 'invisible'}`} />
-                        )}
-                      </div>
-                    </th>
+                    <SortableTableHeader
+                      label="Date Added"
+                      sortKey="date"
+                      currentSortBy={sortBy}
+                      sortDirection={sortDirection}
+                      onClick={handleColumnClick}
+                      className="pr-10"
+                    />
                   )}
                 </tr>
               </thead>
