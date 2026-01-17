@@ -5,6 +5,7 @@ import BarcodeScanner from '../components/BarcodeScanner'
 import LoadingSpinner from '../components/LoadingSpinner';
 import SortableTableHeader from '../components/SortableTableHeader';
 import FilterDropdown from '../components/FilterDropdown';
+import ConfirmDialog from '../components/ConfirmDialog';
 import { FaSortAmountDown, FaPencilAlt, FaTrash } from "react-icons/fa";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { IoMdCloseCircle } from "react-icons/io";
@@ -73,6 +74,14 @@ function MovieList() {
   });
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
   const [selectedMovieIds, setSelectedMovieIds] = useState<Set<number>>(new Set());
+  const [showBulkEditModal, setShowBulkEditModal] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [bulkEditData, setBulkEditData] = useState({
+    shelfNumber: '',
+    shelfSection: '',
+    hdDriveNumber: ''
+  });
+  const [shelfSections, setShelfSections] = useState<string[]>([]);
   
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5156';
   const API_URL = `${API_BASE}/api/movies`;
@@ -85,6 +94,7 @@ function MovieList() {
 
   useEffect(() => {
     fetchMovies();
+    fetchShelfSections();
   }, []);
 
   // Save column preferences to localStorage
@@ -114,6 +124,18 @@ function MovieList() {
       console.error('Error fetching movies:', error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchShelfSections = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/api/shelfsections`);
+      if (response.ok) {
+        const data = await response.json();
+        setShelfSections(data.map((section: any) => section.name).sort());
+      }
+    } catch (error) {
+      console.error('Error fetching shelf sections:', error);
     }
   };
 
@@ -273,6 +295,74 @@ function MovieList() {
     });
   };
 
+  const handleBulkEdit = async () => {
+    try {
+      const updates: Partial<Movie> = {};
+      
+      if (bulkEditData.shelfNumber !== '') {
+        updates.shelfNumber = parseInt(bulkEditData.shelfNumber);
+      }
+      if (bulkEditData.shelfSection !== '') {
+        updates.shelfSection = bulkEditData.shelfSection;
+      }
+      if (bulkEditData.hdDriveNumber !== '') {
+        updates.hdDriveNumber = parseInt(bulkEditData.hdDriveNumber);
+      }
+
+      // Update each selected movie
+      const updatePromises = Array.from(selectedMovieIds).map(async (movieId) => {
+        const movie = movies.find(m => m.id === movieId);
+        if (!movie) return;
+
+        const updatedMovie = { ...movie, ...updates };
+        const response = await fetch(`${API_URL}/${movieId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedMovie)
+        });
+
+        if (!response.ok) throw new Error(`Failed to update movie ${movieId}`);
+      });
+
+      await Promise.all(updatePromises);
+      
+      // Refresh the movie list
+      await fetchMovies();
+      
+      // Reset state
+      setShowBulkEditModal(false);
+      setSelectedMovieIds(new Set());
+      setBulkEditData({ shelfNumber: '', shelfSection: '', hdDriveNumber: '' });
+    } catch (error) {
+      console.error('Error updating movies:', error);
+      alert('Failed to update movies. Please try again.');
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    try {
+      const deletePromises = Array.from(selectedMovieIds).map(async (movieId) => {
+        const response = await fetch(`${API_URL}/${movieId}`, {
+          method: 'DELETE'
+        });
+
+        if (!response.ok) throw new Error(`Failed to delete movie ${movieId}`);
+      });
+
+      await Promise.all(deletePromises);
+      
+      // Refresh the movie list
+      await fetchMovies();
+      
+      // Reset state
+      setShowDeleteConfirm(false);
+      setSelectedMovieIds(new Set());
+    } catch (error) {
+      console.error('Error deleting movies:', error);
+      alert('Failed to delete movies. Please try again.');
+    }
+  };
+
   // Define filter categories
   const filterCategories = [
     {
@@ -394,14 +484,16 @@ function MovieList() {
           ) : (
             <div className="hidden md:flex items-center justify-center gap-8 py-3 px-6 bg-yellow-900/30 border-2 border-yellow-600 rounded-lg">
               <button
-                className="flex items-center gap-2 px-4 py-2 text-yellow-400 hover:text-yellow-300 transition-colors"
+                onClick={() => setShowBulkEditModal(true)}
+                className="flex items-center gap-2 px-4 py-2 text-yellow-400 hover:text-yellow-300 transition-colors cursor-pointer"
                 title="Edit selected movies"
               >
                 <FaPencilAlt className="w-5 h-5" />
                 <span className="text-sm font-medium">Edit ({selectedMovieIds.size})</span>
               </button>
               <button
-                className="flex items-center gap-2 px-4 py-2 text-yellow-400 hover:text-yellow-300 transition-colors"
+                onClick={() => setShowDeleteConfirm(true)}
+                className="flex items-center gap-2 px-4 py-2 text-yellow-400 hover:text-yellow-300 transition-colors cursor-pointer"
                 title="Delete selected movies"
               >
                 <FaTrash className="w-5 h-5" />
@@ -705,6 +797,103 @@ function MovieList() {
       {showMobileOnlyMessage && (
         <MobileOnlyMessage setShowMobileOnlyMessage={setShowMobileOnlyMessage} />
       )}
+
+      {/* Bulk Edit Modal */}
+      {showBulkEditModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div 
+            className="absolute inset-0 bg-black bg-opacity-75"
+            onClick={() => setShowBulkEditModal(false)}
+          />
+          
+          <div className="relative bg-gray-800 rounded-lg shadow-2xl max-w-md w-full mx-4 border border-gray-700">
+            <div className="p-6">
+              <h3 className="text-xl font-bold text-white mb-3">
+                Bulk Edit {selectedMovieIds.size} Movie{selectedMovieIds.size !== 1 ? 's' : ''}
+              </h3>
+              <p className="text-gray-400 text-sm mb-6">
+                Leave fields empty to keep their current values
+              </p>
+              
+              <div className="space-y-4 mb-6">
+                <div>
+                  <label htmlFor="bulk-shelf-number" className="block text-sm font-medium text-gray-300 mb-2">
+                    Shelf Number
+                  </label>
+                  <input
+                    id="bulk-shelf-number"
+                    type="number"
+                    value={bulkEditData.shelfNumber}
+                    onChange={(e) => setBulkEditData(prev => ({ ...prev, shelfNumber: e.target.value }))}
+                    placeholder="Enter shelf number"
+                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  />
+                </div>
+                
+                <div>
+                  <label htmlFor="bulk-shelf-section" className="block text-sm font-medium text-gray-300 mb-2">
+                    Shelf Section
+                  </label>
+                  <select
+                    id="bulk-shelf-section"
+                    value={bulkEditData.shelfSection}
+                    onChange={(e) => setBulkEditData(prev => ({ ...prev, shelfSection: e.target.value }))}
+                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent cursor-pointer"
+                  >
+                    <option value="">-- Keep Current --</option>
+                    {shelfSections.map(section => (
+                      <option key={section} value={section}>{section}</option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div>
+                  <label htmlFor="bulk-hdd-number" className="block text-sm font-medium text-gray-300 mb-2">
+                    HDD Number
+                  </label>
+                  <input
+                    id="bulk-hdd-number"
+                    type="number"
+                    value={bulkEditData.hdDriveNumber}
+                    onChange={(e) => setBulkEditData(prev => ({ ...prev, hdDriveNumber: e.target.value }))}
+                    placeholder="Enter HDD number"
+                    className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                  />
+                </div>
+              </div>
+              
+              <div className="flex gap-3 justify-end">
+                <button
+                  onClick={() => {
+                    setShowBulkEditModal(false);
+                    setBulkEditData({ shelfNumber: '', shelfSection: '', hdDriveNumber: '' });
+                  }}
+                  className="px-5 py-2.5 bg-gray-700 hover:bg-gray-600 text-white font-medium rounded-md transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleBulkEdit}
+                  className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-md transition cursor-pointer"
+                >
+                  Update Movies
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showDeleteConfirm}
+        title="Delete Movies"
+        message={`Are you sure you want to delete ${selectedMovieIds.size} movie${selectedMovieIds.size !== 1 ? 's' : ''}? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={handleBulkDelete}
+        onCancel={() => setShowDeleteConfirm(false)}
+      />
         </>
       )}
     </div>
