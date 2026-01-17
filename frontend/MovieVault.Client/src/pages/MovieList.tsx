@@ -556,11 +556,11 @@ function MovieList() {
                   )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-700">
+              <tbody className="">
               {currentMovies.map((movie) => (
                 <tr 
                   key={movie.id}
-                  className="hover:bg-gray-700 transition-colors duration-150"
+                  className="hover:bg-gray-700 transition-colors duration-150 focus:outline-none focus-within:outline-none"
                 >
                   <td className="px-6 py-2 text-white w-46 max-w-46 md:w-96 md:max-w-96 align-middle">
                     <Link to={`/movie/${movie.id}`} className="hover:text-indigo-400 transition-colors inline-block truncate max-w-full align-middle" title={movie.title}>
