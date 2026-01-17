@@ -695,7 +695,7 @@ function MovieList() {
                   className={`text-sm group ${index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-900'} hover:bg-gray-700 transition-colors duration-150 focus:outline-none focus-within:outline-none`}
                 >
                   <td 
-                    className="w-12 text-center bg-gray-900 cursor-pointer"
+                    className="w-12 text-center bg-gray-900"
                     onClick={() => handleCheckboxChange(movie.id, !selectedMovieIds.has(movie.id || 0))}
                   >
                     {selectedMovieIds.has(movie.id || 0) ? (
