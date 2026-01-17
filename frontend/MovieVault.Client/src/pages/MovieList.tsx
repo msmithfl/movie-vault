@@ -506,7 +506,7 @@ function MovieList() {
                   id="itemsPerPage"
                   value={itemsPerPage}
                   onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                  className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
+                  className="text-sm px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
                 >
                   <option value={25}>25</option>
                   <option value={50}>50</option>
@@ -559,7 +559,7 @@ function MovieList() {
                   id="itemsPerPage-mobile"
                   value={itemsPerPage}
                   onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                  className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
+                  className="text-sm px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
                 >
                   <option value={25}>25</option>
                   <option value={50}>50</option>
@@ -589,8 +589,8 @@ function MovieList() {
                         <LuTable2 className="w-5 h-5" />
                       </button>
                       {showColumnMenu && (
-                        <div className="absolute -left-1 mt-2 w-40 bg-gray-800 border border-gray-600 rounded-md shadow-lg z-10">
-                          <div className="space-y-2">
+                        <div className="text-sm absolute -left-1 mt-2 w-40 bg-gray-800 border border-gray-600 rounded-md shadow-lg z-10">
+                          <div className="">
                             <button
                               onClick={() => toggleColumn('year')}
                               className="w-full flex items-center justify-between cursor-pointer hover:bg-gray-700 px-3 py-2 rounded"
