@@ -490,11 +490,13 @@ function MovieList() {
                     <IoMdCloseCircle className="w-2.5 h-2.5 text-white" />
                   </button>
                 )}
-                <FilterDropdown
-                  categories={filterCategories}
-                  selectedFilters={selectedFilters}
-                  onFilterChange={handleFilterChange}
-                />
+                <div onClick={() => setShowColumnMenu(false)}>
+                  <FilterDropdown
+                    categories={filterCategories}
+                    selectedFilters={selectedFilters}
+                    onFilterChange={handleFilterChange}
+                  />
+                </div>
               </div>
               <div className="flex items-center gap-3">
                 <label htmlFor="itemsPerPage" className="text-sm font-medium text-gray-300">
@@ -587,53 +589,43 @@ function MovieList() {
                         <LuTable2 className="w-5 h-5" />
                       </button>
                       {showColumnMenu && (
-                        <div className="absolute -left-1 mt-2 w-56 bg-gray-800 border border-gray-600 rounded-md shadow-lg z-10">
-                          <div className="p-3 space-y-2">
-                            <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
-                              <input
-                                type="checkbox"
-                                checked={visibleColumns.year}
-                                onChange={() => toggleColumn('year')}
-                                className="cursor-pointer"
-                              />
-                              <span className="text-sm text-white">Year</span>
-                            </label>
-                            <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
-                              <input
-                                type="checkbox"
-                                checked={visibleColumns.format}
-                                onChange={() => toggleColumn('format')}
-                                className="cursor-pointer"
-                              />
-                              <span className="text-sm text-white">Format</span>
-                            </label>
-                            <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
-                              <input
-                                type="checkbox"
-                                checked={visibleColumns.condition}
-                                onChange={() => toggleColumn('condition')}
-                                className="cursor-pointer"
-                              />
-                              <span className="text-sm text-white">Condition</span>
-                            </label>
-                            <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
-                              <input
-                                type="checkbox"
-                                checked={visibleColumns.rating}
-                                onChange={() => toggleColumn('rating')}
-                                className="cursor-pointer"
-                              />
-                              <span className="text-sm text-white">Rating</span>
-                            </label>
-                            <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
-                              <input
-                                type="checkbox"
-                                checked={visibleColumns.dateAdded}
-                                onChange={() => toggleColumn('dateAdded')}
-                                className="cursor-pointer"
-                              />
-                              <span className="text-sm text-white">Date Added</span>
-                            </label>
+                        <div className="absolute -left-1 mt-2 w-40 bg-gray-800 border border-gray-600 rounded-md shadow-lg z-10">
+                          <div className="space-y-2">
+                            <button
+                              onClick={() => toggleColumn('year')}
+                              className="w-full flex items-center justify-between cursor-pointer hover:bg-gray-700 px-3 py-2 rounded"
+                            >
+                              <span className={`font-normal ${visibleColumns.year ? 'text-indigo-400' : 'text-white'}`}>Year</span>
+                              {visibleColumns.year && <FaCheck className="w-5 h-5 text-indigo-400" />}
+                            </button>
+                            <button
+                              onClick={() => toggleColumn('format')}
+                              className="w-full flex items-center justify-between cursor-pointer hover:bg-gray-700 px-3 py-2 rounded"
+                            >
+                              <span className={`font-normal ${visibleColumns.format ? 'text-indigo-400' : 'text-white'}`}>Format</span>
+                              {visibleColumns.format && <FaCheck className="w-5 h-5 text-indigo-400" />}
+                            </button>
+                            <button
+                              onClick={() => toggleColumn('condition')}
+                              className="w-full flex items-center justify-between cursor-pointer hover:bg-gray-700 px-3 py-2 rounded"
+                            >
+                              <span className={`font-normal ${visibleColumns.condition ? 'text-indigo-400' : 'text-white'}`}>Condition</span>
+                              {visibleColumns.condition && <FaCheck className="w-5 h-5 text-indigo-400" />}
+                            </button>
+                            <button
+                              onClick={() => toggleColumn('rating')}
+                              className="w-full flex items-center justify-between cursor-pointer hover:bg-gray-700 px-3 py-2 rounded"
+                            >
+                              <span className={`font-normal ${visibleColumns.rating ? 'text-indigo-400' : 'text-white'}`}>Rating</span>
+                              {visibleColumns.rating && <FaCheck className="w-5 h-5 text-indigo-400" />}
+                            </button>
+                            <button
+                              onClick={() => toggleColumn('dateAdded')}
+                              className="w-full flex items-center justify-between cursor-pointer hover:bg-gray-700 px-3 py-2 rounded"
+                            >
+                              <span className={`font-normal ${visibleColumns.dateAdded ? 'text-indigo-400' : 'text-white'}`}>Date Added</span>
+                              {visibleColumns.dateAdded && <FaCheck className="w-5 h-5 text-indigo-400" />}
+                            </button>
                           </div>
                         </div>
                       )}
