@@ -7,6 +7,7 @@ import SortableTableHeader from '../components/SortableTableHeader';
 import FilterDropdown from '../components/FilterDropdown';
 import { FaSortAmountDown, FaCog } from "react-icons/fa";
 import { FaMagnifyingGlass } from "react-icons/fa6";
+import { IoMdCloseCircle } from "react-icons/io";
 import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from 'react-icons/ti'
 import { IoCameraOutline } from "react-icons/io5";
 import { getRelativeTimeString } from '../utils/dateUtils';
@@ -261,6 +262,11 @@ function MovieList() {
     setCurrentPage(1);
   };
 
+  const handleClearFilters = () => {
+    setSelectedFilters({});
+    setCurrentPage(1);
+  };
+
   // Define filter categories
   const filterCategories = [
     {
@@ -353,71 +359,6 @@ function MovieList() {
           
           {/* Desktop Sort Controls - Always Visible */}
           <div className="hidden md:flex items-center gap-6">
-              <FilterDropdown
-                categories={filterCategories}
-                selectedFilters={selectedFilters}
-                onFilterChange={handleFilterChange}
-              />
-            <div className="relative">
-              <button
-                onClick={() => setShowColumnMenu(!showColumnMenu)}
-                className="flex items-center gap-2 px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white hover:border-gray-500 transition-colors cursor-pointer"
-              >
-                <FaCog className="w-4 h-4" />
-                Columns
-              </button>
-              {showColumnMenu && (
-                <div className="absolute right-0 mt-2 w-56 bg-gray-800 border border-gray-600 rounded-md shadow-lg z-10">
-                  <div className="p-3 space-y-2">
-                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
-                      <input
-                        type="checkbox"
-                        checked={visibleColumns.year}
-                        onChange={() => toggleColumn('year')}
-                        className="cursor-pointer"
-                      />
-                      <span className="text-sm text-white">Year</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
-                      <input
-                        type="checkbox"
-                        checked={visibleColumns.format}
-                        onChange={() => toggleColumn('format')}
-                        className="cursor-pointer"
-                      />
-                      <span className="text-sm text-white">Format</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
-                      <input
-                        type="checkbox"
-                        checked={visibleColumns.condition}
-                        onChange={() => toggleColumn('condition')}
-                        className="cursor-pointer"
-                      />
-                      <span className="text-sm text-white">Condition</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
-                      <input
-                        type="checkbox"
-                        checked={visibleColumns.rating}
-                        onChange={() => toggleColumn('rating')}
-                        className="cursor-pointer"
-                      />
-                      <span className="text-sm text-white">Rating</span>
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
-                      <input
-                        type="checkbox"
-                        checked={visibleColumns.dateAdded}
-                        onChange={() => toggleColumn('dateAdded')}
-                        className="cursor-pointer"
-                      />
-                      <span className="text-sm text-white">Date Added</span>
-                    </label>
-                  </div>
-                </div>
-              )}
-            </div>
             <div className="flex items-center gap-3">
               <label htmlFor="itemsPerPage" className="text-sm font-medium text-gray-300">
                 Per page:
@@ -432,6 +373,22 @@ function MovieList() {
                 <option value={50}>50</option>
                 <option value={100}>100</option>
               </select>
+            </div>
+            <div className="relative">
+              {Object.values(selectedFilters).some(arr => arr.length > 0) && (
+                <button
+                  onClick={handleClearFilters}
+                  className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-5 h-5 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center transition-colors cursor-pointer"
+                  title="Clear filters"
+                >
+                  <IoMdCloseCircle className="w-2.5 h-2.5 text-white" />
+                </button>
+              )}
+              <FilterDropdown
+                categories={filterCategories}
+                selectedFilters={selectedFilters}
+                onFilterChange={handleFilterChange}
+              />
             </div>
           </div>
 
@@ -520,6 +477,68 @@ function MovieList() {
             <table className="w-full">
               <thead className="bg-gray-700">
                 <tr>
+                  <th className="px-3 py-2 w-12 border-r border-gray-600">
+                    <div className="relative">
+                      <button
+                        onClick={() => setShowColumnMenu(!showColumnMenu)}
+                        className="text-gray-300 hover:text-white transition-colors cursor-pointer"
+                        aria-label="Column options"
+                      >
+                        <FaCog className="w-4 h-4" />
+                      </button>
+                      {showColumnMenu && (
+                        <div className="absolute left-0 mt-2 w-56 bg-gray-800 border border-gray-600 rounded-md shadow-lg z-10">
+                          <div className="p-3 space-y-2">
+                            <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
+                              <input
+                                type="checkbox"
+                                checked={visibleColumns.year}
+                                onChange={() => toggleColumn('year')}
+                                className="cursor-pointer"
+                              />
+                              <span className="text-sm text-white">Year</span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
+                              <input
+                                type="checkbox"
+                                checked={visibleColumns.format}
+                                onChange={() => toggleColumn('format')}
+                                className="cursor-pointer"
+                              />
+                              <span className="text-sm text-white">Format</span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
+                              <input
+                                type="checkbox"
+                                checked={visibleColumns.condition}
+                                onChange={() => toggleColumn('condition')}
+                                className="cursor-pointer"
+                              />
+                              <span className="text-sm text-white">Condition</span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
+                              <input
+                                type="checkbox"
+                                checked={visibleColumns.rating}
+                                onChange={() => toggleColumn('rating')}
+                                className="cursor-pointer"
+                              />
+                              <span className="text-sm text-white">Rating</span>
+                            </label>
+                            <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
+                              <input
+                                type="checkbox"
+                                checked={visibleColumns.dateAdded}
+                                onChange={() => toggleColumn('dateAdded')}
+                                className="cursor-pointer"
+                              />
+                              <span className="text-sm text-white">Date Added</span>
+                            </label>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </th>
                   <SortableTableHeader
                     label="Title"
                     sortKey="alphabetic"
@@ -583,6 +602,13 @@ function MovieList() {
                   key={movie.id}
                   className={`${index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-900'} hover:bg-gray-700 transition-colors duration-150 focus:outline-none focus-within:outline-none`}
                 >
+                  <td className="px-3 py-2 w-12 align-middle">
+                    <input
+                      type="checkbox"
+                      className="cursor-pointer"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </td>
                   <td className="px-6 py-2 text-white w-46 max-w-46 md:w-96 md:max-w-96 align-middle">
                     <Link to={`/movie/${movie.id}`} className="hover:text-indigo-400 transition-colors inline-block truncate max-w-full align-middle" title={movie.title}>
                       {movie.title}
