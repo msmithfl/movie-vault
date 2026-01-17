@@ -5,7 +5,7 @@ import BarcodeScanner from '../components/BarcodeScanner'
 import LoadingSpinner from '../components/LoadingSpinner';
 import SortableTableHeader from '../components/SortableTableHeader';
 import FilterDropdown from '../components/FilterDropdown';
-import { FaSortAmountDown } from "react-icons/fa";
+import { FaSortAmountDown, FaPencilAlt, FaTrash } from "react-icons/fa";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { IoMdCloseCircle } from "react-icons/io";
 import { LuTable2 } from "react-icons/lu";
@@ -72,6 +72,7 @@ function MovieList() {
     };
   });
   const [selectedFilters, setSelectedFilters] = useState<Record<string, string[]>>({});
+  const [selectedMovieIds, setSelectedMovieIds] = useState<Set<number>>(new Set());
   
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5156';
   const API_URL = `${API_BASE}/api/movies`;
@@ -258,6 +259,20 @@ function MovieList() {
     setCurrentPage(1);
   };
 
+  const handleCheckboxChange = (movieId: number | undefined, checked: boolean) => {
+    if (movieId === undefined) return;
+    
+    setSelectedMovieIds(prev => {
+      const newSet = new Set(prev);
+      if (checked) {
+        newSet.add(movieId);
+      } else {
+        newSet.delete(movieId);
+      }
+      return newSet;
+    });
+  };
+
   // Define filter categories
   const filterCategories = [
     {
@@ -341,40 +356,59 @@ function MovieList() {
             </div>
           </div>
           
-          {/* Desktop Sort Controls - Always Visible */}
-          <div className="hidden md:flex items-center justify-between gap-6">
-            <div className="relative">
-              {Object.values(selectedFilters).some(arr => arr.length > 0) && (
-                <button
-                  onClick={handleClearFilters}
-                  className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-5 h-5 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center transition-colors cursor-pointer"
-                  title="Clear filters"
+          {/* Desktop Sort Controls - Conditionally Visible */}
+          {selectedMovieIds.size === 0 ? (
+            <div className="hidden md:flex items-center justify-between gap-6">
+              <div className="relative">
+                {Object.values(selectedFilters).some(arr => arr.length > 0) && (
+                  <button
+                    onClick={handleClearFilters}
+                    className="absolute -left-3 top-1/2 -translate-y-1/2 z-10 w-5 h-5 bg-red-600 hover:bg-red-700 rounded-full flex items-center justify-center transition-colors cursor-pointer"
+                    title="Clear filters"
+                  >
+                    <IoMdCloseCircle className="w-2.5 h-2.5 text-white" />
+                  </button>
+                )}
+                <FilterDropdown
+                  categories={filterCategories}
+                  selectedFilters={selectedFilters}
+                  onFilterChange={handleFilterChange}
+                />
+              </div>
+              <div className="flex items-center gap-3">
+                <label htmlFor="itemsPerPage" className="text-sm font-medium text-gray-300">
+                  Per page:
+                </label>
+                <select
+                  id="itemsPerPage"
+                  value={itemsPerPage}
+                  onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                  className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
                 >
-                  <IoMdCloseCircle className="w-2.5 h-2.5 text-white" />
-                </button>
-              )}
-              <FilterDropdown
-                categories={filterCategories}
-                selectedFilters={selectedFilters}
-                onFilterChange={handleFilterChange}
-              />
+                  <option value={25}>25</option>
+                  <option value={50}>50</option>
+                  <option value={100}>100</option>
+                </select>
+              </div>
             </div>
-            <div className="flex items-center gap-3">
-              <label htmlFor="itemsPerPage" className="text-sm font-medium text-gray-300">
-                Per page:
-              </label>
-              <select
-                id="itemsPerPage"
-                value={itemsPerPage}
-                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
+          ) : (
+            <div className="hidden md:flex items-center justify-center gap-8 py-3 px-6 bg-yellow-900/30 border-2 border-yellow-600 rounded-lg">
+              <button
+                className="flex items-center gap-2 px-4 py-2 text-yellow-400 hover:text-yellow-300 transition-colors"
+                title="Edit selected movies"
               >
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
+                <FaPencilAlt className="w-5 h-5" />
+                <span className="text-sm font-medium">Edit ({selectedMovieIds.size})</span>
+              </button>
+              <button
+                className="flex items-center gap-2 px-4 py-2 text-yellow-400 hover:text-yellow-300 transition-colors"
+                title="Delete selected movies"
+              >
+                <FaTrash className="w-5 h-5" />
+                <span className="text-sm font-medium">Delete ({selectedMovieIds.size})</span>
+              </button>
             </div>
-          </div>
+          )}
 
           {/* Mobile Sort Controls - Toggle Visibility */}
           {showSortMenu && (
@@ -536,6 +570,8 @@ function MovieList() {
                     <input
                       type="checkbox"
                       className="cursor-pointer"
+                      checked={selectedMovieIds.has(movie.id || 0)}
+                      onChange={(e) => handleCheckboxChange(movie.id, e.target.checked)}
                       onClick={(e) => e.stopPropagation()}
                     />
                   </td>
