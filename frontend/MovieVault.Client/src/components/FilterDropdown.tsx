@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { FaFilter, FaChevronRight, FaArrowLeft, FaCheck } from 'react-icons/fa';
+import { FaFilter, FaArrowLeft, FaCheck } from 'react-icons/fa';
 
 interface FilterOption {
   label: string;
