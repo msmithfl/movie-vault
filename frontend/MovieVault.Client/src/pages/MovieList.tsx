@@ -353,26 +353,11 @@ function MovieList() {
           
           {/* Desktop Sort Controls - Always Visible */}
           <div className="hidden md:flex items-center gap-6">
-            <div className="flex items-center gap-3">
-              <label htmlFor="itemsPerPage" className="text-sm font-medium text-gray-300">
-                Per page:
-              </label>
-              <select
-                id="itemsPerPage"
-                value={itemsPerPage}
-                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
-              >
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
-            </div>
-            <FilterDropdown
-              categories={filterCategories}
-              selectedFilters={selectedFilters}
-              onFilterChange={handleFilterChange}
-            />
+              <FilterDropdown
+                categories={filterCategories}
+                selectedFilters={selectedFilters}
+                onFilterChange={handleFilterChange}
+              />
             <div className="relative">
               <button
                 onClick={() => setShowColumnMenu(!showColumnMenu)}
@@ -432,6 +417,21 @@ function MovieList() {
                   </div>
                 </div>
               )}
+            </div>
+            <div className="flex items-center gap-3">
+              <label htmlFor="itemsPerPage" className="text-sm font-medium text-gray-300">
+                Per page:
+              </label>
+              <select
+                id="itemsPerPage"
+                value={itemsPerPage}
+                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
+              >
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
             </div>
           </div>
 
