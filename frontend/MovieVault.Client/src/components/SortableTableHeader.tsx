@@ -22,7 +22,7 @@ function SortableTableHeader({
   return (
     <th
       onClick={() => onClick(sortKey)}
-      className={`px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600 hover:text-white transition-colors cursor-pointer focus:outline-none active:border-gray-600 ${className}`}
+      className={`px-6 py-2 text-left text-sm font-semibold text-gray-200 border-r border-gray-600 hover:text-white transition-colors cursor-pointer focus:outline-none active:border-gray-600 whitespace-nowrap ${className}`}
     >
       <div className="flex items-center gap-2">
         {label}
