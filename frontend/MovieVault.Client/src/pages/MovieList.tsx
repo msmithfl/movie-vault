@@ -168,6 +168,16 @@ function MovieList() {
       );
     }
     
+    // HDD Number filter
+    if (selectedFilters.hdd && selectedFilters.hdd.length > 0) {
+      filtered = filtered.filter(movie => {
+        const hddValue = movie.hdDriveNumber.toString();
+        const hasNoHDD = movie.hdDriveNumber === 0;
+        return selectedFilters.hdd.includes(hddValue) || 
+               (selectedFilters.hdd.includes('0') && hasNoHDD);
+      });
+    }
+    
     return filtered;
   };
   
@@ -261,6 +271,17 @@ function MovieList() {
         { label: 'Blu-ray', value: 'Blu-ray' },
         { label: 'DVD', value: 'DVD' },
         { label: 'VHS', value: 'VHS' },
+      ]
+    },
+    {
+      id: 'hdd',
+      label: 'HDD Number',
+      options: [
+        { label: 'No HDD', value: '0' },
+        ...Array.from(new Set(movies.map(m => m.hdDriveNumber)))
+          .filter(num => num > 0)
+          .sort((a, b) => a - b)
+          .map(num => ({ label: `HDD ${num}`, value: num.toString() }))
       ]
     }
   ];
@@ -494,7 +515,7 @@ function MovieList() {
       {movies.length === 0 ? (
         <EmptyState message="No movies in your collection yet." />
       ) : (
-        <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+        <div className="bg-gray-800 shadow-lg overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-700">
@@ -556,11 +577,11 @@ function MovieList() {
                   )}
                 </tr>
               </thead>
-              <tbody className="">
-              {currentMovies.map((movie) => (
+              <tbody>
+              {currentMovies.map((movie, index) => (
                 <tr 
                   key={movie.id}
-                  className="hover:bg-gray-700 transition-colors duration-150 focus:outline-none focus-within:outline-none"
+                  className={`${index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-900'} hover:bg-gray-700 transition-colors duration-150 focus:outline-none focus-within:outline-none`}
                 >
                   <td className="px-6 py-2 text-white w-46 max-w-46 md:w-96 md:max-w-96 align-middle">
                     <Link to={`/movie/${movie.id}`} className="hover:text-indigo-400 transition-colors inline-block truncate max-w-full align-middle" title={movie.title}>
