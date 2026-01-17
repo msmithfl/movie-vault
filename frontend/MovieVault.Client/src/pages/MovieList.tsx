@@ -5,9 +5,10 @@ import BarcodeScanner from '../components/BarcodeScanner'
 import LoadingSpinner from '../components/LoadingSpinner';
 import SortableTableHeader from '../components/SortableTableHeader';
 import FilterDropdown from '../components/FilterDropdown';
-import { FaSortAmountDown, FaCog } from "react-icons/fa";
+import { FaSortAmountDown } from "react-icons/fa";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { IoMdCloseCircle } from "react-icons/io";
+import { LuTable2 } from "react-icons/lu";
 import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from 'react-icons/ti'
 import { IoCameraOutline } from "react-icons/io5";
 import { getRelativeTimeString } from '../utils/dateUtils';
@@ -312,7 +313,7 @@ function MovieList() {
               className="p-2 text-gray-300 hover:text-white transition-colors"
               aria-label="Column options"
             >
-              <FaCog className="w-6 h-6" />
+              <LuTable2 className="w-6 h-6" />
             </button>
             <button
               onClick={() => setShowSortMenu(!showSortMenu)}
@@ -358,22 +359,7 @@ function MovieList() {
           </div>
           
           {/* Desktop Sort Controls - Always Visible */}
-          <div className="hidden md:flex items-center gap-6">
-            <div className="flex items-center gap-3">
-              <label htmlFor="itemsPerPage" className="text-sm font-medium text-gray-300">
-                Per page:
-              </label>
-              <select
-                id="itemsPerPage"
-                value={itemsPerPage}
-                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
-                className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
-              >
-                <option value={25}>25</option>
-                <option value={50}>50</option>
-                <option value={100}>100</option>
-              </select>
-            </div>
+          <div className="hidden md:flex items-center justify-between gap-6">
             <div className="relative">
               {Object.values(selectedFilters).some(arr => arr.length > 0) && (
                 <button
@@ -389,6 +375,21 @@ function MovieList() {
                 selectedFilters={selectedFilters}
                 onFilterChange={handleFilterChange}
               />
+            </div>
+            <div className="flex items-center gap-3">
+              <label htmlFor="itemsPerPage" className="text-sm font-medium text-gray-300">
+                Per page:
+              </label>
+              <select
+                id="itemsPerPage"
+                value={itemsPerPage}
+                onChange={(e) => handleItemsPerPageChange(Number(e.target.value))}
+                className="px-4 py-2 bg-gray-800 border border-gray-600 rounded-md text-white focus:outline-none focus:border-gray-500 cursor-pointer"
+              >
+                <option value={25}>25</option>
+                <option value={50}>50</option>
+                <option value={100}>100</option>
+              </select>
             </div>
           </div>
 
@@ -481,13 +482,13 @@ function MovieList() {
                     <div className="relative">
                       <button
                         onClick={() => setShowColumnMenu(!showColumnMenu)}
-                        className="text-gray-300 hover:text-white transition-colors cursor-pointer"
+                        className="flex text-gray-300 hover:text-white transition-colors cursor-pointer items-center"
                         aria-label="Column options"
                       >
-                        <FaCog className="w-4 h-4" />
+                        <LuTable2 className="w-5 h-5" />
                       </button>
                       {showColumnMenu && (
-                        <div className="absolute left-0 mt-2 w-56 bg-gray-800 border border-gray-600 rounded-md shadow-lg z-10">
+                        <div className="absolute -left-1 mt-2 w-56 bg-gray-800 border border-gray-600 rounded-md shadow-lg z-10">
                           <div className="p-3 space-y-2">
                             <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-700 p-2 rounded">
                               <input
@@ -602,7 +603,7 @@ function MovieList() {
                   key={movie.id}
                   className={`${index % 2 === 0 ? 'bg-gray-800' : 'bg-gray-900'} hover:bg-gray-700 transition-colors duration-150 focus:outline-none focus-within:outline-none`}
                 >
-                  <td className="px-3 py-2 w-12 align-middle">
+                  <td className="flex px-3 py-2 w-12 justify-center mt-2">
                     <input
                       type="checkbox"
                       className="cursor-pointer"
