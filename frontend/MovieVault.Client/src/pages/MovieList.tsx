@@ -7,9 +7,10 @@ import SortableTableHeader from '../components/SortableTableHeader';
 import FilterDropdown from '../components/FilterDropdown';
 import ConfirmDialog from '../components/ConfirmDialog';
 import { FaSortAmountDown, FaPencilAlt, FaTrash } from "react-icons/fa";
-import { FaMagnifyingGlass } from "react-icons/fa6";
+import { FaMagnifyingGlass, FaCheck } from "react-icons/fa6";
 import { IoMdCloseCircle } from "react-icons/io";
 import { LuTable2 } from "react-icons/lu";
+import { MdClose } from "react-icons/md";
 import { TiStarOutline, TiStarHalfOutline, TiStarFullOutline } from 'react-icons/ti'
 import { IoCameraOutline } from "react-icons/io5";
 import { getRelativeTimeString } from '../utils/dateUtils';
@@ -302,6 +303,10 @@ function MovieList() {
     setCurrentPage(1);
   };
 
+  const handleDeselectAll = () => {
+    setSelectedMovieIds(new Set());
+  };
+
   const handleCheckboxChange = (movieId: number | undefined, checked: boolean) => {
     if (movieId === undefined) return;
     
@@ -441,7 +446,7 @@ function MovieList() {
       </div>
 
       {movies.length > 0 && (
-        <div className="mb-6 space-y-4">
+        <div className="mb-4 space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="relative">
               <input
@@ -508,22 +513,35 @@ function MovieList() {
               </div>
             </div>
           ) : (
-            <div className="hidden md:flex items-center justify-center gap-8 py-3 px-6 bg-yellow-900/30 border-2 border-yellow-600 rounded-lg">
+            <div className="hidden md:flex items-center justify-between py-1 px-6 bg-yellow-900/30 border border-yellow-600 rounded-lg">
+              <span className="text-yellow-400 font-medium">
+                <FaCheck className="inline w-4 h-4 mr-1 -mt-1" /> 
+                {selectedMovieIds.size} selected
+              </span>
+              
+              <div className="flex items-center gap-6">
+                <button
+                  onClick={() => setShowBulkEditModal(true)}
+                  className="text-yellow-400 hover:text-yellow-300 transition-colors cursor-pointer"
+                  title="Edit selected movies"
+                >
+                  <FaPencilAlt className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className="text-yellow-400 hover:text-yellow-300 transition-colors cursor-pointer"
+                  title="Delete selected movies"
+                >
+                  <FaTrash className="w-5 h-5" />
+                </button>
+              </div>
+              
               <button
-                onClick={() => setShowBulkEditModal(true)}
-                className="flex items-center gap-2 px-4 py-2 text-yellow-400 hover:text-yellow-300 transition-colors cursor-pointer"
-                title="Edit selected movies"
+                onClick={handleDeselectAll}
+                className="px-4 py-1.5 text-sm text-yellow-400 hover:text-yellow-300 hover:border-yellow-500 rounded transition-colors cursor-pointer"
               >
-                <FaPencilAlt className="w-5 h-5" />
-                <span className="text-sm font-medium">Edit ({selectedMovieIds.size})</span>
-              </button>
-              <button
-                onClick={() => setShowDeleteConfirm(true)}
-                className="flex items-center gap-2 px-4 py-2 text-yellow-400 hover:text-yellow-300 transition-colors cursor-pointer"
-                title="Delete selected movies"
-              >
-                <FaTrash className="w-5 h-5" />
-                <span className="text-sm font-medium">Delete ({selectedMovieIds.size})</span>
+                <MdClose className="inline w-4 h-4 mr-1 -mt-1" />
+                Deselect All
               </button>
             </div>
           )}
