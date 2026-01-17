@@ -1,8 +1,9 @@
 import { useState, useEffect, useRef } from 'react'
-import { Link, useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import ConfirmDialog from '../components/ConfirmDialog'
 import Counter from '../components/Counter'
 import MovieDetailCard from '../components/MovieDetailCard'
+import MoviePosterCard from '../components/MoviePosterCard'
 import EmptyState from '../components/EmptyState'
 import { FaEdit, FaTrash, FaCheck, FaImage } from 'react-icons/fa'
 import { FaTableList, FaChevronDown, FaChevronUp } from 'react-icons/fa6'
@@ -43,7 +44,7 @@ function ShelfSectionDetail() {
   
   // View mode state
   const [viewMode, setViewMode] = useState<'detail' | 'poster'>(() => {
-    const saved = localStorage.getItem('shelfViewMode');
+    const saved = localStorage.getItem('movieViewMode');
     return (saved === 'poster' || saved === 'detail') ? saved : 'detail';
   });
   const [isViewDropdownOpen, setIsViewDropdownOpen] = useState(false);
@@ -51,7 +52,7 @@ function ShelfSectionDetail() {
   
   const handleViewModeChange = (mode: 'detail' | 'poster') => {
     setViewMode(mode);
-    localStorage.setItem('shelfViewMode', mode);
+    localStorage.setItem('movieViewMode', mode);
     setIsViewDropdownOpen(false);
   };
 
@@ -299,32 +300,7 @@ function ShelfSectionDetail() {
         }>
           {movies.map((movie) => (
             viewMode === 'poster' ? (
-              <Link
-                key={movie.id}
-                to={`/movie/${movie.id}`}
-                className="group relative aspect-2/3 rounded-lg overflow-hidden shadow-lg transition-all duration-200 hover:scale-105 hover:shadow-2xl"
-              >
-                {movie.posterPath ? (
-                  <img 
-                    src={movie.posterPath} 
-                    alt={`${movie.title} poster`}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      e.currentTarget.src = 'https://via.placeholder.com/300x450?text=No+Poster';
-                    }}
-                  />
-                ) : (
-                  <div className="max-w-64 md:max-w-50 h-full bg-gray-700 flex items-center justify-center">
-                    <span className="text-gray-400 text-sm text-center px-2 truncate">{movie.title}</span>
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-linear-to-t from-black/80 via-black/0 to-black/0 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                  <div className="max-w-64 md:max-w-50 absolute bottom-0 left-0 right-0 p-3">
-                    <h3 className="text-white font-bold text-sm line-clamp-2 mb-1 truncate">{movie.title}</h3>
-                    <p className="text-gray-300 text-xs">Shelf #{movie.shelfNumber || 'N/A'}</p>
-                  </div>
-                </div>
-              </Link>
+              <MoviePosterCard key={movie.id} movie={movie} showShelf />
             ) : (
               <MovieDetailCard key={movie.id} movie={movie} showYear />
             )
