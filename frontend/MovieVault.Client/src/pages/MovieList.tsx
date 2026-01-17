@@ -82,6 +82,7 @@ function MovieList() {
     hdDriveNumber: ''
   });
   const [shelfSections, setShelfSections] = useState<string[]>([]);
+  const [collections, setCollections] = useState<string[]>([]);
   
   const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5156';
   const API_URL = `${API_BASE}/api/movies`;
@@ -95,6 +96,7 @@ function MovieList() {
   useEffect(() => {
     fetchMovies();
     fetchShelfSections();
+    fetchCollections();
   }, []);
 
   // Save column preferences to localStorage
@@ -136,6 +138,18 @@ function MovieList() {
       }
     } catch (error) {
       console.error('Error fetching shelf sections:', error);
+    }
+  };
+
+  const fetchCollections = async () => {
+    try {
+      const response = await fetch(`${API_BASE}/api/collections`);
+      if (response.ok) {
+        const data = await response.json();
+        setCollections(data.map((collection: any) => collection.name).sort());
+      }
+    } catch (error) {
+      console.error('Error fetching collections:', error);
     }
   };
 
@@ -201,6 +215,13 @@ function MovieList() {
         return selectedFilters.hdd.includes(hddValue) || 
                (selectedFilters.hdd.includes('0') && hasNoHDD);
       });
+    }
+    
+    // Collection filter
+    if (selectedFilters.collection && selectedFilters.collection.length > 0) {
+      filtered = filtered.filter(movie => 
+        movie.collections.some(collection => selectedFilters.collection.includes(collection))
+      );
     }
     
     return filtered;
@@ -385,6 +406,11 @@ function MovieList() {
           .sort((a, b) => a - b)
           .map(num => ({ label: `HDD ${num}`, value: num.toString() }))
       ]
+    },
+    {
+      id: 'collection',
+      label: 'Collection',
+      options: collections.map(collection => ({ label: collection, value: collection }))
     }
   ];
 
