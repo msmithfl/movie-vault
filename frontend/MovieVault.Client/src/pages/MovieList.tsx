@@ -423,7 +423,7 @@ function MovieList() {
       <div className="flex justify-between items-center mb-8">
         <div className='flex items-center gap-4'>
           <h2 className="text-3xl font-bold">Library</h2>
-          <Counter count={movies.length} />
+          <Counter count={filteredMovies.length} />
         </div>
         
         {/* Mobile Sort and Column Buttons */}
