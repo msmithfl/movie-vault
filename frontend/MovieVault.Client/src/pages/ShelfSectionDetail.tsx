@@ -300,7 +300,7 @@ function ShelfSectionDetail() {
         }>
           {movies.map((movie) => (
             viewMode === 'poster' ? (
-              <MoviePosterCard key={movie.id} movie={movie} showShelf />
+              <MoviePosterCard key={movie.id} movie={movie} />
             ) : (
               <MovieDetailCard key={movie.id} movie={movie} showYear />
             )
