@@ -574,7 +574,7 @@ function MovieList() {
       {movies.length === 0 ? (
         <EmptyState message="No movies in your collection yet." />
       ) : (
-        <div className="bg-gray-800 overflow-hidden">
+        <div className="bg-gray-900 overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead className="bg-gray-700">
