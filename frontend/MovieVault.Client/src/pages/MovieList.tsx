@@ -201,16 +201,6 @@ function MovieList() {
     setItemsPerPage(value);
     setCurrentPage(1);
   };
-  
-  // const handleSortChange = (value: SortOption) => {
-  //   setSortBy(value);
-  //   setSortDirection('asc');
-  //   setCurrentPage(1);
-  // };
-
-  // const toggleSortDirection = () => {
-  //   setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc');
-  // };
 
   const handleColumnClick = (sortKey: string) => {
     const column = sortKey as SortOption;
@@ -309,13 +299,6 @@ function MovieList() {
         {movies.length > 0 && (
           <div className="md:hidden flex gap-2">
             <button
-              onClick={() => setShowColumnMenu(!showColumnMenu)}
-              className="p-2 text-gray-300 hover:text-white transition-colors"
-              aria-label="Column options"
-            >
-              <LuTable2 className="w-6 h-6" />
-            </button>
-            <button
               onClick={() => setShowSortMenu(!showSortMenu)}
               className="p-2 text-gray-300 hover:text-white transition-colors"
               aria-label="Sort options"
@@ -410,60 +393,6 @@ function MovieList() {
                   <option value={50}>50</option>
                   <option value={100}>100</option>
                 </select>
-              </div>
-            </div>
-          )}
-
-          {/* Mobile Column Controls - Toggle Visibility */}
-          {showColumnMenu && (
-            <div className="md:hidden space-y-3 p-4 bg-gray-700 rounded-lg">
-              <h3 className="text-sm font-medium text-gray-300 mb-2">Show Columns:</h3>
-              <div className="space-y-2">
-                <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-600 p-2 rounded">
-                  <input
-                    type="checkbox"
-                    checked={visibleColumns.year}
-                    onChange={() => toggleColumn('year')}
-                    className="cursor-pointer"
-                  />
-                  <span className="text-sm text-white">Year</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-600 p-2 rounded">
-                  <input
-                    type="checkbox"
-                    checked={visibleColumns.format}
-                    onChange={() => toggleColumn('format')}
-                    className="cursor-pointer"
-                  />
-                  <span className="text-sm text-white">Format</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-600 p-2 rounded">
-                  <input
-                    type="checkbox"
-                    checked={visibleColumns.condition}
-                    onChange={() => toggleColumn('condition')}
-                    className="cursor-pointer"
-                  />
-                  <span className="text-sm text-white">Condition</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-600 p-2 rounded">
-                  <input
-                    type="checkbox"
-                    checked={visibleColumns.rating}
-                    onChange={() => toggleColumn('rating')}
-                    className="cursor-pointer"
-                  />
-                  <span className="text-sm text-white">Rating</span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer hover:bg-gray-600 p-2 rounded">
-                  <input
-                    type="checkbox"
-                    checked={visibleColumns.dateAdded}
-                    onChange={() => toggleColumn('dateAdded')}
-                    className="cursor-pointer"
-                  />
-                  <span className="text-sm text-white">Date Added</span>
-                </label>
               </div>
             </div>
           )}
